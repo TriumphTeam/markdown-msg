@@ -3,36 +3,47 @@ package me.mattstudios.mfmsg.base;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class Lexer {
 
+    private Lexer() {}
+
     private static final Pattern stylePattern = Pattern.compile("(?<HEX><#.+?>)|(?<ACTION>(?<!\\\\)\\[.+?(?<!\\\\)](?<!\\\\)\\(.+?(?<!\\\\)\\))|(?<BI>(?<!\\\\)\\*+.+?(?<!\\\\)\\*+)|(?<STRIKE>(?<!\\\\)~+.+?~+)|(?<ESCAPED>\\\\[*~\\[\\]()])");
     private static final List<TokenType> tokenTypes = Arrays.asList(TokenType.values()).parallelStream().filter(tokenType -> tokenType != TokenType.TEXT).collect(Collectors.toList());
 
-    public List<Token> lex(final String input) {
+    public static List<Token> lex(final String input) {
         final List<Token> lexed = new ArrayList<>();
 
-        final Matcher matcher = stylePattern.matcher(input);
+        final char[] chars = input.toCharArray();
 
-        int lastStart = 0;
-        while (matcher.find()) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < chars.length; i++) {
+            final char currentChar = chars[i];
 
-            lexed.add(new Token(TokenType.TEXT, input.substring(lastStart, matcher.start())));
-            lastStart = matcher.end();
+            if (currentChar == TokenType.ASTERISK.getChar()) {
+                // Handles escaping
+                if (i > 0 && chars[i - 1] == TokenType.ESCAPE.getChar()) {
+                    stringBuilder.append(currentChar);
+                    continue;
+                }
 
-            for (final TokenType tokenType : tokenTypes) {
-                final String group = matcher.group(tokenType.name());
-                if (group == null) continue;
+                // Turns the builder into a TEXT since nothing else was detected
+                if (stringBuilder.length() != 0) {
+                    lexed.add(new Token(TokenType.TEXT, stringBuilder.toString()));
+                    stringBuilder = new StringBuilder();
+                }
 
-                lexed.add(new Token(tokenType, group));
+                lexed.add(new Token(TokenType.ASTERISK, String.valueOf(currentChar)));
+
+                continue;
             }
 
+            stringBuilder.append(currentChar);
         }
 
-        lexed.add(new Token(TokenType.TEXT, input.substring(lastStart)));
+        lexed.add(new Token(TokenType.TEXT, stringBuilder.toString()));
 
         return lexed;
     }
