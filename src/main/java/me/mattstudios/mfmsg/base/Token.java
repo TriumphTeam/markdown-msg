@@ -17,4 +17,8 @@ public final class Token {
         return "[" + tokenType.name() + " = " + value + "]";
     }
 
+    public TokenType getType() {
+        return tokenType;
+    }
+
 }

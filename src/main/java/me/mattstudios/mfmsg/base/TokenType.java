@@ -4,7 +4,20 @@ public enum TokenType {
 
     ASTERISK('*'),
     ESCAPE('\\'),
-    TEXT(null);
+    L_ARROW('<'),
+    R_ARROW('>'),
+    L_BRACKET('['),
+    R_BRACKET(']'),
+    L_PAREN('('),
+    R_PAREN(')'),
+    DECLARE(':'),
+    TEXT(null),
+    PARSABLE(null);
+
+
+    public static TokenType[] possibleValues() {
+        return new TokenType[] {ASTERISK, ESCAPE, L_ARROW, R_ARROW, L_BRACKET, R_BRACKET, L_PAREN, R_PAREN, DECLARE, TEXT};
+    }
 
     private final Character character;
 
