@@ -1,8 +1,10 @@
 package me.mattstudios.mfmsg.base;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class Lexer {
@@ -10,10 +12,10 @@ public final class Lexer {
     private Lexer() {}
 
     //private static final Pattern stylePattern = Pattern.compile("(?<HEX><#.+?>)|(?<ACTION>(?<!\\\\)\\[.+?(?<!\\\\)](?<!\\\\)\\(.+?(?<!\\\\)\\))|(?<BI>(?<!\\\\)\\*+.+?(?<!\\\\)\\*+)|(?<STRIKE>(?<!\\\\)~+.+?~+)|(?<ESCAPED>\\\\[*~\\[\\]()])");
-    private static final List<TokenType> tokenTypes = Arrays.stream(TokenType.values())
+    private static final Set<TokenType> tokenTypes = Arrays.stream(TokenType.possibleValues())
                                                             .filter(tokenType -> tokenType != TokenType.TEXT)
                                                             .filter(tokenType -> tokenType != TokenType.ESCAPE)
-                                                            .collect(Collectors.toList());
+                                                            .collect(Collectors.toSet());
 
     public static List<Token> lex(final String input) {
         final List<Token> lexed = new ArrayList<>();
@@ -50,7 +52,7 @@ public final class Lexer {
 
             if (!matched) stringBuilder.append(currentChar);
         }
-
+        if (stringBuilder.length() != 0)
         lexed.add(new Token(TokenType.TEXT, stringBuilder.toString()));
 
         return lexed;
@@ -64,6 +66,13 @@ public final class Lexer {
 
         // TODO, check for \\*, won't work
         return i != 0 && chars[i - 1] == TokenType.ESCAPE.getChar() && chars[i - 2] != TokenType.ESCAPE.getChar();
+    }
+
+
+    public static void main(String[] args) {
+        Parser parser = new Parser(lex("*lol*"));
+        parser.parseText();
+        System.out.println(Grammar.BOLD.partialMatches(parser.getStack()) + " <- Grammar result");
     }
 
 }
