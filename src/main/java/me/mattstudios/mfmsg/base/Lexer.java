@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +9,9 @@ public final class Lexer {
 
     private Lexer() {}
 
-    private static final Map<Character, TokenType> TOKENS = new LinkedHashMap<>();
+    private static final Map<Character, TokenType> TOKENS = new HashMap<>();
 
+    // Puts all the tokens on the Map
     static {
         TOKENS.put('*', TokenType.ASTERISK);
         TOKENS.put('\\', TokenType.ESCAPE);
@@ -23,6 +24,7 @@ public final class Lexer {
         TOKENS.put(')', TokenType.R_PAREN);
     }
 
+    // I'll comment this later
     public static List<Token> lex(final String input) {
         final List<Token> lexed = new ArrayList<>();
 
