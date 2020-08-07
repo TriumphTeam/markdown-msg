@@ -1,8 +1,5 @@
 package me.mattstudios.mfmsg.base;
 
-
-
-import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -11,7 +8,7 @@ public final class Parser {
     private final Stack<Token> tokenStack;
     private final StringBuilder resultBuilder = new StringBuilder();
     private final Stack<Token> parseStack = new Stack<>();
-    protected Parser(List<Token> tokens) {
+    public Parser(List<Token> tokens) {
         this.tokenStack = new Stack<>();
         tokenStack.addAll(tokens);
     }

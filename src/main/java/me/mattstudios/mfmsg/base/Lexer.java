@@ -1,78 +1,76 @@
 package me.mattstudios.mfmsg.base;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public final class Lexer {
 
     private Lexer() {}
 
-    //private static final Pattern stylePattern = Pattern.compile("(?<HEX><#.+?>)|(?<ACTION>(?<!\\\\)\\[.+?(?<!\\\\)](?<!\\\\)\\(.+?(?<!\\\\)\\))|(?<BI>(?<!\\\\)\\*+.+?(?<!\\\\)\\*+)|(?<STRIKE>(?<!\\\\)~+.+?~+)|(?<ESCAPED>\\\\[*~\\[\\]()])");
-    private static final Set<TokenType> tokenTypes = Arrays.stream(TokenType.possibleValues())
-                                                            .filter(tokenType -> tokenType != TokenType.TEXT)
-                                                            .filter(tokenType -> tokenType != TokenType.ESCAPE)
-                                                            .collect(Collectors.toSet());
+    private static final Map<Character, TokenType> TOKENS = new LinkedHashMap<>();
+
+    static {
+        TOKENS.put('*', TokenType.ASTERISK);
+        TOKENS.put('\\', TokenType.ESCAPE);
+        TOKENS.put('<', TokenType.L_ARROW);
+        TOKENS.put('#', TokenType.HASH_TAG);
+        TOKENS.put('>', TokenType.R_ARROW);
+        TOKENS.put('[', TokenType.L_BRACKET);
+        TOKENS.put(']', TokenType.R_BRACKET);
+        TOKENS.put('(', TokenType.L_PAREN);
+        TOKENS.put(')', TokenType.R_PAREN);
+    }
 
     public static List<Token> lex(final String input) {
         final List<Token> lexed = new ArrayList<>();
 
         final char[] chars = input.toCharArray();
 
-        StringBuilder stringBuilder = new StringBuilder();
+        // Builder to capture the TEXT token
+        StringBuilder textBuilder = new StringBuilder();
         for (int i = 0; i < chars.length; i++) {
             final char currentChar = chars[i];
 
-            boolean matched = false;
+            // If the current token type is null it's a TEXT token
+            final TokenType tokenType = TOKENS.get(currentChar);
+            if (tokenType == null || (i + 1 >= chars.length)) {
+                textBuilder.append(currentChar);
+                continue;
+            }
 
-            // Looks for token matches
-            for (final TokenType tokenType : tokenTypes) {
-                if (currentChar != tokenType.getChar()) continue;
-                matched = true;
+            // Checks for possible escaping
+            if (tokenType == TokenType.ESCAPE) {
+                final char nextChar = chars[i + 1];
+                final TokenType nextToken = TOKENS.get(nextChar);
 
-                // Checks if token is escaped or not .. needs work
-                if (isEscaped(chars, i)) {
-                    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-                    stringBuilder.append(currentChar);
+                // Appends "\", as it's not followed by another token
+                if (nextToken == null) {
+                    textBuilder.append(currentChar);
                     continue;
                 }
 
-                // Turns the builder into a TEXT since nothing else was detected
-                if (stringBuilder.length() != 0) {
-                    lexed.add(new Token(TokenType.TEXT, stringBuilder.toString()));
-                    stringBuilder = new StringBuilder();
-                }
-
-                lexed.add(new Token(tokenType, String.valueOf(currentChar)));
-                break;
+                // Appends only the next char as it's been escaped
+                textBuilder.append(nextChar);
+                i = i + 1;
+                continue;
             }
 
-            if (!matched) stringBuilder.append(currentChar);
+            // Appends the text and resets the StringBuilder
+            if (textBuilder.length() != 0) {
+                lexed.add(new Token(TokenType.TEXT, textBuilder.toString()));
+                textBuilder = new StringBuilder();
+            }
+
+            lexed.add(new Token(tokenType, String.valueOf(currentChar)));
         }
-        if (stringBuilder.length() != 0)
-        lexed.add(new Token(TokenType.TEXT, stringBuilder.toString()));
+
+        if (textBuilder.length() != 0) {
+            lexed.add(new Token(TokenType.TEXT, textBuilder.toString()));
+        }
 
         return lexed;
-    }
-
-    private static boolean isEscaped(final char[] chars, final int i) {
-        // Checks for \*
-        if (i >= 1) {
-            return chars[i - 1] == TokenType.ESCAPE.getChar();
-        }
-
-        // TODO, check for \\*, won't work
-        return i != 0 && chars[i - 1] == TokenType.ESCAPE.getChar() && chars[i - 2] != TokenType.ESCAPE.getChar();
-    }
-
-
-    public static void main(String[] args) {
-        Parser parser = new Parser(lex("*lol*"));
-        parser.parseText();
-        System.out.println(Grammar.BOLD.partialMatches(parser.getStack()) + " <- Grammar result");
     }
 
 }

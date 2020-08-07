@@ -1,7 +1,6 @@
 package me.mattstudios.mfmsg.base;
 
 import java.util.Stack;
-import java.util.Vector;
 
 public enum Grammar {
     COLOR(
@@ -46,7 +45,7 @@ public enum Grammar {
      * @param tokenStack currently traversed tokens
      * @return true, if input follows this grammar
      */
-    protected boolean partialMatches(Stack<Token> tokenStack) {
+    public boolean partialMatches(Stack<Token> tokenStack) {
         // Cant predict size if any variable argument sized grammar is used
         if (!hasVarArg) {
             // There are more tokens than grammar length, so cannot be following this grammar
