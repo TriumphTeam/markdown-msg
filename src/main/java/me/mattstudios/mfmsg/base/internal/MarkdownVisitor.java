@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.base.internal;
 
-import com.google.common.collect.ImmutableSet;
+import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
+import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -9,43 +10,45 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.CustomNode;
-import org.commonmark.node.Document;
 import org.commonmark.node.Emphasis;
 import org.commonmark.node.Node;
-import org.commonmark.node.Paragraph;
 import org.commonmark.node.StrongEmphasis;
 import org.commonmark.node.Text;
+import org.commonmark.parser.Parser;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 public final class MarkdownVisitor extends AbstractVisitor {
 
     @NotNull
     private final ComponentBuilder builder = new ComponentBuilder();
 
-    private final List<HoverEvent> hoverEvents = new ArrayList<>();
-    private final List<ClickEvent> clickEvents = new ArrayList<>();
+    @Nullable
+    private HoverEvent hoverEvent = null;
+    @Nullable
+    private ClickEvent clickEvent = null;
 
+    // Text properties
     private boolean italic;
     private boolean bold;
     private boolean strike;
+    private boolean underLine;
+    private boolean obfuscated;
 
-    public Set<Class<? extends Node>> getNodeTypes() {
-        return ImmutableSet.of(Document.class, Paragraph.class);
-    }
-
-    public void render(final Node node) {
+    /**
+     * Parses the {@link Node}
+     *
+     * @param node The {@link Node} given by the {@link Parser}
+     */
+    public void parse(final Node node) {
         node.accept(this);
     }
 
-    @Override
-    public void visit(final Document document) {
-        visitChildren(document);
-    }
-
+    /**
+     * Handles italic
+     *
+     * @param emphasis The italic is matched by either `* *` or `_ _`
+     */
     @Override
     public void visit(final Emphasis emphasis) {
         italic = true;
@@ -53,6 +56,11 @@ public final class MarkdownVisitor extends AbstractVisitor {
         italic = false;
     }
 
+    /**
+     * Handles bold
+     *
+     * @param strongEmphasis Bold is matched by `** **`
+     */
     @Override
     public void visit(final StrongEmphasis strongEmphasis) {
         bold = true;
@@ -60,58 +68,102 @@ public final class MarkdownVisitor extends AbstractVisitor {
         bold = false;
     }
 
+    /**
+     * Handles extended nodes
+     *
+     * @param customNode The {@link CustomNode} can be either {@link Underline}, {@link Strikethrough}, or {@link Obfuscated}
+     */
     @Override
     public void visit(final CustomNode customNode) {
-        if (!(customNode instanceof Strikethrough)) return;
+        if (customNode instanceof Underline) {
+            underLine = true;
+            visitChildren(customNode);
+            underLine = false;
+            return;
+        }
 
+        if (customNode instanceof Obfuscated) {
+            obfuscated = true;
+            visitChildren(customNode);
+            obfuscated = false;
+            return;
+        }
+
+        if (!(customNode instanceof Strikethrough)) return;
         strike = true;
         visitChildren(customNode);
         strike = false;
     }
 
+    /**
+     * Handles the appending of the component
+     *
+     * @param text A parsed {@link Text} node
+     */
     @Override
     public void visit(final Text text) {
-        builder.append(TextComponent.fromLegacyText(text.getLiteral()), ComponentBuilder.FormatRetention.NONE);
+        append(TextComponent.fromLegacyText(text.getLiteral()));
 
+        // Sets each property accordingly
         builder.italic(italic);
         builder.bold(bold);
         builder.strikethrough(strike);
+        builder.underlined(underLine);
+        builder.obfuscated(obfuscated);
 
-        for (final HoverEvent event : hoverEvents) {
-            builder.event(event);
-        }
-
-        for (final ClickEvent event : clickEvents) {
-            builder.event(event);
-        }
+        // If available sets the event
+        if (hoverEvent != null) builder.event(hoverEvent);
+        if (clickEvent != null) builder.event(clickEvent);
 
         visitChildren(text);
     }
 
-    public void addHoverEvents(final List<HoverEvent> hoverEvents) {
-        this.hoverEvents.addAll(hoverEvents);
+    /**
+     * Sets the hover event to be used
+     *
+     * @param hoverEvent A nullable {@link HoverEvent}
+     */
+    public void setHoverEvent(@Nullable final HoverEvent hoverEvent) {
+        this.hoverEvent = hoverEvent;
     }
 
-    public void addClickEvents(final List<ClickEvent> clickEvents) {
-        this.clickEvents.addAll(clickEvents);
+    /**
+     * Sets the click event to be used
+     *
+     * @param clickEvent A nullable {@link ClickEvent}
+     */
+    public void setClickEvent(@Nullable final ClickEvent clickEvent) {
+        this.clickEvent = clickEvent;
     }
 
+    /**
+     * Builds the component into a {@link BaseComponent[]} and resets the {@link #builder}
+     *
+     * @return A {@link BaseComponent[]} with all the parsed values
+     */
+    @NotNull
     public BaseComponent[] build() {
         final BaseComponent[] component = builder.create();
         reset();
         return component;
     }
 
-    private boolean currentHasText() {
-        final BaseComponent current = builder.getCurrentComponent();
-        return current instanceof TextComponent && !((TextComponent) current).getText().isEmpty();
-    }
-
+    /**
+     * Resets the {@link #builder}, {@link #hoverEvent}, and the {@link #clickEvent}
+     */
     private void reset() {
         builder.getParts().clear();
+        hoverEvent = null;
+        clickEvent = null;
+    }
 
-        hoverEvents.clear();
-        clickEvents.clear();
+    /**
+     * Appends a the given {@link BaseComponent[]} into the {@link #builder}
+     *
+     * @param components A {@link BaseComponent[]}
+     */
+    private void append(@NotNull final BaseComponent[] components) {
+        builder.append(components, ComponentBuilder.FormatRetention.NONE);
     }
 
 }
