@@ -71,11 +71,11 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Text text) {
-        builder.append(text.getLiteral(), ComponentBuilder.FormatRetention.NONE);
+        builder.append(TextComponent.fromLegacyText(text.getLiteral()), ComponentBuilder.FormatRetention.NONE);
 
-        if (italic) builder.italic(true);
-        if (bold) builder.bold(true);
-        if (strike) builder.strikethrough(true);
+        builder.italic(italic);
+        builder.bold(bold);
+        builder.strikethrough(strike);
 
         for (final HoverEvent event : hoverEvents) {
             builder.event(event);
@@ -108,14 +108,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
     }
 
     private void reset() {
-        //builder.reset();
-        while (!builder.getParts().isEmpty() && !currentHasText()) {
-            if (builder.getCurrentComponent().getExtra() != null && !builder.getCurrentComponent().getExtra().isEmpty()) {
-                break;
-            }
-
-            builder.resetCursor().removeComponent(builder.getCursor());
-        }
+        builder.getParts().clear();
 
         hoverEvents.clear();
         clickEvents.clear();

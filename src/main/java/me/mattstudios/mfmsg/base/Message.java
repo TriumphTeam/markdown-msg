@@ -56,7 +56,7 @@ public final class Message {
     }
 
     private void appendSpace() {
-        finalBuilder.append(TextComponent.fromLegacyText(" "));
+        finalBuilder.append(TextComponent.fromLegacyText(" "), ComponentBuilder.FormatRetention.NONE);
     }
 
     private void parseAction(final ActionToken token) {
@@ -68,20 +68,23 @@ public final class Message {
 
             if (!matcher.find()) continue;
 
-            final String type = matcher.group("type");
             markdownVisitor.render(PARSER.parse(matcher.group("text")));
 
-            switch (matcher.group("type")) {
+            switch (matcher.group("type").toLowerCase()) {
                 case "hover":
-                    hoverEvents.add(new HoverEvent(HoverEvent.Action.SHOW_TEXT, markdownVisitor.build()));
+                    BaseComponent[] components = markdownVisitor.build();
+                    for (final BaseComponent component : components) {
+                        System.out.println(component);
+                    }
+                    hoverEvents.add(new HoverEvent(HoverEvent.Action.SHOW_TEXT, components));
                     break;
             }
         }
 
         markdownVisitor.addClickEvents(clickEvents);
         markdownVisitor.addHoverEvents(hoverEvents);
-        //markdownVisitor.render(PARSER.parse(token.getActionText()));
-        //finalBuilder.append(markdownVisitor.build(), ComponentBuilder.FormatRetention.NONE);
+        markdownVisitor.render(PARSER.parse(token.getActionText()));
+        finalBuilder.append(markdownVisitor.build(), ComponentBuilder.FormatRetention.NONE);
     }
 
     public BaseComponent[] build() {
