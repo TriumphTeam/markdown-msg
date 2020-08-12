@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class BaseComponentBuilder implements Builder<BaseComponent[]> {
+public final class BaseComponentAppender implements Appender<BaseComponent[]> {
 
     private final ComponentBuilder componentBuilder = new ComponentBuilder();
     private HoverEvent hoverEvent = null;

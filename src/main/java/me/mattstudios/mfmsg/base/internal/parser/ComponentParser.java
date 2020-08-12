@@ -3,8 +3,8 @@ package me.mattstudios.mfmsg.base.internal.parser;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
-import me.mattstudios.mfmsg.base.internal.component.BaseComponentBuilder;
-import me.mattstudios.mfmsg.base.internal.component.Builder;
+import me.mattstudios.mfmsg.base.internal.component.BaseComponentAppender;
+import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
 import me.mattstudios.mfmsg.base.internal.token.Token;
@@ -28,11 +28,11 @@ public final class ComponentParser extends AbstractParser {
     @NotNull
     private final ComponentBuilder finalBuilder = new ComponentBuilder();
 
-    private final Builder<BaseComponent[]> builder = new BaseComponentBuilder();
+    private final Appender<BaseComponent[]> appender = new BaseComponentAppender();
     private final MarkdownVisitor visitor;
 
     public ComponentParser(@NotNull final String message, @NotNull Set<Format> formats) {
-        visitor = new MarkdownVisitor(builder, formats);
+        visitor = new MarkdownVisitor(appender, formats);
         tokens = ActionLexer.tokenize(message);
         parseTokens();
     }
@@ -55,7 +55,7 @@ public final class ComponentParser extends AbstractParser {
             if (tokenText.isEmpty()) continue;
             // Parses a normal text instead
             visitor.parse(PARSER.parse(tokenText));
-            finalBuilder.append(builder.build(), ComponentBuilder.FormatRetention.NONE);
+            finalBuilder.append(appender.build(), ComponentBuilder.FormatRetention.NONE);
             if (i < tokens.size() - 1) appendSpace();
         }
     }
@@ -90,7 +90,7 @@ public final class ComponentParser extends AbstractParser {
                 case "hover":
                     // Parses the action text
                     visitor.parse(PARSER.parse(actionText));
-                    hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, builder.build());
+                    hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, appender.build());
                     break;
 
                 case "command":
@@ -112,11 +112,11 @@ public final class ComponentParser extends AbstractParser {
         }
 
         // Adds the click and hover events
-        builder.setClickEvent(clickEvent);
-        builder.setHoverEvent(hoverEvent);
+        appender.setClickEvent(clickEvent);
+        appender.setHoverEvent(hoverEvent);
 
         visitor.parse(PARSER.parse(token.getActionText()));
-        final BaseComponent[] baseComponent = builder.build();
+        final BaseComponent[] baseComponent = appender.build();
         if (baseComponent.length == 0) return;
         finalBuilder.append(baseComponent, ComponentBuilder.FormatRetention.NONE);
     }

@@ -2,7 +2,7 @@ package me.mattstudios.mfmsg.base.internal.component;
 
 import org.jetbrains.annotations.NotNull;
 
-public final class StringComponentBuilder implements Builder<String> {
+public final class StringComponentAppender implements Appender<String> {
 
     private final StringBuilder builder = new StringBuilder();
 

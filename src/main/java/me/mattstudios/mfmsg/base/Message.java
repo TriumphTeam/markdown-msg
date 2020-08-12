@@ -1,7 +1,6 @@
 package me.mattstudios.mfmsg.base;
 
 import me.mattstudios.mfmsg.base.internal.Format;
-import me.mattstudios.mfmsg.base.internal.component.StringComponentBuilder;
 import me.mattstudios.mfmsg.base.internal.parser.ComponentParser;
 import me.mattstudios.mfmsg.base.internal.parser.StringParser;
 import net.md_5.bungee.api.chat.BaseComponent;

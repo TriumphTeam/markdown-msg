@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base.internal;
 
-import me.mattstudios.mfmsg.base.internal.component.Builder;
+import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
@@ -23,11 +23,11 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private boolean underline;
     private boolean obfuscated;
 
-    private final Builder<?> builder;
+    private final Appender<?> appender;
     private final Set<Format> formats;
 
-    public MarkdownVisitor(final Builder<?> abstractParser, final Set<Format> formats) {
-        this.builder = abstractParser;
+    public MarkdownVisitor(final Appender<?> abstractParser, final Set<Format> formats) {
+        this.appender = abstractParser;
         this.formats = formats;
     }
 
@@ -108,7 +108,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final Text text) {
-        builder.append(text.getLiteral(), italic, bold, strike, underline, obfuscated);
+        appender.append(text.getLiteral(), italic, bold, strike, underline, obfuscated);
         visitChildren(text);
     }
 
