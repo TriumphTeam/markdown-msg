@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base;
 
+import me.mattstudios.mfmsg.base.internal.ServerVersion;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -29,7 +30,7 @@ public final class HexUtils {
     /**
      * Sends a CommandSender a colored message
      *
-     * @param sender  The CommandSender to send to
+     * @param sender The CommandSender to send to
      * @param message The message to send
      */
     public static void sendMessage(CommandSender sender, String message) {
@@ -47,7 +48,7 @@ public final class HexUtils {
         parsed = parseRainbow(parsed);
         parsed = parseGradients(parsed);
         parsed = parseHex(parsed);
-        //parsed = parseLegacy(parsed);
+        parsed = parseLegacy(parsed);
         return parsed;
     }
 
@@ -145,7 +146,7 @@ public final class HexUtils {
     /**
      * Returns the index before the color changes
      *
-     * @param content     The content to search through
+     * @param content The content to search through
      * @param searchAfter The index at which to search after
      * @return the index of the color stop, or the end of the string index if none is found
      */
@@ -168,11 +169,21 @@ public final class HexUtils {
         }
     }
 
+    /**
+     * Finds the closest hex or ChatColor value as the hex string
+     *
+     * @param hex The hex color
+     * @return The closest ChatColor value
+     */
     private static String translateHex(String hex) {
-        return ChatColor.of(hex).toString();
+        if (ServerVersion.CURRENT_VERSION.isNewerThan(ServerVersion.V1_15_R1))
+            return ChatColor.of(hex).toString();
+        return translateHex(Color.decode(hex));
     }
 
     private static String translateHex(Color color) {
+        if (ServerVersion.CURRENT_VERSION.isNewerThan(ServerVersion.V1_15_R1))
+            return ChatColor.of(color).toString();
 
         int minDist = Integer.MAX_VALUE;
         ChatColor legacy = ChatColor.WHITE;
@@ -266,6 +277,8 @@ public final class HexUtils {
          */
         public Color next() {
             // Gradients will use the first color of the entire spectrum won't be available to preserve prettiness
+            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_16_R1))
+                return this.colors.get(0);
 
             Color color;
             if (this.stepIndex + 1 < this.colors.size()) {
@@ -290,8 +303,8 @@ public final class HexUtils {
         /**
          * Gets a color along a linear gradient between two colors
          *
-         * @param start    The start color
-         * @param end      The end color
+         * @param start The start color
+         * @param end The end color
          * @param interval The interval to get, between 0 and 1 inclusively
          * @return A Color at the interval between the start and end colors
          */
