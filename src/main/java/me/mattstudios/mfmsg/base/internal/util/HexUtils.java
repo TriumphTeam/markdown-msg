@@ -1,10 +1,9 @@
-package me.mattstudios.mfmsg.base;
+package me.mattstudios.mfmsg.base.internal.util;
 
-import me.mattstudios.mfmsg.base.internal.ServerVersion;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;

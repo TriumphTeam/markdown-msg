@@ -1,8 +1,5 @@
-package me.mattstudios.mfmsg.base.internal;
+package me.mattstudios.mfmsg.base.internal.token;
 
-import me.mattstudios.mfmsg.base.internal.token.ActionToken;
-import me.mattstudios.mfmsg.base.internal.token.TextToken;
-import me.mattstudios.mfmsg.base.internal.token.Token;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;

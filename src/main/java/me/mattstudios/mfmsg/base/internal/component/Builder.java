@@ -14,4 +14,5 @@ public interface Builder<T> {
     default void setClickEvent(@Nullable final ClickEvent clickEvent) {}
 
     T build();
+
 }
