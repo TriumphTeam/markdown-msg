@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.parser;
 
+import me.mattstudios.mfmsg.base.internal.component.ColorComponent;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
@@ -24,15 +25,21 @@ public final class ComponentParser extends AbstractParser {
     // List of all the generated tokens
     @NotNull
     private final List<Token> tokens;
+
+    private final Set<Format> formats;
+
     // Main component builder
     @NotNull
     private final ComponentBuilder finalBuilder = new ComponentBuilder();
 
-    private final Appender<BaseComponent[]> appender = new BaseComponentAppender();
+    private final ColorComponent colorComponent = new ColorComponent();
+    private final Appender<BaseComponent[]> appender = new BaseComponentAppender(colorComponent);
     private final MarkdownVisitor visitor;
 
     public ComponentParser(@NotNull final String message, @NotNull Set<Format> formats) {
-        visitor = new MarkdownVisitor(appender, formats);
+        this.formats = formats;
+
+        visitor = new MarkdownVisitor(appender, this.formats);
         tokens = ActionLexer.tokenize(message);
         parseTokens();
     }
@@ -54,7 +61,7 @@ public final class ComponentParser extends AbstractParser {
             final String tokenText = ((TextToken) token).getText().trim();
             if (tokenText.isEmpty()) continue;
             // Parses a normal text instead
-            visitor.parse(PARSER.parse(tokenText));
+            visitor.visitComponents(PARSER.parse(tokenText));
             finalBuilder.append(appender.build(), ComponentBuilder.FormatRetention.NONE);
             if (i < tokens.size() - 1) appendSpace();
         }
@@ -89,7 +96,9 @@ public final class ComponentParser extends AbstractParser {
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
                     // Parses the action text
-                    visitor.parse(PARSER.parse(actionText));
+                    final Appender<BaseComponent[]> appender = new BaseComponentAppender(new ColorComponent());
+                    final MarkdownVisitor visitor = new MarkdownVisitor(appender, formats);
+                    visitor.visitComponents(PARSER.parse(actionText));
                     hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, appender.build());
                     break;
 
@@ -115,7 +124,7 @@ public final class ComponentParser extends AbstractParser {
         appender.setClickEvent(clickEvent);
         appender.setHoverEvent(hoverEvent);
 
-        visitor.parse(PARSER.parse(token.getActionText()));
+        visitor.visitComponents(PARSER.parse(token.getActionText()));
         final BaseComponent[] baseComponent = appender.build();
         if (baseComponent.length == 0) return;
         finalBuilder.append(baseComponent, ComponentBuilder.FormatRetention.NONE);

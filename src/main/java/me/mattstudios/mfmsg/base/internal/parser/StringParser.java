@@ -4,6 +4,7 @@ import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.StringComponentAppender;
+import me.mattstudios.mfmsg.base.internal.util.HexUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -21,12 +22,12 @@ public final class StringParser extends AbstractParser {
     }
 
     private void parseMessage(@NotNull final String message) {
-        visitor.parse(PARSER.parse(message));
+        visitor.visitComponents(PARSER.parse(message));
         finalBuilder.append(appender.build()).append("§r");
     }
 
     public String build() {
-        return finalBuilder.toString();
+        return HexUtils.colorify(finalBuilder.toString());
     }
 
 }

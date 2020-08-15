@@ -4,19 +4,24 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class BaseComponentAppender implements Appender<BaseComponent[]> {
 
+    private final ColorComponent colorComponent;
+
     private final ComponentBuilder componentBuilder = new ComponentBuilder();
     private HoverEvent hoverEvent = null;
     private ClickEvent clickEvent = null;
 
+    public BaseComponentAppender(final ColorComponent colorComponent) {
+        this.colorComponent = colorComponent;
+    }
+
     @Override
-    public void append(final @NotNull String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {
-        appendComponent(TextComponent.fromLegacyText(message));
+    public void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {
+        appendComponent(colorComponent.colorize(message));
 
         // Sets each property accordingly
         componentBuilder.italic(italic);
@@ -67,6 +72,7 @@ public final class BaseComponentAppender implements Appender<BaseComponent[]> {
      * @param components A {@link BaseComponent[]}
      */
     private void appendComponent(@NotNull final BaseComponent[] components) {
+        if (components.length == 0) return;
         componentBuilder.append(components, ComponentBuilder.FormatRetention.NONE);
     }
 

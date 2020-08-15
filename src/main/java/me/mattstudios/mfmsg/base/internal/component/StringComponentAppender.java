@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class StringComponentAppender implements Appender<String> {
 
-    private final StringBuilder builder = new StringBuilder();
+    private StringBuilder builder = new StringBuilder();
 
     @Override
     public void append(final @NotNull String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {
@@ -20,7 +20,9 @@ public final class StringComponentAppender implements Appender<String> {
 
     @Override
     public String build() {
-        return builder.toString();
+        final String buildString = builder.toString();
+        builder = new StringBuilder();
+        return buildString;
     }
 
     private void appendString(final String message) {

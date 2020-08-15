@@ -30,13 +30,12 @@ public final class MarkdownVisitor extends AbstractVisitor {
         this.appender = abstractParser;
         this.formats = formats;
     }
-
     /**
      * Parses the {@link Node}
      *
      * @param node The {@link Node} given by the {@link Parser}
      */
-    public void parse(final Node node) {
+    public void visitComponents(final Node node) {
         node.accept(this);
     }
 
