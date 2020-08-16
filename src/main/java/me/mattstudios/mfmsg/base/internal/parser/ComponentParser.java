@@ -1,19 +1,16 @@
 package me.mattstudios.mfmsg.base.internal.parser;
 
-import me.mattstudios.mfmsg.base.internal.component.ColorComponent;
-import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
-import me.mattstudios.mfmsg.base.internal.component.BaseComponentAppender;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
+import me.mattstudios.mfmsg.base.internal.component.BaseComponentAppender;
+import me.mattstudios.mfmsg.base.internal.component.ColorComponent;
+import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
 import me.mattstudios.mfmsg.base.internal.token.Token;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
+import org.commonmark.node.Node;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -26,8 +23,6 @@ public final class ComponentParser extends AbstractParser {
     @NotNull
     private final List<Token> tokens;
 
-    private final Set<Format> formats;
-
     // Main component builder
     @NotNull
     private final ComponentBuilder finalBuilder = new ComponentBuilder();
@@ -37,9 +32,7 @@ public final class ComponentParser extends AbstractParser {
     private final MarkdownVisitor visitor;
 
     public ComponentParser(@NotNull final String message, @NotNull Set<Format> formats) {
-        this.formats = formats;
-
-        visitor = new MarkdownVisitor(appender, this.formats);
+        visitor = new MarkdownVisitor(formats);
         tokens = ActionLexer.tokenize(message);
         parseTokens();
     }
@@ -61,7 +54,7 @@ public final class ComponentParser extends AbstractParser {
             final String tokenText = ((TextToken) token).getText().trim();
             if (tokenText.isEmpty()) continue;
             // Parses a normal text instead
-            visitor.visitComponents(PARSER.parse(tokenText));
+            visit(PARSER.parse(tokenText));
             finalBuilder.append(appender.build(), ComponentBuilder.FormatRetention.NONE);
             if (i < tokens.size() - 1) appendSpace();
         }
@@ -72,6 +65,10 @@ public final class ComponentParser extends AbstractParser {
      */
     private void appendSpace() {
         finalBuilder.append(TextComponent.fromLegacyText(" "), ComponentBuilder.FormatRetention.NONE);
+    }
+
+    private void visit(final Node node) {
+        visitor.visitComponents(node, appender);
     }
 
     /**
@@ -97,8 +94,7 @@ public final class ComponentParser extends AbstractParser {
                 case "hover":
                     // Parses the action text
                     final Appender<BaseComponent[]> appender = new BaseComponentAppender(new ColorComponent());
-                    final MarkdownVisitor visitor = new MarkdownVisitor(appender, formats);
-                    visitor.visitComponents(PARSER.parse(actionText));
+                    visitor.visitComponents(PARSER.parse(actionText), appender);
                     hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, appender.build());
                     break;
 
@@ -124,7 +120,7 @@ public final class ComponentParser extends AbstractParser {
         appender.setClickEvent(clickEvent);
         appender.setHoverEvent(hoverEvent);
 
-        visitor.visitComponents(PARSER.parse(token.getActionText()));
+        visit(PARSER.parse(token.getActionText()));
         final BaseComponent[] baseComponent = appender.build();
         if (baseComponent.length == 0) return;
         finalBuilder.append(baseComponent, ComponentBuilder.FormatRetention.NONE);

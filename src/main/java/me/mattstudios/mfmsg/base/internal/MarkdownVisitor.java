@@ -16,6 +16,8 @@ import java.util.Set;
 
 public final class MarkdownVisitor extends AbstractVisitor {
 
+    private final Set<Format> formats;
+
     // Text properties
     private boolean italic;
     private boolean bold;
@@ -23,11 +25,9 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private boolean underline;
     private boolean obfuscated;
 
-    private final Appender<?> appender;
-    private final Set<Format> formats;
+    private Appender<?> appender;
 
-    public MarkdownVisitor(final Appender<?> abstractParser, final Set<Format> formats) {
-        this.appender = abstractParser;
+    public MarkdownVisitor(final Set<Format> formats) {
         this.formats = formats;
     }
     /**
@@ -35,7 +35,8 @@ public final class MarkdownVisitor extends AbstractVisitor {
      *
      * @param node The {@link Node} given by the {@link Parser}
      */
-    public void visitComponents(final Node node) {
+    public void visitComponents(final Node node, final Appender<?> appender) {
+        this.appender = appender;
         node.accept(this);
     }
 
