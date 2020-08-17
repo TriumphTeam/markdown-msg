@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface Appender<T> {
+public interface Appender {
 
     void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated);
 
@@ -15,8 +15,6 @@ public interface Appender<T> {
 
     default void setClickEvent(@Nullable final ClickEvent clickEvent) {}
 
-    T build();
-
-    List<Component> test();
+    List<MessagePart> build();
 
 }

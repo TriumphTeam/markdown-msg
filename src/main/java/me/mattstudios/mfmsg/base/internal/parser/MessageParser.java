@@ -3,9 +3,9 @@ package me.mattstudios.mfmsg.base.internal.parser;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
-import me.mattstudios.mfmsg.base.internal.component.BaseComponentAppender;
-import me.mattstudios.mfmsg.base.internal.component.ColorComponent;
-import me.mattstudios.mfmsg.base.internal.component.Component;
+import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
+import me.mattstudios.mfmsg.base.internal.color.ColorHandler;
+import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
@@ -19,23 +19,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-public final class ComponentParser extends AbstractParser {
+public final class MessageParser extends AbstractParser {
 
     // List of all the generated tokens
     @NotNull
     private final List<Token> tokens;
 
-    // Main component builder
-    @NotNull
-    private final ComponentBuilder finalBuilder = new ComponentBuilder();
+    private final List<MessagePart> parts = new ArrayList<>();
 
-    private final List<Component> testing = new ArrayList<>();
-
-    private final ColorComponent colorComponent = new ColorComponent();
-    private final Appender<BaseComponent[]> appender = new BaseComponentAppender(colorComponent);
+    private final ColorHandler colorHandler = new ColorHandler();
+    private final Appender appender = new MessageAppender(colorHandler);
     private final MarkdownVisitor visitor;
 
-    public ComponentParser(@NotNull final String message, @NotNull Set<Format> formats) {
+    public MessageParser(@NotNull final String message, @NotNull Set<Format> formats) {
         visitor = new MarkdownVisitor(formats);
         tokens = ActionLexer.tokenize(message);
         parseTokens();
@@ -45,12 +41,10 @@ public final class ComponentParser extends AbstractParser {
      * Method to parse all the tokens
      */
     private void parseTokens() {
-        for (int i = 0; i < tokens.size(); i++) {
-            final Token token = tokens.get(i);
+        for (final Token token : tokens) {
             // Checks whether or not the token is an action
             if (token instanceof ActionToken) {
                 parseAction((ActionToken) token);
-                if (i < tokens.size() - 1) appendSpace();
                 continue;
             }
 
@@ -59,17 +53,8 @@ public final class ComponentParser extends AbstractParser {
             if (tokenText.isEmpty()) continue;
             // Parses a normal text instead
             visit(PARSER.parse(tokenText));
-            testing.addAll(appender.test());
-            //finalBuilder.append(appender.build(), ComponentBuilder.FormatRetention.NONE);
-            if (i < tokens.size() - 1) appendSpace();
+            parts.addAll(appender.build());
         }
-    }
-
-    /**
-     * Appends a space after each token, only required because {@link MarkdownVisitor} will trim the spaces
-     */
-    private void appendSpace() {
-        finalBuilder.append(TextComponent.fromLegacyText(" "), ComponentBuilder.FormatRetention.NONE);
     }
 
     private void visit(final Node node) {
@@ -98,9 +83,9 @@ public final class ComponentParser extends AbstractParser {
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
                     // Parses the action text
-                    final Appender<BaseComponent[]> appender = new BaseComponentAppender(new ColorComponent());
-                    visitor.visitComponents(PARSER.parse(actionText), appender);
-                    hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, appender.build());
+                    //final Appender appender = new MessageAppender(new ColorHandler());
+                    //visitor.visitComponents(PARSER.parse(actionText), appender);
+                    //hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, appender.build());
                     break;
 
                 case "command":
@@ -122,22 +107,17 @@ public final class ComponentParser extends AbstractParser {
         }
 
         // Adds the click and hover events
-        appender.setClickEvent(clickEvent);
-        appender.setHoverEvent(hoverEvent);
+        //appender.setClickEvent(clickEvent);
+        //appender.setHoverEvent(hoverEvent);
 
         visit(PARSER.parse(token.getActionText()));
-        //final BaseComponent[] baseComponent = appender.build();
-        //if (baseComponent.length == 0) return;
-        //finalBuilder.append(baseComponent, ComponentBuilder.FormatRetention.NONE);
-        testing.addAll(appender.test());
+        final List<MessagePart> parts = appender.build();
+        if (parts.isEmpty()) return;
+        this.parts.addAll(appender.build());
     }
 
-    public List<Component> test() {
-        return testing;
-    }
-
-    public BaseComponent[] build() {
-        return finalBuilder.create();
+    public List<MessagePart> build() {
+        return parts;
     }
 
 }

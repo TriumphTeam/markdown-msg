@@ -4,13 +4,7 @@ import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
-import org.commonmark.node.AbstractVisitor;
-import org.commonmark.node.CustomNode;
-import org.commonmark.node.Emphasis;
-import org.commonmark.node.Node;
-import org.commonmark.node.StrongEmphasis;
-import org.commonmark.node.Text;
-import org.commonmark.parser.Parser;
+import org.commonmark.node.*;
 
 import java.util.Set;
 
@@ -25,18 +19,14 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private boolean underline;
     private boolean obfuscated;
 
-    private Appender<?> appender;
+    private Appender appender;
 
     public MarkdownVisitor(final Set<Format> formats) {
         this.formats = formats;
     }
-    /**
-     * Parses the {@link Node}
-     *
-     * @param node The {@link Node} given by the {@link Parser}
-     */
-    public void visitComponents(final Node node, final Appender<?> appender) {
-        this.appender = appender;
+
+    public void visitComponents(final Node node, final Appender appender) {
+        if (this.appender != appender) this.appender = appender;
         node.accept(this);
     }
 
