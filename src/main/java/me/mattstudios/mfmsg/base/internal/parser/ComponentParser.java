@@ -5,6 +5,7 @@ import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.BaseComponentAppender;
 import me.mattstudios.mfmsg.base.internal.component.ColorComponent;
+import me.mattstudios.mfmsg.base.internal.component.Component;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
@@ -13,6 +14,7 @@ import net.md_5.bungee.api.chat.*;
 import org.commonmark.node.Node;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,6 +28,8 @@ public final class ComponentParser extends AbstractParser {
     // Main component builder
     @NotNull
     private final ComponentBuilder finalBuilder = new ComponentBuilder();
+
+    private final List<Component> testing = new ArrayList<>();
 
     private final ColorComponent colorComponent = new ColorComponent();
     private final Appender<BaseComponent[]> appender = new BaseComponentAppender(colorComponent);
@@ -55,7 +59,8 @@ public final class ComponentParser extends AbstractParser {
             if (tokenText.isEmpty()) continue;
             // Parses a normal text instead
             visit(PARSER.parse(tokenText));
-            finalBuilder.append(appender.build(), ComponentBuilder.FormatRetention.NONE);
+            testing.addAll(appender.test());
+            //finalBuilder.append(appender.build(), ComponentBuilder.FormatRetention.NONE);
             if (i < tokens.size() - 1) appendSpace();
         }
     }
@@ -121,9 +126,14 @@ public final class ComponentParser extends AbstractParser {
         appender.setHoverEvent(hoverEvent);
 
         visit(PARSER.parse(token.getActionText()));
-        final BaseComponent[] baseComponent = appender.build();
-        if (baseComponent.length == 0) return;
-        finalBuilder.append(baseComponent, ComponentBuilder.FormatRetention.NONE);
+        //final BaseComponent[] baseComponent = appender.build();
+        //if (baseComponent.length == 0) return;
+        //finalBuilder.append(baseComponent, ComponentBuilder.FormatRetention.NONE);
+        testing.addAll(appender.test());
+    }
+
+    public List<Component> test() {
+        return testing;
     }
 
     public BaseComponent[] build() {

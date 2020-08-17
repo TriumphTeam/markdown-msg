@@ -23,16 +23,13 @@ public final class Component {
     }
 
     public String test() {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[").append(text).append(" - ");
-        if (bold) stringBuilder.append("bold");
-        if (italic) stringBuilder.append("italic");
-        if (strike) stringBuilder.append("strike");
-        if (underline) stringBuilder.append("underline");
-        if (obfuscated) stringBuilder.append("obfuscated");
-        stringBuilder.append(" - ").append(color).append("]");
-
-        return stringBuilder.toString();
+        return "[{" + text + "} - " +
+                "bold: " + bold + ", " +
+                "italic: " + italic + ", " +
+                "strike: " + strike + ", " +
+                "underline: " + underline + ", " +
+                "obfuscated: " + obfuscated + ", " +
+                "color: " + color + "]";
     }
 
 }

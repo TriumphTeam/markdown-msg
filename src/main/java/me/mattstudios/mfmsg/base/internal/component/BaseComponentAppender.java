@@ -7,9 +7,14 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class BaseComponentAppender implements Appender<BaseComponent[]> {
 
     private final ColorComponent colorComponent;
+
+    final List<Component> testing = new ArrayList<>();
 
     private final ComponentBuilder componentBuilder = new ComponentBuilder();
     private HoverEvent hoverEvent = null;
@@ -21,7 +26,10 @@ public final class BaseComponentAppender implements Appender<BaseComponent[]> {
 
     @Override
     public void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {
-        appendComponent(colorComponent.colorize(message));
+
+        //testing.add(new Component(message, "none", bold, italic, strike, underline, obfuscated));
+        testing.addAll(colorComponent.colorize(message, bold, italic, strike, underline, obfuscated));
+        //appendComponent(colorComponent.colorize(message));
 
         // Sets each property accordingly
         componentBuilder.italic(italic);
@@ -57,6 +65,12 @@ public final class BaseComponentAppender implements Appender<BaseComponent[]> {
         return component;
     }
 
+    public List<Component> test() {
+        final List<Component> test = new ArrayList<>(testing);
+        reset();
+        return test;
+    }
+
     /**
      * Resets the {@link #componentBuilder}, {@link #hoverEvent}, and the {@link #clickEvent}
      */
@@ -64,6 +78,7 @@ public final class BaseComponentAppender implements Appender<BaseComponent[]> {
         componentBuilder.getParts().clear();
         hoverEvent = null;
         clickEvent = null;
+        testing.clear();
     }
 
     /**

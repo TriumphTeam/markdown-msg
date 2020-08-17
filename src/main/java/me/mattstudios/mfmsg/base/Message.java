@@ -1,9 +1,11 @@
 package me.mattstudios.mfmsg.base;
 
 import me.mattstudios.mfmsg.base.internal.Format;
+import me.mattstudios.mfmsg.base.internal.component.Component;
 import me.mattstudios.mfmsg.base.internal.parser.ComponentParser;
 import net.md_5.bungee.api.chat.BaseComponent;
 
+import java.util.List;
 import java.util.Set;
 
 public final class Message {
@@ -24,6 +26,10 @@ public final class Message {
 
     public BaseComponent[] parseToComponent(final String message) {
         return new ComponentParser(message, formats).build();
+    }
+
+    public List<Component> parseTest(final String message) {
+        return new ComponentParser(message, formats).test();
     }
 
 }
