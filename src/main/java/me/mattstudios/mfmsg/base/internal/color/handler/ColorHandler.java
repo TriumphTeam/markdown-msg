@@ -44,7 +44,11 @@ public final class ColorHandler {
             if (hex != null) color = new FlatColor(ofHex(hex));
 
             final String gradient = matcher.group("gradient");
-            if (gradient != null) color = new Gradient(Arrays.stream(gradient.split(":")).map(this::hexToColor).collect(Collectors.toList()));
+            if (gradient != null) {
+                final List<String> colors = Arrays.asList(gradient.split(":"));
+                if (colors.size() == 1) color = new FlatColor(ofHex(colors.get(0)));
+                else color = new Gradient(colors.stream().map(this::hexToColor).collect(Collectors.toList()));
+            }
 
             start = matcher.end();
             rest = message.substring(start);

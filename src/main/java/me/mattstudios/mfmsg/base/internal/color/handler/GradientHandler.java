@@ -2,11 +2,10 @@ package me.mattstudios.mfmsg.base.internal.color.handler;
 
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
-import me.mattstudios.mfmsg.base.internal.util.ServerVersion;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
 public final class GradientHandler {
@@ -38,55 +37,38 @@ public final class GradientHandler {
     private static class ColorGradient {
 
         private final List<Color> colors;
-        private final int stepSize;
-        private int step, stepIndex;
 
-        public ColorGradient(List<Color> colors, int totalColors) {
+        private final int stepSize;
+        private int step = 0;
+        private int stepIndex = 0;
+
+        private ColorGradient(final List<Color> colors, final int totalColors) {
             this.colors = colors;
-            this.stepSize = totalColors / (colors.size() - 1);
-            this.step = this.stepIndex = 0;
+            stepSize = totalColors / (colors.size() - 1);
         }
 
-        /**
-         * @return the next color in the gradient
-         */
-        public Color next() {
-            // Gradients will use the first color of the entire spectrum won't be available to preserve prettiness
-            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_16_R1))
-                return this.colors.get(0);
-
-            Color color;
-            if (this.stepIndex + 1 < this.colors.size()) {
-                Color start = this.colors.get(this.stepIndex);
-                Color end = this.colors.get(this.stepIndex + 1);
-                float interval = (float) this.step / this.stepSize;
+        private Color next() {
+            final Color color;
+            if (stepIndex + 1 < colors.size()) {
+                final Color start = colors.get(stepIndex);
+                final Color end = colors.get(stepIndex + 1);
+                final float interval = (float) step / stepSize;
 
                 color = getGradientInterval(start, end, interval);
             } else {
-                color = this.colors.get(this.colors.size() - 1);
+                color = colors.get(colors.size() - 1);
             }
 
-            this.step += 1;
-            if (this.step >= this.stepSize) {
-                this.step = 0;
-                this.stepIndex++;
+            step += 1;
+            if (step >= stepSize) {
+                step = 0;
+                stepIndex++;
             }
 
             return color;
         }
 
-        /**
-         * Gets a color along a linear gradient between two colors
-         *
-         * @param start    The start color
-         * @param end      The end color
-         * @param interval The interval to get, between 0 and 1 inclusively
-         * @return A Color at the interval between the start and end colors
-         */
-        public static Color getGradientInterval(Color start, Color end, float interval) {
-            if (0 > interval || interval > 1)
-                throw new IllegalArgumentException("Interval must be between 0 and 1 inclusively.");
-
+        private static Color getGradientInterval(final Color start, final Color end, final float interval) {
             int r = (int) (end.getRed() * interval + start.getRed() * (1 - interval));
             int g = (int) (end.getGreen() * interval + start.getGreen() * (1 - interval));
             int b = (int) (end.getBlue() * interval + start.getBlue() * (1 - interval));
