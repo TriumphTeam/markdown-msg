@@ -1,10 +1,14 @@
-package me.mattstudios.mfmsg.base.internal.color;
+package me.mattstudios.mfmsg.base.internal.color.handler;
 
 import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.color.FlatColor;
+import me.mattstudios.mfmsg.base.internal.color.Gradient;
+import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +44,7 @@ public final class ColorHandler {
             if (hex != null) color = new FlatColor(ofHex(hex));
 
             final String gradient = matcher.group("gradient");
-            if (gradient != null) color = new Gradient(Arrays.stream(gradient.split(":")).map(this::ofHex).collect(Collectors.toList()));
+            if (gradient != null) color = new Gradient(Arrays.stream(gradient.split(":")).map(this::hexToColor).collect(Collectors.toList()));
 
             start = matcher.end();
             rest = message.substring(start);
@@ -55,6 +59,10 @@ public final class ColorHandler {
     }
 
     private ChatColor ofHex(final String color) {
+        return ChatColor.of(hexToColor(color));
+    }
+
+    private Color hexToColor(final String color) {
         final StringBuilder builder = new StringBuilder();
         final String hex = color.substring(1);
 
@@ -65,7 +73,7 @@ public final class ColorHandler {
             builder.append(increaseHex(hex.substring(0, 3)));
         }
 
-        return ChatColor.of(builder.toString());
+        return Color.decode(builder.toString());
     }
 
     private String increaseHex(final String hex) {

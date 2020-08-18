@@ -92,14 +92,14 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.16.1-R0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-chat</artifactId>
             <version>1.16-R0.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

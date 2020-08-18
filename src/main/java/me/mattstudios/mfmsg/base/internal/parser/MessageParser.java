@@ -6,7 +6,7 @@ import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.action.ClickAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverAction;
-import me.mattstudios.mfmsg.base.internal.color.ColorHandler;
+import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.BungeeComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessageAppender;

@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
 import me.mattstudios.mfmsg.base.internal.action.Action;
-import me.mattstudios.mfmsg.base.internal.color.ColorHandler;
+import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

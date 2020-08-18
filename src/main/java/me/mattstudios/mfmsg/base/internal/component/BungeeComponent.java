@@ -4,11 +4,13 @@ import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
+import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,28 @@ public final class BungeeComponent implements MessageComponent {
     @Override
     public BaseComponent[] asBaseComponent() {
         final ComponentBuilder builder = new ComponentBuilder();
-        for (final MessagePart part : parts) {
+        for (int i = 0; i < parts.size(); i++) {
+            final MessagePart part = parts.get(i);
+
+            final MessageColor color = part.getColor();
+
+            if (color instanceof Gradient) {
+                final List<MessagePart> gradientParts = new ArrayList<>();
+                final Gradient gradient = (Gradient) color;
+
+                for (;i < parts.size(); i++) {
+                    final MessagePart newPart = parts.get(i);
+                    final MessageColor newColor = newPart.getColor();
+                    if (!(newColor instanceof Gradient)) break;
+                    if (gradient != newColor) break;
+
+                    gradientParts.add(newPart);
+                }
+
+                GradientHandler.appendGradient(gradientParts, gradient, builder);
+                continue;
+            }
+
             builder.append(new TextComponent(part.getText()), ComponentBuilder.FormatRetention.NONE);
 
             builder.bold(part.isBold());
@@ -37,14 +60,7 @@ public final class BungeeComponent implements MessageComponent {
             builder.underlined(part.isUnderline());
             builder.obfuscated(part.isObfuscated());
 
-            final MessageColor color = part.getColor();
             if (color == null) continue;
-
-            if (color instanceof Gradient) {
-
-                continue;
-            }
-
 
             builder.color((((FlatColor) part.getColor()).getColor()));
         }
