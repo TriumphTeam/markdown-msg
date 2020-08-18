@@ -1,7 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
+import me.mattstudios.mfmsg.base.internal.action.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,9 +10,7 @@ public interface Appender {
 
     void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated);
 
-    default void setHoverEvent(@Nullable final HoverEvent hoverEvent) {}
-
-    default void setClickEvent(@Nullable final ClickEvent clickEvent) {}
+    default void addActions(@Nullable final List<Action> actions) {}
 
     List<MessagePart> build();
 

@@ -2,15 +2,19 @@ package me.mattstudios.mfmsg.base.internal.parser;
 
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
-import me.mattstudios.mfmsg.base.internal.component.Appender;
-import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
+import me.mattstudios.mfmsg.base.internal.MessageComponent;
+import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.action.ClickAction;
+import me.mattstudios.mfmsg.base.internal.action.HoverAction;
 import me.mattstudios.mfmsg.base.internal.color.ColorHandler;
+import me.mattstudios.mfmsg.base.internal.component.Appender;
+import me.mattstudios.mfmsg.base.internal.component.BungeeComponent;
+import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
 import me.mattstudios.mfmsg.base.internal.token.Token;
-import net.md_5.bungee.api.chat.*;
 import org.commonmark.node.Node;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,8 +71,7 @@ public final class MessageParser extends AbstractParser {
      * @param token The current {@link ActionToken} to parse
      */
     private void parseAction(@NotNull final ActionToken token) {
-        HoverEvent hoverEvent = null;
-        ClickEvent clickEvent = null;
+        final List<Action> actions = new ArrayList<>(2);
 
         // Splits the token message on "|" to separate it's types
         for (final String action : SPLIT_PATTERN.split(token.getActions())) {
@@ -83,41 +86,39 @@ public final class MessageParser extends AbstractParser {
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
                     // Parses the action text
-                    //final Appender appender = new MessageAppender(new ColorHandler());
-                    //visitor.visitComponents(PARSER.parse(actionText), appender);
-                    //hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, appender.build());
+                    final Appender appender = new MessageAppender(new ColorHandler());
+                    visitor.visitComponents(PARSER.parse(actionText), appender);
+                    actions.add(new HoverAction(appender.build()));
                     break;
 
                 case "command":
-                    clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND, actionText);
+                    actions.add(new ClickAction(Format.ACTION_COMMAND, actionText));
                     break;
 
                 case "suggest":
-                    clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, actionText);
+                    actions.add(new ClickAction(Format.ACTION_SUGGEST, actionText));
                     break;
 
                 case "clipboard":
-                    clickEvent = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, actionText);
+                    actions.add(new ClickAction(Format.ACTION_CLIPBOARD, actionText));
                     break;
 
                 case "url":
-                    clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, actionText);
+                    actions.add(new ClickAction(Format.ACTION_URL, actionText));
                     break;
             }
         }
 
         // Adds the click and hover events
-        //appender.setClickEvent(clickEvent);
-        //appender.setHoverEvent(hoverEvent);
-
+        appender.addActions(actions);
         visit(PARSER.parse(token.getActionText()));
         final List<MessagePart> parts = appender.build();
         if (parts.isEmpty()) return;
-        this.parts.addAll(appender.build());
+        this.parts.addAll(parts);
     }
 
-    public List<MessagePart> build() {
-        return parts;
+    public MessageComponent parse() {
+        return new BungeeComponent(parts);
     }
 
 }

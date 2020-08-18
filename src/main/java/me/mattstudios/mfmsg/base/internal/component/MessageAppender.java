@@ -1,8 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
+import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.color.ColorHandler;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,8 +14,7 @@ public final class MessageAppender implements Appender {
 
     final List<MessagePart> parts = new ArrayList<>();
 
-    private HoverEvent hoverEvent = null;
-    private ClickEvent clickEvent = null;
+    private final List<Action> actions = new ArrayList<>();
 
     public MessageAppender(final ColorHandler colorHandler) {
         this.colorHandler = colorHandler;
@@ -24,17 +22,13 @@ public final class MessageAppender implements Appender {
 
     @Override
     public void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {
-        parts.addAll(colorHandler.colorize(message, bold, italic, strike, underline, obfuscated));
+        parts.addAll(colorHandler.colorize(message, bold, italic, strike, underline, obfuscated, new ArrayList<>(actions)));
     }
 
     @Override
-    public void setHoverEvent(final @Nullable HoverEvent hoverEvent) {
-        this.hoverEvent = hoverEvent;
-    }
-
-    @Override
-    public void setClickEvent(final @Nullable ClickEvent clickEvent) {
-        this.clickEvent = clickEvent;
+    public void addActions(@Nullable final List<Action> actions) {
+        if (actions == null) return;
+        this.actions.addAll(actions);
     }
 
     @Override
@@ -45,9 +39,8 @@ public final class MessageAppender implements Appender {
     }
 
     private void reset() {
-        hoverEvent = null;
-        clickEvent = null;
         parts.clear();
+        actions.clear();
     }
 
 }
