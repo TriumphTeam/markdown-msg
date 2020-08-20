@@ -5,7 +5,7 @@ import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
-import me.mattstudios.mfmsg.base.internal.util.Regex;
+import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public final class Message {
     public MessageComponent parse(final String message) {
         final List<List<MessagePart>> parts = new ArrayList<>();
 
-        for (final String line : Regex.splitNewLine(message)) {
+        for (final String line : RegexUtils.splitNewLine(message)) {
             parts.add(new MessageParser(line, formats).parse());
         }
 

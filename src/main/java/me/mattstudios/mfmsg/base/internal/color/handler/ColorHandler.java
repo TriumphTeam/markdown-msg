@@ -5,28 +5,25 @@ import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class ColorHandler {
-
-    private static final Pattern COLOR_PATTERN = Pattern.compile("(?<!\\\\)[<&](?<hex>#[A-Fa-f0-9]{3,6})[>]?|(?<!\\\\)(?<stop>&r)|<g:(?<gradient>.+?)>");
-    private static final Pattern THREE_HEX = Pattern.compile("([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
 
     private MessageColor color;
 
     public List<MessagePart> colorize(@NotNull final String message, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
 
         final List<MessagePart> components = new ArrayList<>();
-        final Matcher matcher = COLOR_PATTERN.matcher(message);
+        final Matcher matcher = RegexUtils.COLOR_PATTERN.matcher(message);
 
         String rest = message;
         int start = 0;
@@ -38,7 +35,14 @@ public final class ColorHandler {
                 components.add(new MessagePart(before, color, bold, italic, strike, underline, obfuscated, actions));
             }
 
-            if (matcher.group("stop") != null) color = null;
+            final String colorChar = matcher.group("char");
+            if (colorChar != null) {
+                if ("r".equalsIgnoreCase(colorChar)) {
+                    color = null;
+                } else {
+                    color = new FlatColor(ChatColor.getByChar(colorChar.charAt(0)));
+                }
+            }
 
             final String hex = matcher.group("hex");
             if (hex != null) color = new FlatColor(ofHex(hex));
@@ -81,7 +85,7 @@ public final class ColorHandler {
     }
 
     private String increaseHex(final String hex) {
-        return THREE_HEX.matcher(hex).replaceAll("$1$1$2$2$3$3");
+        return RegexUtils.THREE_HEX.matcher(hex).replaceAll("$1$1$2$2$3$3");
     }
 
 }

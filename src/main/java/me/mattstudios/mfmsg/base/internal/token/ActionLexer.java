@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.token;
 
-import me.mattstudios.mfmsg.base.internal.util.Regex;
+import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -13,7 +13,7 @@ public final class ActionLexer {
 
     public static List<Token> tokenize(@NotNull final String text) {
         final List<Token> tokens = new LinkedList<>();
-        final Matcher matcher = Regex.ACTION_PATTERN.matcher(text);
+        final Matcher matcher = RegexUtils.ACTION_PATTERN_SPACES.matcher(text);
 
         String rest = text;
         int start = 0;

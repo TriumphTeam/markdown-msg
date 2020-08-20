@@ -1,8 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.color;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class Gradient implements MessageColor {
 
@@ -16,8 +15,4 @@ public final class Gradient implements MessageColor {
         return colors;
     }
 
-    @Override
-    public String test() {
-        return "{Gradient: " + colors.stream().map(Color::toString).collect(Collectors.joining(", ")) + "}";
-    }
 }

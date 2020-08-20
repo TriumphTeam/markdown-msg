@@ -9,21 +9,29 @@ import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.extension.ObfuscatedExtension;
+import me.mattstudios.mfmsg.base.internal.extension.UnderlineExtension;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
 import me.mattstudios.mfmsg.base.internal.token.SpaceToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
 import me.mattstudios.mfmsg.base.internal.token.Token;
-import me.mattstudios.mfmsg.base.internal.util.Regex;
+import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
+import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-public final class MessageParser extends AbstractParser {
+public final class MessageParser {
+
+    // The parser that'll be used with the strikethrough, underline, obfuscated extensions
+    private static final Parser PARSER = Parser.builder().extensions(Arrays.asList(StrikethroughExtension.create(), UnderlineExtension.create(), ObfuscatedExtension.create())).build();
 
     // List of all the generated tokens
     @NotNull
@@ -80,8 +88,8 @@ public final class MessageParser extends AbstractParser {
         final List<Action> actions = new ArrayList<>(2);
 
         // Splits the token message on "|" to separate it's types
-        for (final String action : SPLIT_PATTERN.split(token.getActions())) {
-            final Matcher matcher = ACTION_PATTERN.matcher(action);
+        for (final String action : RegexUtils.SPLIT_PATTERN.split(token.getActions())) {
+            final Matcher matcher = RegexUtils.ACTION_PATTERN.matcher(action);
 
             // If nothing is matched continue
             if (!matcher.find()) continue;
@@ -92,7 +100,7 @@ public final class MessageParser extends AbstractParser {
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
                     final List<List<MessagePart>> parts = new ArrayList<>();
-                    for (final String line : Regex.NEW_LINE.split(actionText)) {
+                    for (final String line : RegexUtils.NEW_LINE.split(actionText)) {
                         final Appender appender = new MessageAppender(new ColorHandler());
                         visitor.visitComponents(PARSER.parse(line), appender);
                         parts.add(appender.build());

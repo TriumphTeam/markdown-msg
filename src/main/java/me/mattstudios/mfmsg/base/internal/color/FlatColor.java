@@ -14,8 +14,4 @@ public final class FlatColor implements MessageColor {
         return color;
     }
 
-    @Override
-    public String test() {
-        return "{FlatColor: " + color.getName() + "}";
-    }
 }
