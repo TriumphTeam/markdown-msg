@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.color.handler;
 
+import me.mattstudios.mfmsg.base.bungee.BungeeConverter;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import net.md_5.bungee.api.ChatColor;
@@ -18,7 +19,7 @@ public final class GradientHandler {
 
         for (final MessagePart part : parts) {
             for (char character : part.getText().toCharArray()) {
-                builder.append(String.valueOf(character));
+                builder.append(String.valueOf(character), ComponentBuilder.FormatRetention.NONE);
 
                 builder.bold(part.isBold());
                 builder.italic(part.isItalic());
@@ -27,6 +28,7 @@ public final class GradientHandler {
                 builder.obfuscated(part.isObfuscated());
 
                 builder.color(ChatColor.of(colorGradient.next()));
+                BungeeConverter.appendAction(builder, part.getActions());
             }
         }
     }

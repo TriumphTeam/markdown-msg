@@ -4,7 +4,6 @@ import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class MessagePart {
 
@@ -61,25 +60,6 @@ public final class MessagePart {
 
     public List<Action> getActions() {
         return actions;
-    }
-
-    public String test() {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder
-                .append("[{").append(text).append("} - ")
-                .append("bold: ").append(bold).append(", ")
-                .append("italic: ").append(italic).append(", ")
-                .append("strike: ").append(strike).append(", ")
-                .append("underline: ").append(underline).append(", ")
-                .append("obfuscated: ").append(obfuscated).append(", ")
-                .append( "color: ");
-        if (color == null) stringBuilder.append("null");
-        else stringBuilder.append(color.test());
-        stringBuilder.append("] - Actions: ");
-        if (actions == null || actions.isEmpty()) stringBuilder.append(" none");
-        else stringBuilder.append(actions.stream().map(Action::test).collect(Collectors.joining(", ")));
-
-        return stringBuilder.toString();
     }
 
 }

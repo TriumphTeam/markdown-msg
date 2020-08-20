@@ -2,19 +2,19 @@ package me.mattstudios.mfmsg.base.internal.parser;
 
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
-import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.action.ClickAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverAction;
 import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
-import me.mattstudios.mfmsg.base.internal.component.BungeeComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.token.ActionLexer;
 import me.mattstudios.mfmsg.base.internal.token.ActionToken;
+import me.mattstudios.mfmsg.base.internal.token.SpaceToken;
 import me.mattstudios.mfmsg.base.internal.token.TextToken;
 import me.mattstudios.mfmsg.base.internal.token.Token;
+import me.mattstudios.mfmsg.base.internal.util.Regex;
 import org.commonmark.node.Node;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,8 +52,14 @@ public final class MessageParser extends AbstractParser {
                 continue;
             }
 
+            if (token instanceof SpaceToken) {
+                appender.append(((SpaceToken) token).getText(), false, false, false, false, false);
+                parts.addAll(appender.build());
+                continue;
+            }
+
             // Trims and checks if the text is empty
-            final String tokenText = ((TextToken) token).getText().trim();
+            final String tokenText = ((TextToken) token).getText();
             if (tokenText.isEmpty()) continue;
             // Parses a normal text instead
             visit(PARSER.parse(tokenText));
@@ -75,7 +81,7 @@ public final class MessageParser extends AbstractParser {
 
         // Splits the token message on "|" to separate it's types
         for (final String action : SPLIT_PATTERN.split(token.getActions())) {
-            final Matcher matcher = ACTION_PATTERN.matcher(action.trim());
+            final Matcher matcher = ACTION_PATTERN.matcher(action);
 
             // If nothing is matched continue
             if (!matcher.find()) continue;
@@ -85,10 +91,13 @@ public final class MessageParser extends AbstractParser {
             // Checks for which action type it is
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
-                    // Parses the action text
-                    final Appender appender = new MessageAppender(new ColorHandler());
-                    visitor.visitComponents(PARSER.parse(actionText), appender);
-                    actions.add(new HoverAction(appender.build()));
+                    final List<List<MessagePart>> parts = new ArrayList<>();
+                    for (final String line : Regex.NEW_LINE.split(actionText)) {
+                        final Appender appender = new MessageAppender(new ColorHandler());
+                        visitor.visitComponents(PARSER.parse(line), appender);
+                        parts.add(appender.build());
+                    }
+                    actions.add(new HoverAction(parts));
                     break;
 
                 case "command":
@@ -117,8 +126,8 @@ public final class MessageParser extends AbstractParser {
         this.parts.addAll(parts);
     }
 
-    public MessageComponent parse() {
-        return new BungeeComponent(parts);
+    public List<MessagePart> parse() {
+        return parts;
     }
 
 }

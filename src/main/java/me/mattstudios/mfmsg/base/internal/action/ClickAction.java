@@ -20,9 +20,4 @@ public final class ClickAction implements Action {
         return action;
     }
 
-    @Override
-    public String test() {
-        return "{Click: type - " + actionType + ", value - " + action + "}";
-    }
-
 }

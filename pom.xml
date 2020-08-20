@@ -119,6 +119,12 @@
             <groupId>com.atlassian.commonmark</groupId>
             <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
             <version>0.15.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Only for easier testing -->
