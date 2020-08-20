@@ -40,12 +40,13 @@ public final class MessageParser {
 
     private final List<MessagePart> parts = new ArrayList<>();
 
-    private final Appender appender = new MessageAppender();
+    private final Appender appender;
     private final MarkdownVisitor visitor;
 
     public MessageParser(@NotNull final String message, @NotNull Set<Format> formats) {
         this.formats = formats;
 
+        appender = new MessageAppender(formats);
         visitor = new MarkdownVisitor(formats);
         tokens = ActionLexer.tokenize(message);
         parseTokens();
@@ -102,10 +103,10 @@ public final class MessageParser {
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
                     if (!formats.contains(Format.ACTION_HOVER)) break;
-                    
+
                     final List<List<MessagePart>> parts = new ArrayList<>();
                     for (final String line : RegexUtils.NEW_LINE.split(actionText)) {
-                        final Appender appender = new MessageAppender();
+                        final Appender appender = new MessageAppender(formats);
                         visitor.visitComponents(PARSER.parse(line), appender);
                         parts.add(appender.build());
                     }
@@ -113,18 +114,22 @@ public final class MessageParser {
                     break;
 
                 case "command":
+                    if (!formats.contains(Format.ACTION_COMMAND)) break;
                     actions.add(new ClickAction(Format.ACTION_COMMAND, actionText));
                     break;
 
                 case "suggest":
+                    if (!formats.contains(Format.ACTION_SUGGEST)) break;
                     actions.add(new ClickAction(Format.ACTION_SUGGEST, actionText));
                     break;
 
                 case "clipboard":
+                    if (!formats.contains(Format.ACTION_CLIPBOARD)) break;
                     actions.add(new ClickAction(Format.ACTION_CLIPBOARD, actionText));
                     break;
 
                 case "url":
+                    if (!formats.contains(Format.ACTION_URL)) break;
                     actions.add(new ClickAction(Format.ACTION_URL, actionText));
                     break;
             }

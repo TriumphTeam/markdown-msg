@@ -72,6 +72,10 @@ public final class MarkdownVisitor extends AbstractVisitor {
     @Override
     public void visit(final CustomNode customNode) {
         if (customNode instanceof Underline) {
+            if (!formats.contains(Format.UNDERLINE)) {
+                visitChildren(customNode);
+                return;
+            }
             underline = true;
             visitChildren(customNode);
             underline = false;
@@ -79,6 +83,10 @@ public final class MarkdownVisitor extends AbstractVisitor {
         }
 
         if (customNode instanceof Obfuscated) {
+            if (!formats.contains(Format.OBFUSCATED)) {
+                visitChildren(customNode);
+                return;
+            }
             obfuscated = true;
             visitChildren(customNode);
             obfuscated = false;
@@ -86,6 +94,10 @@ public final class MarkdownVisitor extends AbstractVisitor {
         }
 
         if (!(customNode instanceof Strikethrough)) return;
+        if (!formats.contains(Format.STRIKETHROUGH)) {
+            visitChildren(customNode);
+            return;
+        }
         strike = true;
         visitChildren(customNode);
         strike = false;

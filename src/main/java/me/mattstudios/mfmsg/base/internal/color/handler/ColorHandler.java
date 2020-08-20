@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.color.handler;
 
+import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
@@ -14,10 +15,17 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public final class ColorHandler {
+
+    private final Set<Format> formats;
+
+    public ColorHandler(final Set<Format> formats) {
+        this.formats = formats;
+    }
 
     private MessageColor color;
 
@@ -38,14 +46,18 @@ public final class ColorHandler {
 
             final String colorChar = matcher.group("char");
             if (colorChar != null) {
-                color = new FlatColor(ChatColor.getByChar(colorChar.charAt(0)));
+                if (formats.contains(Format.COLOR)) {
+                    color = new FlatColor(ChatColor.getByChar(colorChar.charAt(0)));
+                } else {
+                    if ("r".equalsIgnoreCase(colorChar)) color = new FlatColor(ChatColor.RESET);
+                }
             }
 
             final String hex = matcher.group("hex");
-            if (hex != null) color = new FlatColor(ofHex(hex));
+            if (hex != null && formats.contains(Format.HEX)) color = new FlatColor(ofHex(hex));
 
             final String gradient = matcher.group("gradient");
-            if (gradient != null && !ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+            if (gradient != null && !ServerVersion.CURRENT_VERSION.isColorLegacy() && formats.contains(Format.HEX)) {
                 final List<String> colors = Arrays.asList(gradient.split(":"));
                 if (colors.size() == 1) color = new FlatColor(ofHex(colors.get(0)));
                 else color = new Gradient(colors.stream().map(this::hexToColor).collect(Collectors.toList()));
