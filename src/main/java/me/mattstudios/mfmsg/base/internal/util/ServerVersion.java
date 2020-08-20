@@ -78,6 +78,10 @@ public enum ServerVersion {
         return versionNumber < V1_13_R1.versionNumber;
     }
 
+    public boolean isColorLegacy() {
+        return versionNumber < V1_16_R1.versionNumber;
+    }
+
     /**
      * Gets a version from the NMS name
      *

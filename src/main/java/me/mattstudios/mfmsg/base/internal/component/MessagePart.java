@@ -62,4 +62,8 @@ public final class MessagePart {
         return actions;
     }
 
+    public String test() {
+        return color.toString();
+    }
+
 }

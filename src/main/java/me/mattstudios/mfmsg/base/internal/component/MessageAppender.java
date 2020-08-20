@@ -10,15 +10,11 @@ import java.util.List;
 
 public final class MessageAppender implements Appender {
 
-    private final ColorHandler colorHandler;
+    private final ColorHandler colorHandler = new ColorHandler();
 
-    final List<MessagePart> parts = new ArrayList<>();
+    private final List<MessagePart> parts = new ArrayList<>();
 
     private final List<Action> actions = new ArrayList<>();
-
-    public MessageAppender(final ColorHandler colorHandler) {
-        this.colorHandler = colorHandler;
-    }
 
     @Override
     public void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {

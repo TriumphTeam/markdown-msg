@@ -5,7 +5,6 @@ import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
 import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.action.ClickAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverAction;
-import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
@@ -37,13 +36,16 @@ public final class MessageParser {
     @NotNull
     private final List<Token> tokens;
 
+    private final Set<Format> formats;
+
     private final List<MessagePart> parts = new ArrayList<>();
 
-    private final ColorHandler colorHandler = new ColorHandler();
-    private final Appender appender = new MessageAppender(colorHandler);
+    private final Appender appender = new MessageAppender();
     private final MarkdownVisitor visitor;
 
     public MessageParser(@NotNull final String message, @NotNull Set<Format> formats) {
+        this.formats = formats;
+
         visitor = new MarkdownVisitor(formats);
         tokens = ActionLexer.tokenize(message);
         parseTokens();
@@ -99,9 +101,11 @@ public final class MessageParser {
             // Checks for which action type it is
             switch (matcher.group("type").toLowerCase()) {
                 case "hover":
+                    if (!formats.contains(Format.ACTION_HOVER)) break;
+                    
                     final List<List<MessagePart>> parts = new ArrayList<>();
                     for (final String line : RegexUtils.NEW_LINE.split(actionText)) {
-                        final Appender appender = new MessageAppender(new ColorHandler());
+                        final Appender appender = new MessageAppender();
                         visitor.visitComponents(PARSER.parse(line), appender);
                         parts.add(appender.build());
                     }
