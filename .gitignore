@@ -18,3 +18,5 @@ src/main/java/me/mattstudios/mfmsg/Cmd.java
 src/main/java/me/mattstudios/mfmsg/Main.java
 
 src/main/java/me/mattstudios/mfmsg/Plugin.java
+
+src/main/java/me/mattstudios/mfmsg/base/bungee/Test.java
