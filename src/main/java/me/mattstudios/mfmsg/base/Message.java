@@ -30,7 +30,7 @@ public final class Message {
     public MessageComponent parse(final String message) {
         final List<List<MessagePart>> parts = new ArrayList<>();
 
-        for (final String line : Regex.NEW_LINE.split(message)) {
+        for (final String line : Regex.splitNewLine(message)) {
             parts.add(new MessageParser(line, formats).parse());
         }
 

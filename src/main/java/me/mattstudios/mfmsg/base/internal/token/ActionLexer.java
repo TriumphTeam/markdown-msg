@@ -1,21 +1,19 @@
 package me.mattstudios.mfmsg.base.internal.token;
 
+import me.mattstudios.mfmsg.base.internal.util.Regex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class ActionLexer {
 
     private ActionLexer() {}
 
-    private static final Pattern ACTION_PATTERN = Pattern.compile("((?<start>[ ]*)((?<!\\\\)\\[(?<text>.+?)(?<!\\\\)](?<!\\\\)\\((?<actions>.+?)(?<!\\\\)\\))(?<end>[ ]*))");
-
     public static List<Token> tokenize(@NotNull final String text) {
         final List<Token> tokens = new LinkedList<>();
-        final Matcher matcher = ACTION_PATTERN.matcher(text);
+        final Matcher matcher = Regex.ACTION_PATTERN.matcher(text);
 
         String rest = text;
         int start = 0;
