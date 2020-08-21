@@ -12,6 +12,7 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.nms.ServerVersion;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,9 +25,7 @@ public final class JsonSerializer {
     private JsonSerializer() {}
 
     public static String toString(final List<MessageLine> lines) {
-        String test = gson.toJson(toJson(lines));
-        System.out.println(test);
-        return test;
+        return gson.toJson(toJson(lines));
     }
 
     public static JsonArray toJson(final List<MessageLine> lines) {
@@ -85,7 +84,7 @@ public final class JsonSerializer {
         jsonObject.addProperty("bold", bold);
         jsonObject.addProperty("italic", italic);
         jsonObject.addProperty("strikethrough", strike);
-        jsonObject.addProperty("underline", underline);
+        jsonObject.addProperty("underlined", underline);
         jsonObject.addProperty("obfuscated", obfuscated);
 
         if (color != null) jsonObject.addProperty("color", color);
@@ -96,7 +95,11 @@ public final class JsonSerializer {
             if (action instanceof HoverAction) {
                 final JsonObject hoverObject = new JsonObject();
                 hoverObject.addProperty("action", "show_text");
-                hoverObject.add("contents", toJson(((HoverAction) action).getLines()));
+                if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+                    hoverObject.add("value", toJson(((HoverAction) action).getLines()));
+                } else {
+                    hoverObject.add("contents", toJson(((HoverAction) action).getLines()));
+                }
                 jsonObject.add("hoverEvent", hoverObject);
                 continue;
             }

@@ -1,10 +1,12 @@
 package me.mattstudios.mfmsg.base.nms;
 
+import org.bukkit.Bukkit;
+
 import java.util.Arrays;
 
 public enum ServerVersion {
 
-    UNKNOWN(0),
+    UNKNOWN(1000),
 
     /**
      * Legacy versions
@@ -29,7 +31,9 @@ public enum ServerVersion {
 
     V1_14_R1(141),
     V1_15_R1(151),
-    V1_16_R1(161);
+
+    V1_16_R1(161),
+    V1_16_R2(162);
 
     private final int versionNumber;
 
@@ -43,9 +47,9 @@ public enum ServerVersion {
         this.versionNumber = versionNumber;
     }
 
-    //public static final String PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName();
-    //public static final String NMS_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
-    public static final ServerVersion CURRENT_VERSION = V1_16_R1;//getByNmsName(NMS_VERSION);
+    public static final String PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName();
+    public static final String NMS_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
+    public static final ServerVersion CURRENT_VERSION = getByNmsName(NMS_VERSION);
 
     /**
      * Checks if the current version is newer than the {@link ServerVersion} specified
