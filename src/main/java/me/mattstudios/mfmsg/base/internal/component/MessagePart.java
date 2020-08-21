@@ -1,6 +1,8 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
+import com.google.gson.JsonObject;
 import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 
 import java.util.List;
@@ -62,8 +64,16 @@ public final class MessagePart {
         return actions;
     }
 
-    public String test() {
-        return color.toString();
+    public JsonObject test() {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("text", text);
+        if (color != null) jsonObject.addProperty("color", ((FlatColor) color).getColor());
+        jsonObject.addProperty("bold", bold);
+        jsonObject.addProperty("italic", italic);
+        jsonObject.addProperty("strikethrough", strike);
+        jsonObject.addProperty("underline", underline);
+        jsonObject.addProperty("obfuscated", obfuscated);
+        return jsonObject;
     }
 
 }

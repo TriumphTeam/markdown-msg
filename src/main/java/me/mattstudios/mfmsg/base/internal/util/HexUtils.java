@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.util;
 
+import me.mattstudios.mfmsg.base.nms.ServerVersion;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 

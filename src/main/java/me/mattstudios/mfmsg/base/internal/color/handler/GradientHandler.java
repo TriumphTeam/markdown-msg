@@ -1,17 +1,17 @@
 package me.mattstudios.mfmsg.base.internal.color.handler;
 
-import me.mattstudios.mfmsg.base.bungee.BungeeConverter;
+import com.google.gson.JsonArray;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
 
 import java.awt.Color;
 import java.util.List;
 
 public final class GradientHandler {
 
-    public static void appendGradient(final List<MessagePart> parts, final Gradient gradient, final ComponentBuilder builder) {
+    public static JsonArray toGradient(final List<MessagePart> parts, final Gradient gradient) {
+        final JsonArray jsonArray = new JsonArray();
         final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
         final List<Color> colors = gradient.getColors();
 
@@ -19,18 +19,11 @@ public final class GradientHandler {
 
         for (final MessagePart part : parts) {
             for (char character : part.getText().toCharArray()) {
-                builder.append(String.valueOf(character), ComponentBuilder.FormatRetention.NONE);
-
-                builder.bold(part.isBold());
-                builder.italic(part.isItalic());
-                builder.strikethrough(part.isStrike());
-                builder.underlined(part.isUnderline());
-                builder.obfuscated(part.isObfuscated());
-
-                builder.color(ChatColor.of(colorGradient.next()));
-                BungeeConverter.appendAction(builder, part.getActions());
+                jsonArray.add(JsonSerializer.toObject(String.valueOf(character), colorGradient.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
             }
         }
+
+        return jsonArray;
     }
 
     /**
@@ -49,7 +42,7 @@ public final class GradientHandler {
             stepSize = totalColors / (colors.size() - 1);
         }
 
-        private Color next() {
+        private String next() {
             final Color color;
             if (stepIndex + 1 < colors.size()) {
                 final Color start = colors.get(stepIndex);
@@ -67,7 +60,7 @@ public final class GradientHandler {
                 stepIndex++;
             }
 
-            return color;
+            return "#" + Integer.toHexString(color.getRGB()).substring(2);
         }
 
         private static Color getGradientInterval(final Color start, final Color end, final float interval) {

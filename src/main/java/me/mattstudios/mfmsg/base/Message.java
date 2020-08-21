@@ -1,9 +1,9 @@
 package me.mattstudios.mfmsg.base;
 
-import me.mattstudios.mfmsg.base.bungee.BungeeComponent;
+import me.mattstudios.mfmsg.base.bungee.BukkitComponent;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
-import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 
@@ -28,13 +28,13 @@ public final class Message {
     }
 
     public MessageComponent parse(final String message) {
-        final List<List<MessagePart>> parts = new ArrayList<>();
+        final List<MessageLine> lines = new ArrayList<>();
 
         for (final String line : RegexUtils.splitNewLine(message)) {
-            parts.add(new MessageParser(line, formats).parse());
+            lines.add(new MessageLine(new MessageParser(line, formats).parse()));
         }
 
-        return new BungeeComponent(parts);
+        return new BukkitComponent(lines);
     }
 
 }

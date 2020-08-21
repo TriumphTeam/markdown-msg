@@ -7,6 +7,7 @@ import me.mattstudios.mfmsg.base.internal.action.ClickAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverAction;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
+import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.extension.ObfuscatedExtension;
 import me.mattstudios.mfmsg.base.internal.extension.UnderlineExtension;
@@ -104,13 +105,13 @@ public final class MessageParser {
                 case "hover":
                     if (!formats.contains(Format.ACTION_HOVER)) break;
 
-                    final List<List<MessagePart>> parts = new ArrayList<>();
+                    final List<MessageLine> lines = new ArrayList<>();
                     for (final String line : RegexUtils.NEW_LINE.split(actionText)) {
                         final Appender appender = new MessageAppender(formats);
                         visitor.visitComponents(PARSER.parse(line), appender);
-                        parts.add(appender.build());
+                        lines.add(new MessageLine(appender.build()));
                     }
-                    actions.add(new HoverAction(parts));
+                    actions.add(new HoverAction(lines));
                     break;
 
                 case "command":

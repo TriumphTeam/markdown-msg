@@ -1,20 +1,19 @@
 package me.mattstudios.mfmsg.base.internal.action;
 
-import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class HoverAction implements Action {
 
-    private final List<List<MessagePart>> parts;
+    private final List<MessageLine> lines;
 
-    public HoverAction(final List<List<MessagePart>> parts) {
-        this.parts = parts;
+    public HoverAction(final List<MessageLine> lines) {
+        this.lines = lines;
     }
 
-    public List<List<MessagePart>> getParts() {
-        return parts;
+    public List<MessageLine> getLines() {
+        return lines;
     }
 
 }

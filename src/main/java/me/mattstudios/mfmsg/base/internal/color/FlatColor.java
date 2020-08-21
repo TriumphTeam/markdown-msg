@@ -1,16 +1,14 @@
 package me.mattstudios.mfmsg.base.internal.color;
 
-import net.md_5.bungee.api.ChatColor;
-
 public final class FlatColor implements MessageColor {
 
-    private final ChatColor color;
+    private final String color;
 
-    public FlatColor(final ChatColor color) {
+    public FlatColor(final String color) {
         this.color = color;
     }
 
-    public ChatColor getColor() {
+    public String getColor() {
         return color;
     }
 

@@ -7,8 +7,7 @@ import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
-import me.mattstudios.mfmsg.base.internal.util.ServerVersion;
-import net.md_5.bungee.api.ChatColor;
+import me.mattstudios.mfmsg.base.nms.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
@@ -47,9 +46,9 @@ public final class ColorHandler {
             final String colorChar = matcher.group("char");
             if (colorChar != null) {
                 if (formats.contains(Format.COLOR)) {
-                    color = new FlatColor(ChatColor.getByChar(colorChar.charAt(0)));
+                    color = new FlatColor(ColorMapping.fromChar(colorChar.charAt(0)));
                 } else {
-                    if ("r".equalsIgnoreCase(colorChar)) color = new FlatColor(ChatColor.RESET);
+                    if ("r".equalsIgnoreCase(colorChar)) color = new FlatColor(ColorMapping.WHITE.color);
                 }
             }
 
@@ -75,11 +74,11 @@ public final class ColorHandler {
         return components;
     }
 
-    private ChatColor ofHex(final String color) {
+    private String ofHex(final String color) {
         if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
-            return ChatColorHexMapping.toLegacy(hexToColor(color));
+            return ColorMapping.toLegacy(hexToColor(color));
         }
-        return ChatColor.of(hexToColor(color));
+        return "#" + Integer.toHexString(hexToColor(color).getRGB()).substring(2);
     }
 
     private Color hexToColor(final String color) {
@@ -103,46 +102,56 @@ public final class ColorHandler {
     /**
      * Maps hex codes to ChatColors
      */
-    private enum ChatColorHexMapping {
+    private enum ColorMapping {
 
-        BLACK(0x000000, ChatColor.BLACK),
-        DARK_BLUE(0x0000AA, ChatColor.DARK_BLUE),
-        DARK_GREEN(0x00AA00, ChatColor.DARK_GREEN),
-        DARK_AQUA(0x00AAAA, ChatColor.DARK_AQUA),
-        DARK_RED(0xAA0000, ChatColor.DARK_RED),
-        DARK_PURPLE(0xAA00AA, ChatColor.DARK_PURPLE),
-        GOLD(0xFFAA00, ChatColor.GOLD),
-        GRAY(0xAAAAAA, ChatColor.GRAY),
-        DARK_GRAY(0x555555, ChatColor.DARK_GRAY),
-        BLUE(0x5555FF, ChatColor.BLUE),
-        GREEN(0x55FF55, ChatColor.GREEN),
-        AQUA(0x55FFFF, ChatColor.AQUA),
-        RED(0xFF5555, ChatColor.RED),
-        LIGHT_PURPLE(0xFF55FF, ChatColor.LIGHT_PURPLE),
-        YELLOW(0xFFFF55, ChatColor.YELLOW),
-        WHITE(0xFFFFFF, ChatColor.WHITE);
+        BLACK(0x000000, "black", '0'),
+        DARK_BLUE(0x0000AA, "dark_blue", '1'),
+        DARK_GREEN(0x00AA00, "dark_green", '2'),
+        DARK_AQUA(0x00AAAA, "dark_aqua", '3'),
+        DARK_RED(0xAA0000, "dark_red", '4'),
+        DARK_PURPLE(0xAA00AA, "dark_purple", '5'),
+        GOLD(0xFFAA00, "gold", '6'),
+        GRAY(0xAAAAAA, "gray", '7'),
+        DARK_GRAY(0x555555, "dark_gray", '8'),
+        BLUE(0x5555FF, "blue", '9'),
+        GREEN(0x55FF55, "green", 'a'),
+        AQUA(0x55FFFF, "aqua", 'b'),
+        RED(0xFF5555, "red", 'c'),
+        LIGHT_PURPLE(0xFF55FF, "light_purple", 'd'),
+        YELLOW(0xFFFF55, "yellow", 'e'),
+        WHITE(0xFFFFFF, "white", 'f');
 
         private final int r, g, b;
-        private final ChatColor chatColor;
+        private final char character;
+        private final String color;
 
-        ChatColorHexMapping(int hex, ChatColor chatColor) {
+        ColorMapping(final int hex, final String color, final char character) {
             this.r = (hex >> 16) & 0xFF;
             this.g = (hex >> 8) & 0xFF;
             this.b = hex & 0xFF;
-            this.chatColor = chatColor;
+            this.color = color;
+            this.character = character;
         }
 
-        private static ChatColor toLegacy(final Color color) {
+        private static String fromChar(final char character) {
+            for (ColorMapping mapping : values()) {
+                if (mapping.character == character) return mapping.color;
+            }
+
+            return WHITE.color;
+        }
+
+        private static String toLegacy(final Color color) {
             int minDist = Integer.MAX_VALUE;
-            ChatColor legacy = ChatColor.WHITE;
-            for (ChatColorHexMapping mapping : values()) {
+            String legacy = WHITE.color;
+            for (ColorMapping mapping : values()) {
                 int r = mapping.r - color.getRed();
                 int g = mapping.g - color.getGreen();
                 int b = mapping.b - color.getBlue();
                 int dist = r * r + g * g + b * b;
                 if (dist < minDist) {
                     minDist = dist;
-                    legacy = mapping.chatColor;
+                    legacy = mapping.color;
                 }
             }
 
