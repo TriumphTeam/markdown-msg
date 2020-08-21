@@ -2,6 +2,7 @@ package me.mattstudios.mfmsg.base.internal.component;
 
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,8 +19,8 @@ public final class MessageAppender implements Appender {
 
     private final List<Action> actions = new ArrayList<>();
 
-    public MessageAppender(final Set<Format> formats) {
-        colorHandler = new ColorHandler(formats);
+    public MessageAppender(final Set<Format> formats, final MessageColor defaultColor) {
+        colorHandler = new ColorHandler(formats, defaultColor);
     }
 
     @Override

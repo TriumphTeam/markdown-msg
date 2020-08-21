@@ -14,14 +14,16 @@ import java.util.List;
 public final class BukkitComponent implements MessageComponent {
 
     private final List<MessageLine> lines;
+    private final String jsonMessage;
 
     public BukkitComponent(final List<MessageLine> lines) {
         this.lines = lines;
+        jsonMessage = JsonSerializer.toString(lines);
     }
 
     @Override
     public void send(final Player player) {
-        final PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(JsonSerializer.toString(lines)), ChatMessageType.CHAT, player.getUniqueId());
+        final PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(jsonMessage), ChatMessageType.CHAT, player.getUniqueId());
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
 

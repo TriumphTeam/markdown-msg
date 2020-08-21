@@ -38,7 +38,6 @@ public final class JsonSerializer {
             if (iterator.hasNext()) {
                 final JsonObject newLine = new JsonObject();
                 newLine.addProperty("text", "\n");
-                newLine.addProperty("color", "white");
                 jsonArray.add(newLine);
             }
         }

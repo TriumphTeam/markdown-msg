@@ -21,12 +21,15 @@ import java.util.stream.Collectors;
 public final class ColorHandler {
 
     private final Set<Format> formats;
+    private final MessageColor defaultColor;
+    private MessageColor currentColor;
 
-    public ColorHandler(final Set<Format> formats) {
+    public ColorHandler(final Set<Format> formats, final MessageColor defaultColor) {
         this.formats = formats;
-    }
+        this.defaultColor = defaultColor;
 
-    private MessageColor color;
+        currentColor = defaultColor;
+    }
 
     public List<MessagePart> colorize(@NotNull final String message, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
 
@@ -40,26 +43,26 @@ public final class ColorHandler {
 
             final String before = message.substring(start, matcher.start());
             if (!before.isEmpty()) {
-                components.add(new MessagePart(before, color, bold, italic, strike, underline, obfuscated, actions));
+                components.add(new MessagePart(before, currentColor, bold, italic, strike, underline, obfuscated, actions));
             }
 
             final String colorChar = matcher.group("char");
             if (colorChar != null) {
                 if (formats.contains(Format.COLOR)) {
-                    color = new FlatColor(ColorMapping.fromChar(colorChar.charAt(0)));
+                    currentColor = new FlatColor(ColorMapping.fromChar(colorChar.charAt(0)));
                 } else {
-                    if ("r".equalsIgnoreCase(colorChar)) color = new FlatColor(ColorMapping.WHITE.color);
+                    if ("r".equalsIgnoreCase(colorChar)) currentColor = defaultColor;
                 }
             }
 
             final String hex = matcher.group("hex");
-            if (hex != null && formats.contains(Format.HEX)) color = new FlatColor(ofHex(hex));
+            if (hex != null && formats.contains(Format.HEX)) currentColor = new FlatColor(ofHex(hex));
 
             final String gradient = matcher.group("gradient");
             if (gradient != null && !ServerVersion.CURRENT_VERSION.isColorLegacy() && formats.contains(Format.HEX)) {
                 final List<String> colors = Arrays.asList(gradient.split(":"));
-                if (colors.size() == 1) color = new FlatColor(ofHex(colors.get(0)));
-                else color = new Gradient(colors.stream().map(this::hexToColor).collect(Collectors.toList()));
+                if (colors.size() == 1) currentColor = new FlatColor(ofHex(colors.get(0)));
+                else currentColor = new Gradient(colors.stream().map(this::hexToColor).collect(Collectors.toList()));
             }
 
             start = matcher.end();
@@ -68,7 +71,7 @@ public final class ColorHandler {
         }
 
         if (!rest.isEmpty()) {
-            components.add(new MessagePart(rest, color, bold, italic, strike, underline, obfuscated, actions));
+            components.add(new MessagePart(rest, currentColor, bold, italic, strike, underline, obfuscated, actions));
         }
 
         return components;
