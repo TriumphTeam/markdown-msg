@@ -7,7 +7,7 @@ import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
-import me.mattstudios.mfmsg.base.nms.ServerVersion;
+import me.mattstudios.mfmsg.base.bungee.nms.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
@@ -33,7 +33,7 @@ public final class ColorHandler {
 
     public List<MessagePart> colorize(@NotNull final String message, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
 
-        final List<MessagePart> components = new ArrayList<>();
+        final List<MessagePart> parts = new ArrayList<>();
         final Matcher matcher = RegexUtils.COLOR_PATTERN.matcher(message);
 
         String rest = message;
@@ -43,7 +43,7 @@ public final class ColorHandler {
 
             final String before = message.substring(start, matcher.start());
             if (!before.isEmpty()) {
-                components.add(new MessagePart(before, currentColor, bold, italic, strike, underline, obfuscated, actions));
+                parts.add(new MessagePart(before, currentColor, bold, italic, strike, underline, obfuscated, actions));
             }
 
             final String colorChar = matcher.group("char");
@@ -71,10 +71,10 @@ public final class ColorHandler {
         }
 
         if (!rest.isEmpty()) {
-            components.add(new MessagePart(rest, currentColor, bold, italic, strike, underline, obfuscated, actions));
+            parts.add(new MessagePart(rest, currentColor, bold, italic, strike, underline, obfuscated, actions));
         }
 
-        return components;
+        return parts;
     }
 
     private String ofHex(final String color) {

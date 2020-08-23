@@ -6,4 +6,6 @@ public interface MessageComponent {
 
     void send(final Player player);
 
+    String asString();
+
 }

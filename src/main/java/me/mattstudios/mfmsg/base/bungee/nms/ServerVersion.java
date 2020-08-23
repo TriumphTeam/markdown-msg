@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.base.nms;
+package me.mattstudios.mfmsg.base.bungee.nms;
 
 import org.bukkit.Bukkit;
 

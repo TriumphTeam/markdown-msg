@@ -1,40 +1,44 @@
-package me.mattstudios.mfmsg.base.nms;
+package me.mattstudios.mfmsg.base.bungee.nms;
 
 import org.bukkit.entity.Player;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.UUID;
 
-@SuppressWarnings({"unchecked", "JavaReflectionInvocation", "rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class NmsMessage {
+
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     private static final Class<?> CHAT_COMPONENT;
     private static final Class<?> CHAT_PACKET;
 
     private static Class CHAT_TYPE;
 
-    private static final Method CHAT_SERIALIZER_METHOD, PLAYER_HANDLE, SEND_PACKET;
+    private static final MethodHandle CHAT_SERIALIZER, PLAYER_HANDLE, SEND_PACKET;
     private static final Field PLAYER_CONNECTION;
 
     static {
         try {
-            CHAT_SERIALIZER_METHOD = getNmsClass("IChatBaseComponent$ChatSerializer").getMethod("a", String.class);
-
             CHAT_COMPONENT = getNmsClass("IChatBaseComponent");
+            CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(getNmsClass("IChatMutableComponent"), String.class));
 
             if (!ServerVersion.CURRENT_VERSION.isLegacy()) CHAT_TYPE = getNmsClass("ChatMessageType");
 
             CHAT_PACKET = getNmsClass("PacketPlayOutChat");
-            PLAYER_HANDLE = getCraftClass("entity.CraftPlayer").getMethod("getHandle");
-            final Class<?> entityPlayerClass = PLAYER_HANDLE.getReturnType();
+            final Class<?> entityPlayerClass = getNmsClass("EntityPlayer");
+            PLAYER_HANDLE = LOOKUP.findVirtual(getCraftClass("entity.CraftPlayer"), "getHandle", MethodType.methodType(entityPlayerClass));
+
             PLAYER_CONNECTION = entityPlayerClass.getField("playerConnection");
             final Class<?> packetClass = getNmsClass("Packet");
             final Class<?> playerConnectionClass = PLAYER_CONNECTION.getType();
-            SEND_PACKET = playerConnectionClass.getMethod("sendPacket", packetClass);
 
-        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
+            SEND_PACKET = LOOKUP.findVirtual(playerConnectionClass, "sendPacket", MethodType.methodType(Void.TYPE, packetClass));
+
+        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -43,20 +47,20 @@ public final class NmsMessage {
         try {
             final Object packet;
             if (ServerVersion.CURRENT_VERSION == ServerVersion.V1_8_R3) {
-                packet = CHAT_PACKET.getConstructor(CHAT_COMPONENT).newInstance(CHAT_SERIALIZER_METHOD.invoke(null, message));
+                packet = LOOKUP.findConstructor(CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT)).invokeWithArguments(CHAT_SERIALIZER.invokeWithArguments(message));
             } else if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
-                packet = CHAT_PACKET.getConstructor(CHAT_COMPONENT, CHAT_TYPE).newInstance(CHAT_SERIALIZER_METHOD.invoke(null, message), Enum.valueOf(CHAT_TYPE, "CHAT"));
+                packet = LOOKUP.findConstructor(CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE)).invokeWithArguments(CHAT_SERIALIZER.invokeWithArguments(message), Enum.valueOf(CHAT_TYPE, "CHAT"));
             } else {
-                packet = CHAT_PACKET.getConstructor(CHAT_COMPONENT, CHAT_TYPE, UUID.class).newInstance(CHAT_SERIALIZER_METHOD.invoke(null, message), Enum.valueOf(CHAT_TYPE, "CHAT"), player.getUniqueId());
+                packet = LOOKUP.findConstructor(CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE, UUID.class)).invokeWithArguments(CHAT_SERIALIZER.invoke(message), Enum.valueOf(CHAT_TYPE, "CHAT"), player.getUniqueId());
             }
 
             sendPacket(player, packet);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
-    private static void sendPacket(final Player player, final Object packet) throws InvocationTargetException, IllegalAccessException {
+    private static void sendPacket(final Player player, final Object packet) throws Throwable {
         Object playerConnection = PLAYER_CONNECTION.get(PLAYER_HANDLE.invoke(player));
         SEND_PACKET.invoke(playerConnection, packet);
     }

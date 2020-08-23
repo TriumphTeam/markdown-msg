@@ -12,7 +12,7 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
-import me.mattstudios.mfmsg.base.nms.ServerVersion;
+import me.mattstudios.mfmsg.base.bungee.nms.ServerVersion;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -64,7 +64,7 @@ public final class JsonSerializer {
                     i++;
                 }
 
-                jsonArray.addAll(GradientHandler.toGradient(gradientParts, gradient));
+                jsonArray.addAll(GradientHandler.toGradientJson(gradientParts, gradient));
                 continue;
             }
 
