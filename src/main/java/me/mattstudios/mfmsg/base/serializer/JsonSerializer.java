@@ -12,8 +12,9 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
-import me.mattstudios.mfmsg.base.bungee.nms.ServerVersion;
+import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,20 +65,20 @@ public final class JsonSerializer {
                     i++;
                 }
 
-                jsonArray.addAll(GradientHandler.toGradientJson(gradientParts, gradient));
+                jsonArray.addAll(gradientity(gradientParts, gradient));
                 continue;
             }
 
             String colorString = null;
             if (color != null) colorString = ((FlatColor) color).getColor();
 
-            jsonArray.add(toObject(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+            jsonArray.add(serializePart(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
         }
 
         return jsonArray;
     }
 
-    public static JsonObject toObject(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
+    public static JsonObject serializePart(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);
 
@@ -125,6 +126,22 @@ public final class JsonSerializer {
         }
 
         return jsonObject;
+    }
+
+    private static JsonArray gradientity(final List<MessagePart> parts, final Gradient gradient) {
+        final JsonArray jsonArray = new JsonArray();
+        final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
+        final List<Color> colors = gradient.getColors();
+
+        final GradientHandler gradientHandler = new GradientHandler(colors, length);
+
+        for (final MessagePart part : parts) {
+            for (char character : part.getText().toCharArray()) {
+                jsonArray.add(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+            }
+        }
+
+        return jsonArray;
     }
 
     private static JsonObject getClickEvent(final ClickAction clickAction, final String type) {

@@ -7,7 +7,7 @@ import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
 import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
-import me.mattstudios.mfmsg.base.bungee.nms.ServerVersion;
+import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;

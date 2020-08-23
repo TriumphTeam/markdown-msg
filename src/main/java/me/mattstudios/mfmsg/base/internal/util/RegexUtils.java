@@ -24,6 +24,8 @@ public final class RegexUtils {
     // Pattern for splitting with \n but ignoring action's new lines
     private static final Pattern NEW_LINE_ACTION = Pattern.compile("(?<action>\\[[^]]*]\\([^)]*\\))|(?<break>\\r?\\\\n)");
 
+    public static final Pattern CHARACTER = Pattern.compile(".");
+
     private RegexUtils() {}
 
     public static List<String> splitNewLine(final String message) {

@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base;
 
-import me.mattstudios.mfmsg.base.bungee.BukkitComponent;
+import me.mattstudios.mfmsg.base.bukkit.BukkitComponent;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;

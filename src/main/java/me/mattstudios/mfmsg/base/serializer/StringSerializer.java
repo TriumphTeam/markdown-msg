@@ -7,7 +7,9 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,23 +52,23 @@ public final class StringSerializer {
                     i++;
                 }
 
-                stringBuilder.append(GradientHandler.toGradientString(gradientParts, gradient));
+                stringBuilder.append(gradientity(gradientParts, gradient));
                 continue;
             }
 
             String colorString = null;
             if (color != null) colorString = ((FlatColor) color).getColor();
 
-            stringBuilder.append(toObject(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+            stringBuilder.append(serializePart(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
         }
 
         return stringBuilder.toString();
     }
 
-    public static String toObject(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
+    public static String serializePart(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
         final StringBuilder stringBuilder = new StringBuilder();
 
-        if (color != null) stringBuilder.append("§x").append(color.substring(1).replaceAll(".", "§$0"));
+        if (color != null) stringBuilder.append("§x").append(RegexUtils.CHARACTER.matcher(color.substring(1)).replaceAll("§$0"));
 
         if (bold) stringBuilder.append("§l");
         if (italic) stringBuilder.append("§o");
@@ -76,6 +78,22 @@ public final class StringSerializer {
 
         stringBuilder.append(text);
         stringBuilder.append("§r");
+
+        return stringBuilder.toString();
+    }
+
+    public static String gradientity(final List<MessagePart> parts, final Gradient gradient) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
+        final List<Color> colors = gradient.getColors();
+
+        final GradientHandler gradientHandler = new GradientHandler(colors, length);
+
+        for (final MessagePart part : parts) {
+            for (char character : part.getText().toCharArray()) {
+                stringBuilder.append(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+            }
+        }
 
         return stringBuilder.toString();
     }

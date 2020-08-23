@@ -1,8 +1,8 @@
-package me.mattstudios.mfmsg.base.bungee;
+package me.mattstudios.mfmsg.base.bukkit;
 
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
-import me.mattstudios.mfmsg.base.bungee.nms.NmsMessage;
+import me.mattstudios.mfmsg.base.bukkit.nms.NmsMessage;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
 import me.mattstudios.mfmsg.base.serializer.StringSerializer;
 import org.bukkit.entity.Player;
