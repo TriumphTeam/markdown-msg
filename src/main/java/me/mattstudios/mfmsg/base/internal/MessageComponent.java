@@ -4,8 +4,17 @@ import org.bukkit.entity.Player;
 
 public interface MessageComponent {
 
-    void send(final Player player);
+    void sendMessage(final Player player);
 
-    String asString();
+    void sendTitle(final Player player, final int fadeIn, final int stay, final int fadeOut);
+
+    void sendSubTitle(final Player player, final int fadeIn, final int stay, final int fadeOut);
+
+    void sendActionBar(final Player player, final int fadeIn, final int stay, final int fadeOut);
+
+    @Override
+    String toString();
+
+    String toJson();
 
 }

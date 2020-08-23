@@ -1,9 +1,9 @@
 package me.mattstudios.mfmsg.base.serializer;
 
-import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
+import me.mattstudios.mfmsg.base.internal.color.handler.ColorMapping;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
@@ -59,16 +59,22 @@ public final class StringSerializer {
             String colorString = null;
             if (color != null) colorString = ((FlatColor) color).getColor();
 
-            stringBuilder.append(serializePart(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+            stringBuilder.append(serializePart(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated()));
         }
 
         return stringBuilder.toString();
     }
 
-    public static String serializePart(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
+    public static String serializePart(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated) {
         final StringBuilder stringBuilder = new StringBuilder();
 
-        if (color != null) stringBuilder.append("§x").append(RegexUtils.CHARACTER.matcher(color.substring(1)).replaceAll("§$0"));
+        if (color != null) {
+            if (color.startsWith("#")) {
+                stringBuilder.append("§x").append(RegexUtils.CHARACTER.matcher(color.substring(1)).replaceAll("§$0"));
+            } else {
+                stringBuilder.append("§").append(ColorMapping.fromName(color));
+            }
+        }
 
         if (bold) stringBuilder.append("§l");
         if (italic) stringBuilder.append("§o");
@@ -91,7 +97,7 @@ public final class StringSerializer {
 
         for (final MessagePart part : parts) {
             for (char character : part.getText().toCharArray()) {
-                stringBuilder.append(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+                stringBuilder.append(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated()));
             }
         }
 

@@ -131,7 +131,7 @@
         <dependency>
             <groupId>me.mattstudios.utils</groupId>
             <artifactId>matt-framework</artifactId>
-            <version>LATEST</version>
+            <version>1.4.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
