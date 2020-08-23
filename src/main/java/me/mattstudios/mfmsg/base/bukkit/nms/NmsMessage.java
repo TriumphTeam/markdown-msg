@@ -13,18 +13,20 @@ public final class NmsMessage {
 
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
-    private static final Class<?> CHAT_COMPONENT;
-    private static final Class<?> CHAT_PACKET, TITLE_PACKET;
+    private static final Class<?> CHAT_COMPONENT, CHAT_PACKET, TITLE_PACKET;
 
-    private static Class CHAT_TYPE, TITLE_TYPE;
+    private static Class CHAT_TYPE;
+    private static final Class TITLE_TYPE;
 
     private static final MethodHandle CHAT_SERIALIZER, PLAYER_HANDLE, SEND_PACKET;
     private static final Field PLAYER_CONNECTION;
 
+    // Initializes all the reflection stuff
     static {
         try {
             CHAT_COMPONENT = getNmsClass("IChatBaseComponent");
 
+            // Because of all the NMS changes throughout the versions
             if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1)) {
                 CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(CHAT_COMPONENT, String.class));
             } else if (ServerVersion.CURRENT_VERSION.isLegacy()) {
@@ -54,9 +56,16 @@ public final class NmsMessage {
         }
     }
 
+    /**
+     * Sends the message to the player using packets
+     *
+     * @param player  The {@link Player}
+     * @param message The json message to send
+     */
     public static void sendMessage(final Player player, final String message) {
         try {
             final Object packet;
+            // For versions from 1.8 - 1.11
             if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1)) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT)
@@ -68,6 +77,7 @@ public final class NmsMessage {
                 return;
             }
 
+            // For versions 1.12 - 1.15
             if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE)
@@ -79,6 +89,7 @@ public final class NmsMessage {
                 return;
             }
 
+            // For 1.16+
             packet = LOOKUP.findConstructor(
                     CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE, UUID.class)
             ).invokeWithArguments(
@@ -91,9 +102,20 @@ public final class NmsMessage {
         }
     }
 
+    /**
+     * Sends a title packet to the {@link Player}
+     *
+     * @param player    The {@link Player} to receive the title
+     * @param message   The json message
+     * @param titleType The type of title to send, example: TITLE, SUBTITLE, ACTIONBAR
+     * @param fadeIn    {@link Integer} in ticks of fade in time
+     * @param stay      {@link Integer} in ticks of stay time
+     * @param fadeOut   {@link Integer} in ticks of fade out time
+     */
     public static void sendTitle(final Player player, final String message, final String titleType, final int fadeIn, final int stay, final int fadeOut) {
         try {
             final Object packet;
+            // For versions older than 1.12 and only for Actionbar since it used to be in the ChatPacket
             if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1) && titleType.equals("ACTIONBAR")) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, byte.class)
@@ -105,12 +127,12 @@ public final class NmsMessage {
                 return;
             }
 
-            packet =
-                    LOOKUP.findConstructor(
-                            TITLE_PACKET, MethodType.methodType(void.class, TITLE_TYPE, CHAT_COMPONENT, int.class, int.class, int.class)
-                    ).invokeWithArguments(
-                            Enum.valueOf(TITLE_TYPE, titleType), CHAT_SERIALIZER.invoke(message), fadeIn, stay, fadeOut
-                    );
+            // For All 1.12+ versions and titles etc for 1.8+
+            packet = LOOKUP.findConstructor(
+                    TITLE_PACKET, MethodType.methodType(void.class, TITLE_TYPE, CHAT_COMPONENT, int.class, int.class, int.class)
+            ).invokeWithArguments(
+                    Enum.valueOf(TITLE_TYPE, titleType), CHAT_SERIALIZER.invoke(message), fadeIn, stay, fadeOut
+            );
 
             sendPacket(player, packet);
         } catch (Throwable e) {
@@ -118,17 +140,38 @@ public final class NmsMessage {
         }
     }
 
+    /**
+     * Sends the packet to the {@link Player}
+     *
+     * @param player The {@link Player} to receive the packet
+     * @param packet The packet {@link Object}
+     * @throws Throwable Throws a throwable in case something goes wrong
+     */
     private static void sendPacket(final Player player, final Object packet) throws Throwable {
         Object playerConnection = PLAYER_CONNECTION.get(PLAYER_HANDLE.invoke(player));
         SEND_PACKET.invoke(playerConnection, packet);
     }
 
-    private static Class<?> getNmsClass(final String clazz) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + ServerVersion.NMS_VERSION + "." + clazz);
+    /**
+     * Gets the NMS class needed
+     *
+     * @param path The path to the NMS {@link Class} to get
+     * @return Returns the correct NMS {@link Class} for the path given
+     * @throws ClassNotFoundException If the class isn't found throws exception
+     */
+    private static Class<?> getNmsClass(final String path) throws ClassNotFoundException {
+        return Class.forName("net.minecraft.server." + ServerVersion.NMS_VERSION + "." + path);
     }
 
-    private static Class<?> getCraftClass(final String clazz) throws ClassNotFoundException {
-        return Class.forName("org.bukkit.craftbukkit." + ServerVersion.NMS_VERSION + "." + clazz);
+    /**
+     * Gets the Craft class needed
+     *
+     * @param path The path to the Craft {@link Class} to get
+     * @return Returns the correct Craft {@link Class} for the path given
+     * @throws ClassNotFoundException If the class isn't found throws exception
+     */
+    private static Class<?> getCraftClass(final String path) throws ClassNotFoundException {
+        return Class.forName("org.bukkit.craftbukkit." + ServerVersion.NMS_VERSION + "." + path);
     }
 
 }

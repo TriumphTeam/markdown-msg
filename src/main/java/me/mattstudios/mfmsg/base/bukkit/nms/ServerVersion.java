@@ -80,6 +80,11 @@ public enum ServerVersion {
         return versionNumber < V1_13_R1.versionNumber;
     }
 
+    /**
+     * Checks if the server is color legacy (1.8-1.15)
+     *
+     * @return True if lower than 1.16
+     */
     public boolean isColorLegacy() {
         return versionNumber < V1_16_R1.versionNumber;
     }
@@ -92,9 +97,9 @@ public enum ServerVersion {
      */
     public static ServerVersion getByNmsName(final String name) {
         return Arrays.stream(values())
-                     .filter(version -> version.name().equalsIgnoreCase(name))
-                     .findFirst()
-                     .orElse(UNKNOWN);
+                .filter(version -> version.name().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(UNKNOWN);
     }
 
 }
