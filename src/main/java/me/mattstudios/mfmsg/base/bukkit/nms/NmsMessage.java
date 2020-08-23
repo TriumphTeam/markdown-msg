@@ -14,9 +14,9 @@ public final class NmsMessage {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     private static final Class<?> CHAT_COMPONENT;
-    private static final Class<?> CHAT_PACKET;
+    private static final Class<?> CHAT_PACKET, TITLE_PACKET;
 
-    private static Class CHAT_TYPE;
+    private static Class CHAT_TYPE, TITLE_TYPE;
 
     private static final MethodHandle CHAT_SERIALIZER, PLAYER_HANDLE, SEND_PACKET;
     private static final Field PLAYER_CONNECTION;
@@ -24,11 +24,22 @@ public final class NmsMessage {
     static {
         try {
             CHAT_COMPONENT = getNmsClass("IChatBaseComponent");
-            CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(getNmsClass("IChatMutableComponent"), String.class));
 
-            if (!ServerVersion.CURRENT_VERSION.isLegacy()) CHAT_TYPE = getNmsClass("ChatMessageType");
+            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1)) {
+                CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(CHAT_COMPONENT, String.class));
+            } else if (ServerVersion.CURRENT_VERSION.isLegacy()) {
+                CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(CHAT_COMPONENT, String.class));
+                CHAT_TYPE = getNmsClass("ChatMessageType");
+            } else {
+                CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(getNmsClass("IChatMutableComponent"), String.class));
+                CHAT_TYPE = getNmsClass("ChatMessageType");
+            }
+
+            TITLE_TYPE = getNmsClass("PacketPlayOutTitle$EnumTitleAction");
 
             CHAT_PACKET = getNmsClass("PacketPlayOutChat");
+            TITLE_PACKET = getNmsClass("PacketPlayOutTitle");
+
             final Class<?> entityPlayerClass = getNmsClass("EntityPlayer");
             PLAYER_HANDLE = LOOKUP.findVirtual(getCraftClass("entity.CraftPlayer"), "getHandle", MethodType.methodType(entityPlayerClass));
 
@@ -46,13 +57,60 @@ public final class NmsMessage {
     public static void sendMessage(final Player player, final String message) {
         try {
             final Object packet;
-            if (ServerVersion.CURRENT_VERSION == ServerVersion.V1_8_R3) {
-                packet = LOOKUP.findConstructor(CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT)).invokeWithArguments(CHAT_SERIALIZER.invokeWithArguments(message));
-            } else if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
-                packet = LOOKUP.findConstructor(CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE)).invokeWithArguments(CHAT_SERIALIZER.invokeWithArguments(message), Enum.valueOf(CHAT_TYPE, "CHAT"));
-            } else {
-                packet = LOOKUP.findConstructor(CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE, UUID.class)).invokeWithArguments(CHAT_SERIALIZER.invoke(message), Enum.valueOf(CHAT_TYPE, "CHAT"), player.getUniqueId());
+            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1)) {
+                packet = LOOKUP.findConstructor(
+                        CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT)
+                ).invokeWithArguments(
+                        CHAT_SERIALIZER.invokeWithArguments(message)
+                );
+
+                sendPacket(player, packet);
+                return;
             }
+
+            if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+                packet = LOOKUP.findConstructor(
+                        CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE)
+                ).invokeWithArguments(
+                        CHAT_SERIALIZER.invokeWithArguments(message), Enum.valueOf(CHAT_TYPE, "CHAT")
+                );
+
+                sendPacket(player, packet);
+                return;
+            }
+
+            packet = LOOKUP.findConstructor(
+                    CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE, UUID.class)
+            ).invokeWithArguments(
+                    CHAT_SERIALIZER.invoke(message), Enum.valueOf(CHAT_TYPE, "CHAT"), player.getUniqueId()
+            );
+
+            sendPacket(player, packet);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendTitle(final Player player, final String message, final String titleType, final int fadeIn, final int stay, final int fadeOut) {
+        try {
+            final Object packet;
+            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1) && titleType.equals("ACTIONBAR")) {
+                packet = LOOKUP.findConstructor(
+                        CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, byte.class)
+                ).invokeWithArguments(
+                        CHAT_SERIALIZER.invoke(message), (byte) 2
+                );
+
+                sendPacket(player, packet);
+                return;
+            }
+
+            packet =
+                    LOOKUP.findConstructor(
+                            TITLE_PACKET, MethodType.methodType(void.class, TITLE_TYPE, CHAT_COMPONENT, int.class, int.class, int.class)
+                    ).invokeWithArguments(
+                            Enum.valueOf(TITLE_TYPE, titleType), CHAT_SERIALIZER.invoke(message), fadeIn, stay, fadeOut
+                    );
 
             sendPacket(player, packet);
         } catch (Throwable e) {

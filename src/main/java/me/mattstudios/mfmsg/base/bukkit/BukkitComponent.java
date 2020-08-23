@@ -5,9 +5,6 @@ import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
 import me.mattstudios.mfmsg.base.serializer.StringSerializer;
-import net.minecraft.server.v1_16_R2.IChatBaseComponent;
-import net.minecraft.server.v1_16_R2.PacketPlayOutTitle;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -27,20 +24,17 @@ public final class BukkitComponent implements MessageComponent {
 
     @Override
     public void sendTitle(final Player player, final int fadeIn, final int stay, final int fadeOut) {
-        final PacketPlayOutTitle packetPlayOutTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, IChatBaseComponent.ChatSerializer.a(JsonSerializer.toString(lines)), fadeIn, stay, fadeOut);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutTitle);
+        NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "TITLE", fadeIn, stay, fadeOut);
     }
 
     @Override
     public void sendSubTitle(final Player player, final int fadeIn, final int stay, final int fadeOut) {
-        final PacketPlayOutTitle packetPlayOutTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a(JsonSerializer.toString(lines)), fadeIn, stay, fadeOut);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutTitle);
+        NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "SUBTITLE", fadeIn, stay, fadeOut);
     }
 
     @Override
     public void sendActionBar(final Player player, final int fadeIn, final int stay, final int fadeOut) {
-        final PacketPlayOutTitle packetPlayOutTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, IChatBaseComponent.ChatSerializer.a(JsonSerializer.toString(lines)), fadeIn, stay, fadeOut);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutTitle);
+        NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "ACTIONBAR", fadeIn, stay, fadeOut);
     }
 
     @Override
