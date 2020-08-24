@@ -13,8 +13,8 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private final Set<Format> formats;
 
     // Text properties
-    private boolean italic;
     private boolean bold;
+    private boolean italic;
     private boolean strike;
     private boolean underline;
     private boolean obfuscated;

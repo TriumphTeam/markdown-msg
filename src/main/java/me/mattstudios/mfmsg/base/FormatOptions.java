@@ -3,56 +3,93 @@ package me.mattstudios.mfmsg.base;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
+/**
+ * Options to enable and disable for the formats
+ */
 public final class FormatOptions {
 
+    @NotNull
     private final Set<Format> formats;
+
+    @NotNull
     private MessageColor defaultColor = new FlatColor("white");
 
+    /**
+     * Main constructor with all the formats
+     */
     FormatOptions() {
         this.formats = EnumSet.allOf(Format.class);
     }
 
-    FormatOptions(final List<Format> formats, final boolean remove) {
-        if (remove) {
-            this.formats = EnumSet.allOf(Format.class);
-            this.formats.removeAll(formats);
-            return;
-        }
-
-        this.formats = EnumSet.noneOf(Format.class);
-        this.formats.addAll(formats);
-    }
-
+    /**
+     * Gets the format options builder
+     *
+     * @return The format options builder
+     */
+    @NotNull
     public static FormatOptions builder() {
         return new FormatOptions();
     }
 
-    public FormatOptions with(final Format... formats) {
+    /**
+     * Creates a format options with only the give formats
+     *
+     * @param formats The formats to add
+     * @return The format options object
+     */
+    @NotNull
+    public FormatOptions with(@NotNull final Format... formats) {
         this.formats.clear();
         this.formats.addAll(Arrays.asList(formats));
         return this;
     }
 
-    public FormatOptions without(final Format... formats) {
+    /**
+     * Creates a format options without the give formats
+     *
+     * @param formats The formats to remove
+     * @return The format options object
+     */
+    @NotNull
+    public FormatOptions without(@NotNull final Format... formats) {
         this.formats.removeAll(Arrays.asList(formats));
         return this;
     }
 
-    public FormatOptions defaultColor(final MessageColor defaultColor) {
+    /**
+     * Sets the default color to use in all messages
+     *
+     * @param defaultColor The default {@link MessageColor}
+     * @return The format options object
+     */
+    @NotNull
+    public FormatOptions defaultColor(@NotNull final MessageColor defaultColor) {
         this.defaultColor = defaultColor;
         return this;
     }
 
+    /**
+     * Gets the default color
+     *
+     * @return The default color
+     */
+    @NotNull
     MessageColor getDefaultColor() {
         return defaultColor;
     }
 
+    /**
+     * Gets the formats
+     *
+     * @return The list with the formats to use
+     */
+    @NotNull
     Set<Format> getFormats() {
         return formats;
     }

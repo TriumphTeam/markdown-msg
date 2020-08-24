@@ -110,9 +110,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.atlassian.commonmark</groupId>
-            <artifactId>commonmark</artifactId>
-            <version>0.15.2</version>
+            <groupId>me.mattstudios.utils</groupId>
+            <artifactId>commonmark-java-mf</artifactId>
+            <version>0.1</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

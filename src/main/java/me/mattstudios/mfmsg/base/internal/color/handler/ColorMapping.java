@@ -1,7 +1,12 @@
 package me.mattstudios.mfmsg.base.internal.color.handler;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.awt.Color;
 
+/**
+ * Enum that handles legacy code conversion
+ */
 public enum ColorMapping {
 
     BLACK(0x000000, "black", '0'),
@@ -25,7 +30,12 @@ public enum ColorMapping {
     private final char character;
     private final String colorName;
 
-    ColorMapping(final int hex, final String colorName, final char character) {
+    /**
+     * @param hex       The hex code of the color
+     * @param colorName The Mojang color name
+     * @param character The character that represents it
+     */
+    ColorMapping(final int hex, @NotNull final String colorName, final char character) {
         this.r = (hex >> 16) & 0xFF;
         this.g = (hex >> 8) & 0xFF;
         this.b = hex & 0xFF;
@@ -33,6 +43,13 @@ public enum ColorMapping {
         this.character = character;
     }
 
+    /**
+     * Gets the color name from a char
+     *
+     * @param character The char to check
+     * @return The color name
+     */
+    @NotNull
     public static String fromChar(final char character) {
         for (ColorMapping mapping : values()) {
             if (mapping.character == character) return mapping.colorName;
@@ -41,7 +58,13 @@ public enum ColorMapping {
         return WHITE.colorName;
     }
 
-    public static char fromName(final String colorName) {
+    /**
+     * Gets the color char from the name
+     *
+     * @param colorName The color name
+     * @return The color char that it represents
+     */
+    public static char fromName(@NotNull final String colorName) {
         for (ColorMapping mapping : values()) {
             if (mapping.colorName.equalsIgnoreCase(colorName)) return mapping.character;
         }
@@ -49,7 +72,14 @@ public enum ColorMapping {
         return WHITE.character;
     }
 
-    public static String toLegacy(final Color color) {
+    /**
+     * Gets the legacy color from a {@link Color}
+     *
+     * @param color The color to get from
+     * @return A legacy color
+     */
+    @NotNull
+    public static String toLegacy(@NotNull final Color color) {
         int minDist = Integer.MAX_VALUE;
         String legacy = WHITE.colorName;
         for (ColorMapping mapping : values()) {

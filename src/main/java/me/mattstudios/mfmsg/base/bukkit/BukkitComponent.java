@@ -6,42 +6,93 @@ import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
 import me.mattstudios.mfmsg.base.serializer.StringSerializer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * {@link MessageComponent} for Bukkit specific methods
+ */
 public final class BukkitComponent implements MessageComponent {
 
+    @NotNull
     private final List<MessageLine> lines;
 
-    public BukkitComponent(final List<MessageLine> lines) {
+    /**
+     * Main constructor that takes in the parsed Lines
+     *
+     * @param lines The parsed lines from {@link me.mattstudios.mfmsg.base.Message}
+     */
+    public BukkitComponent(@NotNull final List<MessageLine> lines) {
         this.lines = lines;
     }
 
+    /**
+     * Sends the json message to the {@link Player}
+     *
+     * @param player The {@link Player}
+     */
     @Override
-    public void sendMessage(final Player player) {
+    public void sendMessage(@NotNull final Player player) {
         NmsMessage.sendMessage(player, JsonSerializer.toString(lines));
     }
 
+    /**
+     * Sends a title to the {@link Player}
+     *
+     * @param player  The {@link Player}
+     * @param fadeIn  An {@link Integer} in ticks for the fade in time
+     * @param stay    An {@link Integer} in ticks for the stay time
+     * @param fadeOut An {@link Integer} in ticks for the fade out time
+     */
     @Override
-    public void sendTitle(final Player player, final int fadeIn, final int stay, final int fadeOut) {
+    public void sendTitle(@NotNull final Player player, final int fadeIn, final int stay, final int fadeOut) {
         NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "TITLE", fadeIn, stay, fadeOut);
     }
 
+    /**
+     * Sends a SubTitle to the {@link Player}
+     *
+     * @param player  The {@link Player}
+     * @param fadeIn  An {@link Integer} in ticks for the fade in time
+     * @param stay    An {@link Integer} in ticks for the stay time
+     * @param fadeOut An {@link Integer} in ticks for the fade out time
+     */
     @Override
-    public void sendSubTitle(final Player player, final int fadeIn, final int stay, final int fadeOut) {
+    public void sendSubTitle(@NotNull final Player player, final int fadeIn, final int stay, final int fadeOut) {
         NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "SUBTITLE", fadeIn, stay, fadeOut);
     }
 
+    /**
+     * Sends an ActionBar to the {@link Player}
+     *
+     * @param player  The {@link Player}
+     * @param fadeIn  An {@link Integer} in ticks for the fade in time
+     * @param stay    An {@link Integer} in ticks for the stay time
+     * @param fadeOut An {@link Integer} in ticks for the fade out time
+     */
     @Override
-    public void sendActionBar(final Player player, final int fadeIn, final int stay, final int fadeOut) {
+    public void sendActionBar(@NotNull final Player player, final int fadeIn, final int stay, final int fadeOut) {
         NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "ACTIONBAR", fadeIn, stay, fadeOut);
     }
 
+    /**
+     * Parses the lines to {@link String} to be used on items etc
+     *
+     * @return A parsed {@link String}
+     */
+    @NotNull
     @Override
     public String toString() {
         return StringSerializer.toString(lines);
     }
 
+    /**
+     * Gets the raw json {@link String}
+     *
+     * @return The raw json
+     */
+    @NotNull
     @Override
     public String toJson() {
         return JsonSerializer.toString(lines);

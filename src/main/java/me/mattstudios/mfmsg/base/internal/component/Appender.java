@@ -2,16 +2,39 @@ package me.mattstudios.mfmsg.base.internal.component;
 
 import me.mattstudios.mfmsg.base.internal.action.Action;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * This interface isn't really necessary but it's good to have
+ */
 public interface Appender {
 
+    /**
+     * Appends the message with all it's info
+     *
+     * @param message    The message to append
+     * @param italic     Whether or not the message is italic
+     * @param bold       Whether or not the message is bold
+     * @param strike     Whether or not the message is strikethrough
+     * @param underline  Whether or not the message is underlined
+     * @param obfuscated Whether or not the message is obfuscated
+     */
     void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated);
 
-    default void addActions(@Nullable final List<Action> actions) {}
+    /**
+     * Adds the actions to the appender
+     *
+     * @param actions The actions to add
+     */
+    default void addActions(@NotNull final List<Action> actions) {}
 
+    /**
+     * Builds into a list of message parts
+     *
+     * @return The list of message parts
+     */
+    @NotNull
     List<MessagePart> build();
 
 }

@@ -7,27 +7,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+/**
+ * Will lex and separate the message into actions and not actions
+ */
 public final class ActionLexer {
 
     private ActionLexer() {}
 
-    public static List<Token> tokenize(@NotNull final String text) {
+    /**
+     * Tokenizes the message into the correct tokens
+     *
+     * @param message The message to parse
+     * @return The list with the generated tokens
+     */
+    @NotNull
+    public static List<Token> tokenize(@NotNull final String message) {
         final List<Token> tokens = new LinkedList<>();
-        final Matcher matcher = RegexUtils.ACTION_PATTERN_SPACES.matcher(text);
+        final Matcher matcher = RegexUtils.ACTION_PATTERN_SPACES.matcher(message);
 
-        String rest = text;
+        String rest = message;
         int start = 0;
         while (matcher.find()) {
 
-            final String before = text.substring(start, matcher.start());
+            final String before = message.substring(start, matcher.start());
             if (!before.isEmpty()) tokens.add(new TextToken(before));
 
             final String startSpaces = matcher.group("start");
             if (startSpaces != null && !startSpaces.isEmpty()) {
                 tokens.add(new SpaceToken(startSpaces));
             }
-
-            // TODO - Handle nulls later
+            
             final String actionText = matcher.group("text");
             final String actions = matcher.group("actions");
 
@@ -39,7 +48,7 @@ public final class ActionLexer {
             }
 
             start = matcher.end();
-            rest = text.substring(start);
+            rest = message.substring(start);
         }
 
         if (!rest.isEmpty()) tokens.add(new TextToken(rest));

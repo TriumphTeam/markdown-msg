@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+/**
+ * Main parser used
+ */
 public final class MessageParser {
 
     // The parser that'll be used with the strikethrough, underline, obfuscated extensions
@@ -38,15 +41,27 @@ public final class MessageParser {
     @NotNull
     private final List<Token> tokens;
 
+    @NotNull
     private final Set<Format> formats;
+    @NotNull
     private final MessageColor defaultColor;
 
+    @NotNull
     private final List<MessagePart> parts = new ArrayList<>();
 
+    @NotNull
     private final Appender appender;
+    @NotNull
     private final MarkdownVisitor visitor;
 
-    public MessageParser(@NotNull final String message, @NotNull Set<Format> formats, final MessageColor defaultColor) {
+    /**
+     * Main constructor that takes message formats and default color
+     *
+     * @param message      The message to parse
+     * @param formats      The formats to check for
+     * @param defaultColor The default color
+     */
+    public MessageParser(@NotNull final String message, @NotNull Set<Format> formats, @NotNull final MessageColor defaultColor) {
         this.formats = formats;
         this.defaultColor = defaultColor;
 
@@ -67,6 +82,7 @@ public final class MessageParser {
                 continue;
             }
 
+            // Simply appends a space because of the actions and commonmark
             if (token instanceof SpaceToken) {
                 appender.append(((SpaceToken) token).getText(), false, false, false, false, false);
                 parts.addAll(appender.build());
@@ -82,6 +98,11 @@ public final class MessageParser {
         }
     }
 
+    /**
+     * Visits the given node
+     *
+     * @param node The node to visit
+     */
     private void visit(final Node node) {
         visitor.visitComponents(node, appender);
     }
@@ -147,7 +168,12 @@ public final class MessageParser {
         this.parts.addAll(parts);
     }
 
-    public List<MessagePart> parse() {
+    /**
+     * Builds the parsed information into the list of parts
+     *
+     * @return The list of all the parsed parts
+     */
+    public List<MessagePart> build() {
         return parts;
     }
 

@@ -1,5 +1,8 @@
 package me.mattstudios.mfmsg.base.internal;
 
+/**
+ * All formats that are available to disable
+ */
 public enum Format {
 
     BOLD,
@@ -10,6 +13,7 @@ public enum Format {
     COLOR,
     HEX,
     GRADIENT,
+    RAINBOW,
     ACTION_HOVER,
     ACTION_COMMAND,
     ACTION_URL,

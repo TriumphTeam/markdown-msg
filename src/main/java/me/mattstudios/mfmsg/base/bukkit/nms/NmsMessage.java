@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.base.bukkit.nms;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -8,6 +9,9 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
+/**
+ * Class for handling packet sending
+ */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public final class NmsMessage {
 
@@ -62,7 +66,7 @@ public final class NmsMessage {
      * @param player  The {@link Player}
      * @param message The json message to send
      */
-    public static void sendMessage(final Player player, final String message) {
+    public static void sendMessage(@NotNull final Player player, @NotNull final String message) {
         try {
             final Object packet;
             // For versions from 1.8 - 1.11
@@ -112,7 +116,7 @@ public final class NmsMessage {
      * @param stay      {@link Integer} in ticks of stay time
      * @param fadeOut   {@link Integer} in ticks of fade out time
      */
-    public static void sendTitle(final Player player, final String message, final String titleType, final int fadeIn, final int stay, final int fadeOut) {
+    public static void sendTitle(@NotNull final Player player, @NotNull final String message, @NotNull final String titleType, final int fadeIn, final int stay, final int fadeOut) {
         try {
             final Object packet;
             // For versions older than 1.12 and only for Actionbar since it used to be in the ChatPacket
@@ -147,7 +151,7 @@ public final class NmsMessage {
      * @param packet The packet {@link Object}
      * @throws Throwable Throws a throwable in case something goes wrong
      */
-    private static void sendPacket(final Player player, final Object packet) throws Throwable {
+    private static void sendPacket(@NotNull final Player player, @NotNull final Object packet) throws Throwable {
         Object playerConnection = PLAYER_CONNECTION.get(PLAYER_HANDLE.invoke(player));
         SEND_PACKET.invoke(playerConnection, packet);
     }
@@ -159,7 +163,8 @@ public final class NmsMessage {
      * @return Returns the correct NMS {@link Class} for the path given
      * @throws ClassNotFoundException If the class isn't found throws exception
      */
-    private static Class<?> getNmsClass(final String path) throws ClassNotFoundException {
+    @NotNull
+    private static Class<?> getNmsClass(@NotNull final String path) throws ClassNotFoundException {
         return Class.forName("net.minecraft.server." + ServerVersion.NMS_VERSION + "." + path);
     }
 
@@ -170,7 +175,8 @@ public final class NmsMessage {
      * @return Returns the correct Craft {@link Class} for the path given
      * @throws ClassNotFoundException If the class isn't found throws exception
      */
-    private static Class<?> getCraftClass(final String path) throws ClassNotFoundException {
+    @NotNull
+    private static Class<?> getCraftClass(@NotNull final String path) throws ClassNotFoundException {
         return Class.forName("org.bukkit.craftbukkit." + ServerVersion.NMS_VERSION + "." + path);
     }
 

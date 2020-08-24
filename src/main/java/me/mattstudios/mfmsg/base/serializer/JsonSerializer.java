@@ -3,33 +3,42 @@ package me.mattstudios.mfmsg.base.serializer;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
 import me.mattstudios.mfmsg.base.internal.action.Action;
 import me.mattstudios.mfmsg.base.internal.action.ClickAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
+import me.mattstudios.mfmsg.base.internal.color.Rainbow;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
+import me.mattstudios.mfmsg.base.internal.color.handler.RainbowHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessagePart;
-import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Will comment this class later, it's currently pretty messy
+ */
 public final class JsonSerializer {
 
+    @NotNull
     private static final Gson gson = new Gson();
 
     private JsonSerializer() {}
 
-    public static String toString(final List<MessageLine> lines) {
+    @NotNull
+    public static String toString(@NotNull final List<MessageLine> lines) {
         return gson.toJson(toJson(lines));
     }
 
-    public static JsonArray toJson(final List<MessageLine> lines) {
+    @NotNull
+    public static JsonArray toJson(@NotNull final List<MessageLine> lines) {
         final JsonArray jsonArray = new JsonArray();
 
         final Iterator<MessageLine> iterator = lines.iterator();
@@ -45,7 +54,8 @@ public final class JsonSerializer {
         return jsonArray;
     }
 
-    private static JsonArray convertLine(final List<MessagePart> parts) {
+    @NotNull
+    private static JsonArray convertLine(@NotNull final List<MessagePart> parts) {
         final JsonArray jsonArray = new JsonArray();
         for (int i = 0; i < parts.size(); i++) {
             final MessagePart part = parts.get(i);
@@ -65,20 +75,38 @@ public final class JsonSerializer {
                     i++;
                 }
 
-                jsonArray.addAll(gradientity(gradientParts, gradient));
+                jsonArray.addAll(toGradient(gradientParts, gradient));
+                continue;
+            }
+
+            if (color instanceof Rainbow) {
+                final List<MessagePart> rainbowParts = new ArrayList<>();
+                final Rainbow rainbow = (Rainbow) color;
+                rainbowParts.add(part);
+
+                while (i + 1 < parts.size()) {
+                    final MessagePart newPart = parts.get(i + 1);
+                    if (!color.equals(newPart.getColor())) break;
+
+                    rainbowParts.add(newPart);
+                    i++;
+                }
+
+                jsonArray.addAll(toRainbow(rainbowParts, rainbow));
                 continue;
             }
 
             String colorString = null;
             if (color != null) colorString = ((FlatColor) color).getColor();
 
-            jsonArray.add(serializePart(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+            jsonArray.add(serializePart(part.getText(), colorString, part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated(), part.getActions()));
         }
 
         return jsonArray;
     }
 
-    public static JsonObject serializePart(final String text, final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, final List<Action> actions) {
+    @NotNull
+    public static JsonObject serializePart(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @NotNull final List<Action> actions) {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);
 
@@ -88,9 +116,9 @@ public final class JsonSerializer {
         jsonObject.addProperty("underlined", underline);
         jsonObject.addProperty("obfuscated", obfuscated);
 
-        if (color != null) jsonObject.addProperty("color", color);
+        jsonObject.addProperty("color", color);
 
-        if (actions == null || actions.isEmpty()) return jsonObject;
+        if (actions.isEmpty()) return jsonObject;
 
         for (final Action action : actions) {
             if (action instanceof HoverAction) {
@@ -128,7 +156,8 @@ public final class JsonSerializer {
         return jsonObject;
     }
 
-    private static JsonArray gradientity(final List<MessagePart> parts, final Gradient gradient) {
+    @NotNull
+    private static JsonArray toGradient(@NotNull final List<MessagePart> parts, @NotNull final Gradient gradient) {
         final JsonArray jsonArray = new JsonArray();
         final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
         final List<Color> colors = gradient.getColors();
@@ -137,14 +166,31 @@ public final class JsonSerializer {
 
         for (final MessagePart part : parts) {
             for (char character : part.getText().toCharArray()) {
-                jsonArray.add(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderline(), part.isObfuscated(), part.getActions()));
+                jsonArray.add(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated(), part.getActions()));
             }
         }
 
         return jsonArray;
     }
 
-    private static JsonObject getClickEvent(final ClickAction clickAction, final String type) {
+    @NotNull
+    private static JsonArray toRainbow(@NotNull final List<MessagePart> parts, @NotNull final Rainbow rainbow) {
+        final JsonArray jsonArray = new JsonArray();
+        final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
+
+        final RainbowHandler rainbowHandler = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
+
+        for (final MessagePart part : parts) {
+            for (char character : part.getText().toCharArray()) {
+                jsonArray.add(serializePart(String.valueOf(character), rainbowHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated(), part.getActions()));
+            }
+        }
+
+        return jsonArray;
+    }
+
+    @NotNull
+    private static JsonObject getClickEvent(@NotNull final ClickAction clickAction, @NotNull final String type) {
         final JsonObject clickObject = new JsonObject();
         clickObject.addProperty("action", type);
         clickObject.addProperty("value", clickAction.getAction());

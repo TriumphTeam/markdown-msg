@@ -1,9 +1,13 @@
 package me.mattstudios.mfmsg.base.bukkit.nms;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+/**
+ * Enum for handling server versions
+ */
 public enum ServerVersion {
 
     UNKNOWN(1000),
@@ -37,6 +41,10 @@ public enum ServerVersion {
 
     private final int versionNumber;
 
+    public static final String PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName();
+    public static final String NMS_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
+    public static final ServerVersion CURRENT_VERSION = getByNmsName(NMS_VERSION);
+
     /**
      * Main constructor that defines a protocol version representing NX where N is the main version and X is the R version
      * For example NX - 81 - 8_R1
@@ -47,17 +55,13 @@ public enum ServerVersion {
         this.versionNumber = versionNumber;
     }
 
-    public static final String PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName();
-    public static final String NMS_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
-    public static final ServerVersion CURRENT_VERSION = getByNmsName(NMS_VERSION);
-
     /**
      * Checks if the current version is newer than the {@link ServerVersion} specified
      *
      * @param version The {@link ServerVersion} to check from
      * @return Whether or not the version is newer
      */
-    public boolean isNewerThan(final ServerVersion version) {
+    public boolean isNewerThan(@NotNull final ServerVersion version) {
         return versionNumber >= version.versionNumber;
     }
 
@@ -67,7 +71,7 @@ public enum ServerVersion {
      * @param version The {@link ServerVersion} to check from
      * @return Whether or not the version is older
      */
-    public boolean isOlderThan(final ServerVersion version) {
+    public boolean isOlderThan(@NotNull final ServerVersion version) {
         return versionNumber < version.versionNumber;
     }
 
@@ -95,7 +99,8 @@ public enum ServerVersion {
      * @param name The NMS name
      * @return The {@link ServerVersion} that represents that version
      */
-    public static ServerVersion getByNmsName(final String name) {
+    @NotNull
+    public static ServerVersion getByNmsName(@NotNull final String name) {
         return Arrays.stream(values())
                 .filter(version -> version.name().equalsIgnoreCase(name))
                 .findFirst()

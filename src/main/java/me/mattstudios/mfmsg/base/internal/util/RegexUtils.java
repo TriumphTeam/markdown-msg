@@ -1,5 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -8,7 +10,7 @@ import java.util.regex.Pattern;
 public final class RegexUtils {
 
     // Pattern for acceptable colors
-    public static final Pattern COLOR_PATTERN = Pattern.compile("(?<!\\\\)[<&](?<hex>#[A-Fa-f0-9]{3,6})[>]?|(?<!\\\\)&(?<char>[a-fA-F0-9rR])|<g:(?<gradient>.+?)>");
+    public static final Pattern COLOR_PATTERN = Pattern.compile("(?<!\\\\)[<&](?<hex>#[A-Fa-f0-9]{3,6})[>]?|(?<!\\\\)&(?<char>[a-fA-F0-9rR])|<(?:g|gradient):(?<gradient>.+?)>|<(?<r>r|rainbow)(?<sat>:\\d*\\.\\d*)?(?<lig>:\\d*\\.\\d*)?>");
     // Pattern for turning #000 into #000000
     public static final Pattern THREE_HEX = Pattern.compile("([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
 
@@ -20,15 +22,22 @@ public final class RegexUtils {
     public static final Pattern NEW_LINE = Pattern.compile("\\r?\\\\n");
     // Pattern for action with spaces for tokens
     public static final Pattern ACTION_PATTERN_SPACES = Pattern.compile("((?<start>[ ]*)((?<!\\\\)\\[(?<text>.+?)(?<!\\\\)](?<!\\\\)\\((?<actions>.+?)(?<!\\\\)\\))(?<end>[ ]*))");
+    // Pattern for all characters
+    public static final Pattern CHARACTER = Pattern.compile(".");
 
     // Pattern for splitting with \n but ignoring action's new lines
     private static final Pattern NEW_LINE_ACTION = Pattern.compile("(?<action>\\[[^]]*]\\([^)]*\\))|(?<break>\\r?\\\\n)");
 
-    public static final Pattern CHARACTER = Pattern.compile(".");
-
     private RegexUtils() {}
 
-    public static List<String> splitNewLine(final String message) {
+    /**
+     * Splits the message and ignores \n that are in the action
+     *
+     * @param message The message to split
+     * @return The list with the new lines
+     */
+    @NotNull
+    public static List<String> splitNewLine(@NotNull final String message) {
         final List<String> lines = new ArrayList<>();
         final Matcher matcher = NEW_LINE_ACTION.matcher(message);
 
