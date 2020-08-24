@@ -33,10 +33,9 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <!-- todo -->
-    <name>Matt's GUI Framework</name>
-    <url>https://github.com/ipsk/MF-GUI</url>
-    <description>Inventory GUI framework for Spigot.</description>
+    <name>Matt's Markdown JSON message</name>
+    <url>https://github.com/ipsk/MF-MSG</url>
+    <description>Message framework for markdown like syntax to be converted to Minecraft.</description>
 
     <licenses>
         <license>
@@ -56,11 +55,10 @@
         </repository>
     </distributionManagement>
 
-    <!-- todo -->
     <scm>
-        <connection>scm:git:git://github.com/ipsk/MF-GUI.git</connection>
-        <developerConnection>scm:git:ssh://github.com:ipsk/MF-GUI.git</developerConnection>
-        <url>http://github.com/ipsk/MF-GUI</url>
+        <connection>scm:git:git://github.com/ipsk/MF-MSG.git</connection>
+        <developerConnection>scm:git:ssh://github.com:ipsk/MF-MSG.git</developerConnection>
+        <url>http://github.com/ipsk/MF-MSG</url>
     </scm>
 
     <developers>
@@ -90,15 +88,8 @@
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-chat</artifactId>
-            <version>1.16-R0.1</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -109,6 +100,7 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Fork of commonmark to change a few things -->
         <dependency>
             <groupId>me.mattstudios.utils</groupId>
             <artifactId>commonmark-java-mf</artifactId>
@@ -116,6 +108,7 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Strikethrough extension -->
         <dependency>
             <groupId>com.atlassian.commonmark</groupId>
             <artifactId>commonmark-ext-gfm-strikethrough</artifactId>

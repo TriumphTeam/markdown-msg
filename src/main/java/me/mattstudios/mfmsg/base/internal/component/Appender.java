@@ -27,7 +27,7 @@ public interface Appender {
      *
      * @param actions The actions to add
      */
-    default void addActions(@NotNull final List<Action> actions) {}
+    void addActions(@NotNull final List<Action> actions);
 
     /**
      * Builds into a list of message parts

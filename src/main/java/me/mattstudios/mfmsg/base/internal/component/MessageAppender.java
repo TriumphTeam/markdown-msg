@@ -67,6 +67,7 @@ public final class MessageAppender implements Appender {
     @NotNull
     @Override
     public List<MessagePart> build() {
+        // Requires to be copied to not be mutated
         final List<MessagePart> test = new ArrayList<>(parts);
         reset();
         return test;
