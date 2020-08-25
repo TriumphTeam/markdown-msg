@@ -6,6 +6,8 @@ import java.awt.Color;
 
 /**
  * Enum that handles legacy code conversion
+ *
+ * Original author: https://github.com/Esophose
  */
 public enum ColorMapping {
 

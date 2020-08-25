@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * Handler for the gradient colors
+ *
+ * Original author: https://github.com/Esophose
  */
 public final class GradientHandler {
 

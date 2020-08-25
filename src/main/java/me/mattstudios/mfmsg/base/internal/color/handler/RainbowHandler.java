@@ -6,6 +6,8 @@ import java.awt.Color;
 
 /**
  * Handles the rainbow colors
+ *
+ * Original author: https://github.com/Esophose
  */
 public final class RainbowHandler {
 
