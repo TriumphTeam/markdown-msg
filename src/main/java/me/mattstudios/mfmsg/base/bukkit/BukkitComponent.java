@@ -97,4 +97,5 @@ public final class BukkitComponent implements MessageComponent {
     public String toJson() {
         return JsonSerializer.toString(lines);
     }
+
 }
