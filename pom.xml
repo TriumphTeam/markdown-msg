@@ -126,7 +126,7 @@
             <groupId>me.mattstudios.utils</groupId>
             <artifactId>matt-framework</artifactId>
             <version>1.4.2</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

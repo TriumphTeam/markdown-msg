@@ -34,7 +34,7 @@ public final class BukkitComponent implements MessageComponent {
      */
     @Override
     public void sendMessage(@NotNull final Player player) {
-        NmsMessage.sendMessage(player, JsonSerializer.toString(lines));
+        NmsMessage.sendMessage(player, toJson());
     }
 
     /**
@@ -47,7 +47,7 @@ public final class BukkitComponent implements MessageComponent {
      */
     @Override
     public void sendTitle(@NotNull final Player player, final int fadeIn, final int stay, final int fadeOut) {
-        NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "TITLE", fadeIn, stay, fadeOut);
+        NmsMessage.sendTitle(player, toJson(), NmsMessage.TitleType.TITLE, fadeIn, stay, fadeOut);
     }
 
     /**
@@ -60,7 +60,7 @@ public final class BukkitComponent implements MessageComponent {
      */
     @Override
     public void sendSubTitle(@NotNull final Player player, final int fadeIn, final int stay, final int fadeOut) {
-        NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "SUBTITLE", fadeIn, stay, fadeOut);
+        NmsMessage.sendTitle(player, toJson(), NmsMessage.TitleType.SUBTITLE, fadeIn, stay, fadeOut);
     }
 
     /**
@@ -73,7 +73,7 @@ public final class BukkitComponent implements MessageComponent {
      */
     @Override
     public void sendActionBar(@NotNull final Player player, final int fadeIn, final int stay, final int fadeOut) {
-        NmsMessage.sendTitle(player, JsonSerializer.toString(lines), "ACTIONBAR", fadeIn, stay, fadeOut);
+        NmsMessage.sendTitle(player, toJson(), NmsMessage.TitleType.ACTIONBAR, fadeIn, stay, fadeOut);
     }
 
     /**

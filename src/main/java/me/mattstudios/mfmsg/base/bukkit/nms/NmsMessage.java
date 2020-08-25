@@ -116,11 +116,11 @@ public final class NmsMessage {
      * @param stay      {@link Integer} in ticks of stay time
      * @param fadeOut   {@link Integer} in ticks of fade out time
      */
-    public static void sendTitle(@NotNull final Player player, @NotNull final String message, @NotNull final String titleType, final int fadeIn, final int stay, final int fadeOut) {
+    public static void sendTitle(@NotNull final Player player, @NotNull final String message, @NotNull final TitleType titleType, final int fadeIn, final int stay, final int fadeOut) {
         try {
             final Object packet;
             // For versions older than 1.12 and only for Actionbar since it used to be in the ChatPacket
-            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1) && titleType.equals("ACTIONBAR")) {
+            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1) && titleType == TitleType.ACTIONBAR) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, byte.class)
                 ).invokeWithArguments(
@@ -135,10 +135,21 @@ public final class NmsMessage {
             packet = LOOKUP.findConstructor(
                     TITLE_PACKET, MethodType.methodType(void.class, TITLE_TYPE, CHAT_COMPONENT, int.class, int.class, int.class)
             ).invokeWithArguments(
-                    Enum.valueOf(TITLE_TYPE, titleType), CHAT_SERIALIZER.invoke(message), fadeIn, stay, fadeOut
+                    Enum.valueOf(TITLE_TYPE, titleType.name()), CHAT_SERIALIZER.invoke(message), fadeIn, stay, fadeOut
             );
 
             sendPacket(player, packet);
+
+            // Required for subtitle to send
+            if (titleType == TitleType.SUBTITLE) {
+                final Object titlePacket = LOOKUP.findConstructor(
+                        TITLE_PACKET, MethodType.methodType(void.class, TITLE_TYPE, CHAT_COMPONENT, int.class, int.class, int.class)
+                ).invokeWithArguments(
+                        Enum.valueOf(TITLE_TYPE, TitleType.TITLE.name()), null, fadeIn, stay, fadeOut
+                );
+
+                sendPacket(player, titlePacket);
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -178,6 +189,12 @@ public final class NmsMessage {
     @NotNull
     private static Class<?> getCraftClass(@NotNull final String path) throws ClassNotFoundException {
         return Class.forName("org.bukkit.craftbukkit." + ServerVersion.NMS_VERSION + "." + path);
+    }
+
+    public enum TitleType {
+        ACTIONBAR,
+        TITLE,
+        SUBTITLE
     }
 
 }

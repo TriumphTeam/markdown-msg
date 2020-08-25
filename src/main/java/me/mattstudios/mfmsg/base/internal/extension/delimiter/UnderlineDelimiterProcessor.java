@@ -34,7 +34,7 @@ public final class UnderlineDelimiterProcessor implements DelimiterProcessor {
         final Node underline = new Underline();
 
         Node tmp = opener.getNext();
-        while (tmp != null && tmp.equals(closer)) {
+        while (tmp != null && !tmp.equals(closer)) {
             final Node next = tmp.getNext();
             underline.appendChild(tmp);
             tmp = next;

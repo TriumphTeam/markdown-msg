@@ -34,7 +34,7 @@ public final class ObfuscatedDelimiterProcessor implements DelimiterProcessor {
         final Node obfuscated = new Obfuscated();
 
         Node tmp = opener.getNext();
-        while (tmp != null && tmp.equals(closer)) {
+        while (tmp != null && !tmp.equals(closer)) {
             final Node next = tmp.getNext();
             obfuscated.appendChild(tmp);
             tmp = next;

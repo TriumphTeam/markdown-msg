@@ -4,7 +4,12 @@ import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
-import org.commonmark.node.*;
+import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.CustomNode;
+import org.commonmark.node.Emphasis;
+import org.commonmark.node.Node;
+import org.commonmark.node.StrongEmphasis;
+import org.commonmark.node.Text;
 
 import java.util.Set;
 
@@ -25,6 +30,12 @@ public final class MarkdownVisitor extends AbstractVisitor {
         this.formats = formats;
     }
 
+    /**
+     * Visits the node's components
+     *
+     * @param node     The node to visit
+     * @param appender The appender to append text to
+     */
     public void visitComponents(final Node node, final Appender appender) {
         if (this.appender != appender) this.appender = appender;
         node.accept(this);
