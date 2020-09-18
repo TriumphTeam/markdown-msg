@@ -1,5 +1,6 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
 }
 
 group 'me.mattstudios'
@@ -10,5 +11,6 @@ dependencies {
     implementation project(":msg")
 
     implementation "me.mattstudios.utils:matt-framework:1.4"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
 }

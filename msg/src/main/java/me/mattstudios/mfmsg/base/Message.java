@@ -6,7 +6,6 @@ import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
-import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -68,7 +67,7 @@ public final class Message {
 
         final List<MessageLine> lines = new ArrayList<>();
 
-        for (final String line : RegexUtils.splitNewLine(message)) {
+        for (final String line : message.split("\\n")) {
             lines.add(new MessageLine(new MessageParser(line, formats, defaultColor).build()));
         }
 

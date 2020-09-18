@@ -10,11 +10,11 @@ allprojects {
     }
 
     dependencies {
-        compileOnly "org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT"
+        implementation "org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT"
     }
 
-    //sourceCompatibility = JavaVersion.VERSION_1_8
-    //targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
