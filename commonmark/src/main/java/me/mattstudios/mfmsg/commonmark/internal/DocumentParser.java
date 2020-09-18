@@ -1,16 +1,41 @@
 package me.mattstudios.mfmsg.commonmark.internal;
 
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
-import me.mattstudios.mfmsg.commonmark.node.*;
+import me.mattstudios.mfmsg.commonmark.node.Block;
+import me.mattstudios.mfmsg.commonmark.node.BlockQuote;
+import me.mattstudios.mfmsg.commonmark.node.Document;
+import me.mattstudios.mfmsg.commonmark.node.FencedCodeBlock;
+import me.mattstudios.mfmsg.commonmark.node.Heading;
+import me.mattstudios.mfmsg.commonmark.node.HtmlBlock;
+import me.mattstudios.mfmsg.commonmark.node.IndentedCodeBlock;
+import me.mattstudios.mfmsg.commonmark.node.LinkReferenceDefinition;
+import me.mattstudios.mfmsg.commonmark.node.ListBlock;
+import me.mattstudios.mfmsg.commonmark.node.Paragraph;
+import me.mattstudios.mfmsg.commonmark.node.SourceSpan;
+import me.mattstudios.mfmsg.commonmark.node.ThematicBreak;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParser;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParserFactory;
-import me.mattstudios.mfmsg.commonmark.parser.block.*;
+import me.mattstudios.mfmsg.commonmark.parser.IncludeSourceSpans;
+import me.mattstudios.mfmsg.commonmark.parser.block.BlockContinue;
+import me.mattstudios.mfmsg.commonmark.parser.block.BlockParser;
+import me.mattstudios.mfmsg.commonmark.parser.block.BlockParserFactory;
+import me.mattstudios.mfmsg.commonmark.parser.block.BlockStart;
+import me.mattstudios.mfmsg.commonmark.parser.block.MatchedBlockParser;
+import me.mattstudios.mfmsg.commonmark.parser.block.ParserState;
 import me.mattstudios.mfmsg.commonmark.parser.delimiter.DelimiterProcessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DocumentParser implements ParserState {
 
@@ -41,6 +66,11 @@ public class DocumentParser implements ParserState {
     private CharSequence line;
 
     /**
+     * Line index (0-based)
+     */
+    private int lineIndex = -1;
+
+    /**
      * current index (offset) in input line (0-based)
      */
     private int index = 0;
@@ -63,21 +93,22 @@ public class DocumentParser implements ParserState {
     private final List<BlockParserFactory> blockParserFactories;
     private final InlineParserFactory inlineParserFactory;
     private final List<DelimiterProcessor> delimiterProcessors;
+    private final IncludeSourceSpans includeSourceSpans;
     private final DocumentBlockParser documentBlockParser;
     private final Map<String, LinkReferenceDefinition> definitions = new LinkedHashMap<>();
 
-    private List<BlockParser> activeBlockParsers = new ArrayList<>();
-    // LinkedHashSet to have a deterministic order
-    private Set<BlockParser> allBlockParsers = new LinkedHashSet<>();
+    private final List<OpenBlockParser> openBlockParsers = new ArrayList<>();
+    private final List<BlockParser> allBlockParsers = new ArrayList<>();
 
     public DocumentParser(List<BlockParserFactory> blockParserFactories, InlineParserFactory inlineParserFactory,
-                          List<DelimiterProcessor> delimiterProcessors) {
+                          List<DelimiterProcessor> delimiterProcessors, IncludeSourceSpans includeSourceSpans) {
         this.blockParserFactories = blockParserFactories;
         this.inlineParserFactory = inlineParserFactory;
         this.delimiterProcessors = delimiterProcessors;
+        this.includeSourceSpans = includeSourceSpans;
 
         this.documentBlockParser = new DocumentBlockParser();
-        activateBlockParser(this.documentBlockParser);
+        activateBlockParser(new OpenBlockParser(documentBlockParser, 0));
     }
 
     public static Set<Class<? extends Block>> getDefaultBlockParserTypes() {
@@ -138,6 +169,10 @@ public class DocumentParser implements ParserState {
         return line;
     }
 
+    public int getLineIndex() {
+        return lineIndex;
+    }
+
     @Override
     public int getIndex() {
         return index;
@@ -165,7 +200,7 @@ public class DocumentParser implements ParserState {
 
     @Override
     public BlockParser getActiveBlockParser() {
-        return activeBlockParsers.get(activeBlockParsers.size() - 1);
+        return openBlockParsers.get(openBlockParsers.size() - 1).blockParser;
     }
 
     /**
@@ -173,24 +208,27 @@ public class DocumentParser implements ParserState {
      * line of input, then finalizing the document.
      */
     private void incorporateLine(CharSequence ln) {
+        lineIndex++;
         line = Parsing.prepareLine(ln);
         index = 0;
         column = 0;
         columnIsInTab = false;
 
         // For each containing block, try to parse the associated line start.
-        // Bail out on failure: container will point to the last matching block.
-        // Set all_matched to false if not all containers match.
-        // The document will always match, can be skipped
+        // The document will always match, so we can skip the first block parser and start at 1 matches
         int matches = 1;
-        for (BlockParser blockParser : activeBlockParsers.subList(1, activeBlockParsers.size())) {
+        for (int i = 1; i < openBlockParsers.size(); i++) {
+            OpenBlockParser openBlockParser = openBlockParsers.get(i);
+            BlockParser blockParser = openBlockParser.blockParser;
             findNextNonSpace();
 
             BlockContinue result = blockParser.tryContinue(this);
             if (result instanceof BlockContinueImpl) {
                 BlockContinueImpl blockContinue = (BlockContinueImpl) result;
+                openBlockParser.sourceIndex = getIndex();
                 if (blockContinue.isFinalize()) {
-                    finalize(blockParser);
+                    addSourceSpans();
+                    closeBlockParsers(openBlockParsers.size() - i);
                     return;
                 } else {
                     if (blockContinue.getNewIndex() != -1) {
@@ -205,15 +243,17 @@ public class DocumentParser implements ParserState {
             }
         }
 
-        List<BlockParser> unmatchedBlockParsers = new ArrayList<>(activeBlockParsers.subList(matches, activeBlockParsers.size()));
-        BlockParser lastMatchedBlockParser = activeBlockParsers.get(matches - 1);
-        BlockParser blockParser = lastMatchedBlockParser;
-        boolean allClosed = unmatchedBlockParsers.isEmpty();
+        int unmatchedBlocks = openBlockParsers.size() - matches;
+        BlockParser blockParser = openBlockParsers.get(matches - 1).blockParser;
+        boolean startedNewBlock = false;
+
+        int lastIndex = index;
 
         // Unless last matched container is a code block, try new container starts,
         // adding children to the last matched container:
         boolean tryBlockStarts = blockParser.getBlock() instanceof Paragraph || blockParser.isContainer();
         while (tryBlockStarts) {
+            lastIndex = index;
             findNextNonSpace();
 
             // this is a little performance optimization:
@@ -228,9 +268,13 @@ public class DocumentParser implements ParserState {
                 break;
             }
 
-            if (!allClosed) {
-                finalizeBlocks(unmatchedBlockParsers);
-                allClosed = true;
+            startedNewBlock = true;
+            int sourceIndex = getIndex();
+
+            // We're starting a new block. If we have any previous blocks that need to be closed, we need to do it now.
+            if (unmatchedBlocks > 0) {
+                closeBlockParsers(unmatchedBlocks);
+                unmatchedBlocks = 0;
             }
 
             if (blockStart.getNewIndex() != -1) {
@@ -239,12 +283,18 @@ public class DocumentParser implements ParserState {
                 setNewColumn(blockStart.getNewColumn());
             }
 
+            List<SourceSpan> replacedSourceSpans = null;
             if (blockStart.isReplaceActiveBlockParser()) {
-                prepareActiveBlockParserForReplacement();
+                Block replacedBlock = prepareActiveBlockParserForReplacement();
+                replacedSourceSpans = replacedBlock.getSourceSpans();
             }
 
             for (BlockParser newBlockParser : blockStart.getBlockParsers()) {
-                blockParser = addChild(newBlockParser);
+                addChild(new OpenBlockParser(newBlockParser, sourceIndex));
+                if (replacedSourceSpans != null) {
+                    newBlockParser.getBlock().setSourceSpans(replacedSourceSpans);
+                }
+                blockParser = newBlockParser;
                 tryBlockStarts = newBlockParser.isContainer();
             }
         }
@@ -253,24 +303,35 @@ public class DocumentParser implements ParserState {
         // appropriate block.
 
         // First check for a lazy paragraph continuation:
-        if (!allClosed && !isBlank() &&
+        if (!startedNewBlock && !isBlank() &&
                 getActiveBlockParser().canHaveLazyContinuationLines()) {
+            openBlockParsers.get(openBlockParsers.size() - 1).sourceIndex = lastIndex;
             // lazy paragraph continuation
             addLine();
 
         } else {
 
             // finalize any blocks not matched
-            if (!allClosed) {
-                finalizeBlocks(unmatchedBlockParsers);
+            if (unmatchedBlocks > 0) {
+                closeBlockParsers(unmatchedBlocks);
             }
 
             if (!blockParser.isContainer()) {
                 addLine();
             } else if (!isBlank()) {
                 // create paragraph container for line
-                addChild(new ParagraphParser());
+                ParagraphParser paragraphParser = new ParagraphParser();
+                addChild(new OpenBlockParser(paragraphParser, lastIndex));
                 addLine();
+            } else {
+                // This can happen for a list item like this:
+                // ```
+                // *
+                // list item
+                // ```
+                //
+                // The first line does not start a paragraph yet, but we still want to record source positions.
+                addSourceSpans();
             }
         }
     }
@@ -283,17 +344,6 @@ public class DocumentParser implements ParserState {
         int length = line.length();
         while (i < length) {
             char c = line.charAt(i);
-            switch (c) {
-                /*case ' ':
-                    i++;
-                    cols++;
-                    continue;*/
-                // Commented out to prevent it from removing beginning white space
-                case '\t':
-                    i++;
-                    cols += (4 - (cols % 4));
-                    continue;
-            }
             blank = false;
             break;
         }
@@ -365,10 +415,27 @@ public class DocumentParser implements ParserState {
             }
             sb.append(rest);
             content = sb.toString();
+        } else if (index == 0) {
+            content = line;
         } else {
             content = line.subSequence(index, line.length());
         }
         getActiveBlockParser().addLine(content);
+        addSourceSpans();
+    }
+
+    private void addSourceSpans() {
+        if (includeSourceSpans != IncludeSourceSpans.NONE) {
+            // Don't add source spans for Document itself (it would get the whole source text)
+            for (int i = 1; i < openBlockParsers.size(); i++) {
+                OpenBlockParser openBlockParser = openBlockParsers.get(i);
+                int blockIndex = openBlockParser.sourceIndex;
+                int length = line.length() - blockIndex;
+                if (length != 0) {
+                    openBlockParser.blockParser.addSourceSpan(SourceSpan.of(lineIndex, blockIndex, length));
+                }
+            }
+        }
     }
 
     private BlockStartImpl findBlockStart(BlockParser blockParser) {
@@ -383,15 +450,10 @@ public class DocumentParser implements ParserState {
     }
 
     /**
-     * Finalize a block. Close it and do any necessary postprocessing, e.g. creating string_content from strings,
-     * setting the 'tight' or 'loose' status of a list, and parsing the beginnings of paragraphs for reference
-     * definitions.
+     * Finalize a block. Close it and do any necessary postprocessing, e.g. setting the content of blocks and
+     * collecting link reference definitions from paragraphs.
      */
     private void finalize(BlockParser blockParser) {
-        if (getActiveBlockParser() == blockParser) {
-            deactivateBlockParser();
-        }
-
         if (blockParser instanceof ParagraphParser) {
             addDefinitionsFrom((ParagraphParser) blockParser);
         }
@@ -425,33 +487,29 @@ public class DocumentParser implements ParserState {
     }
 
     /**
-     * Add block of type tag as a child of the tip. If the tip can't  accept children, close and finalize it and try
-     * its parent, and so on til we find a block that can accept children.
+     * Add block of type tag as a child of the tip. If the tip can't accept children, close and finalize it and try
+     * its parent, and so on until we find a block that can accept children.
      */
-    private <T extends BlockParser> T addChild(T blockParser) {
-        while (!getActiveBlockParser().canContain(blockParser.getBlock())) {
-            finalize(getActiveBlockParser());
+    private void addChild(OpenBlockParser openBlockParser) {
+        while (!getActiveBlockParser().canContain(openBlockParser.blockParser.getBlock())) {
+            closeBlockParsers(1);
         }
 
-        getActiveBlockParser().getBlock().appendChild(blockParser.getBlock());
-        activateBlockParser(blockParser);
-
-        return blockParser;
+        getActiveBlockParser().getBlock().appendChild(openBlockParser.blockParser.getBlock());
+        activateBlockParser(openBlockParser);
     }
 
-    private void activateBlockParser(BlockParser blockParser) {
-        activeBlockParsers.add(blockParser);
-        allBlockParsers.add(blockParser);
+    private void activateBlockParser(OpenBlockParser openBlockParser) {
+        openBlockParsers.add(openBlockParser);
     }
 
-    private void deactivateBlockParser() {
-        activeBlockParsers.remove(activeBlockParsers.size() - 1);
+    private OpenBlockParser deactivateBlockParser() {
+        return openBlockParsers.remove(openBlockParsers.size() - 1);
     }
 
-    private void prepareActiveBlockParserForReplacement() {
-        BlockParser old = getActiveBlockParser();
-        deactivateBlockParser();
-        allBlockParsers.remove(old);
+    private Block prepareActiveBlockParserForReplacement() {
+        // Note that we don't want to parse inlines, as it's getting replaced.
+        BlockParser old = deactivateBlockParser().blockParser;
 
         if (old instanceof ParagraphParser) {
             ParagraphParser paragraphParser = (ParagraphParser) old;
@@ -463,23 +521,27 @@ public class DocumentParser implements ParserState {
             addDefinitionsFrom(paragraphParser);
         }
 
+        // Do this so that source positions are calculated, which we will carry over to the replacing block.
+        old.closeBlock();
         old.getBlock().unlink();
-    }
-
-    /**
-     * Finalize blocks of previous line. Returns true.
-     */
-    private void finalizeBlocks(List<BlockParser> blockParsers) {
-        for (int i = blockParsers.size() - 1; i >= 0; i--) {
-            BlockParser blockParser = blockParsers.get(i);
-            finalize(blockParser);
-        }
+        return old.getBlock();
     }
 
     private Document finalizeAndProcess() {
-        finalizeBlocks(this.activeBlockParsers);
-        this.processInlines();
-        return this.documentBlockParser.getBlock();
+        closeBlockParsers(openBlockParsers.size());
+        processInlines();
+        return documentBlockParser.getBlock();
+    }
+
+    private void closeBlockParsers(int count) {
+        for (int i = 0; i < count; i++) {
+            BlockParser blockParser = deactivateBlockParser().blockParser;
+            finalize(blockParser);
+            // Remember for inline parsing. Note that a lot of blocks don't need inline parsing. We could have a
+            // separate interface (e.g. BlockParserWithInlines) so that we only have to remember those that actually
+            // have inlines to parse.
+            allBlockParsers.add(blockParser);
+        }
     }
 
     private static class MatchedBlockParserImpl implements MatchedBlockParser {
@@ -496,17 +558,22 @@ public class DocumentParser implements ParserState {
         }
 
         @Override
-        public CharSequence getParagraphContent() {
+        public List<CharSequence> getParagraphLines() {
             if (matchedBlockParser instanceof ParagraphParser) {
                 ParagraphParser paragraphParser = (ParagraphParser) matchedBlockParser;
-                CharSequence content = paragraphParser.getContentString();
-                if (content.length() == 0) {
-                    return null;
-                }
-
-                return content;
+                return Collections.unmodifiableList(paragraphParser.getParagraphLines());
             }
-            return null;
+            return Collections.emptyList();
+        }
+    }
+
+    private static class OpenBlockParser {
+        private final BlockParser blockParser;
+        private int sourceIndex;
+
+        OpenBlockParser(BlockParser blockParser, int sourceIndex) {
+            this.blockParser = blockParser;
+            this.sourceIndex = sourceIndex;
         }
     }
 }

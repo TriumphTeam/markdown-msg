@@ -4,7 +4,16 @@ import me.mattstudios.mfmsg.commonmark.Extension;
 import me.mattstudios.mfmsg.commonmark.internal.DocumentParser;
 import me.mattstudios.mfmsg.commonmark.internal.InlineParserContextImpl;
 import me.mattstudios.mfmsg.commonmark.internal.InlineParserImpl;
-import me.mattstudios.mfmsg.commonmark.node.*;
+import me.mattstudios.mfmsg.commonmark.node.Block;
+import me.mattstudios.mfmsg.commonmark.node.BlockQuote;
+import me.mattstudios.mfmsg.commonmark.node.FencedCodeBlock;
+import me.mattstudios.mfmsg.commonmark.node.Heading;
+import me.mattstudios.mfmsg.commonmark.node.HtmlBlock;
+import me.mattstudios.mfmsg.commonmark.node.IndentedCodeBlock;
+import me.mattstudios.mfmsg.commonmark.node.LinkReferenceDefinition;
+import me.mattstudios.mfmsg.commonmark.node.ListBlock;
+import me.mattstudios.mfmsg.commonmark.node.Node;
+import me.mattstudios.mfmsg.commonmark.node.ThematicBreak;
 import me.mattstudios.mfmsg.commonmark.parser.block.BlockParserFactory;
 import me.mattstudios.mfmsg.commonmark.parser.delimiter.DelimiterProcessor;
 
@@ -31,17 +40,19 @@ public class Parser {
     private final List<DelimiterProcessor> delimiterProcessors;
     private final InlineParserFactory inlineParserFactory;
     private final List<PostProcessor> postProcessors;
+    private final IncludeSourceSpans includeSourceSpans;
 
     private Parser(Builder builder) {
         this.blockParserFactories = DocumentParser.calculateBlockParserFactories(builder.blockParserFactories, builder.enabledBlockTypes);
         this.inlineParserFactory = builder.getInlineParserFactory();
         this.postProcessors = builder.postProcessors;
         this.delimiterProcessors = builder.delimiterProcessors;
+        this.includeSourceSpans = builder.includeSourceSpans;
 
         // Try to construct an inline parser. Invalid configuration might result in an exception, which we want to
         // detect as soon as possible.
         this.inlineParserFactory.create(new InlineParserContextImpl(delimiterProcessors,
-                                                                    Collections.<String, LinkReferenceDefinition>emptyMap()));
+                Collections.<String, LinkReferenceDefinition>emptyMap()));
     }
 
     /**
@@ -99,14 +110,13 @@ public class Parser {
     }
 
     private DocumentParser createDocumentParser() {
-        return new DocumentParser(blockParserFactories, inlineParserFactory, delimiterProcessors);
+        return new DocumentParser(blockParserFactories, inlineParserFactory, delimiterProcessors, includeSourceSpans);
     }
 
     private Node postProcess(Node document) {
         for (PostProcessor postProcessor : postProcessors) {
             document = postProcessor.process(document);
         }
-
         return document;
     }
 
@@ -119,6 +129,7 @@ public class Parser {
         private final List<PostProcessor> postProcessors = new ArrayList<>();
         private Set<Class<? extends Block>> enabledBlockTypes = DocumentParser.getDefaultBlockParserTypes();
         private InlineParserFactory inlineParserFactory;
+        private IncludeSourceSpans includeSourceSpans = IncludeSourceSpans.NONE;
 
         /**
          * @return the configured {@link Parser}
@@ -176,6 +187,19 @@ public class Parser {
                 throw new NullPointerException("enabledBlockTypes must not be null");
             }
             this.enabledBlockTypes = enabledBlockTypes;
+            return this;
+        }
+
+        /**
+         * Whether to calculate {@link me.mattstudios.mfmsg.commonmark.node.SourceSpan} for {@link Node}.
+         * <p>
+         * By default, source spans are disabled.
+         *
+         * @param includeSourceSpans which kind of source spans should be included
+         * @return {@code this}
+         */
+        public Builder includeSourceSpans(IncludeSourceSpans includeSourceSpans) {
+            this.includeSourceSpans = includeSourceSpans;
             return this;
         }
 

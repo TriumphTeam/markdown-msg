@@ -3,6 +3,7 @@ package me.mattstudios.mfmsg.commonmark.internal;
 import me.mattstudios.mfmsg.commonmark.node.Block;
 import me.mattstudios.mfmsg.commonmark.node.LinkReferenceDefinition;
 import me.mattstudios.mfmsg.commonmark.node.Paragraph;
+import me.mattstudios.mfmsg.commonmark.node.SourceSpan;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParser;
 import me.mattstudios.mfmsg.commonmark.parser.block.AbstractBlockParser;
 import me.mattstudios.mfmsg.commonmark.parser.block.BlockContinue;
@@ -13,7 +14,7 @@ import java.util.List;
 public class ParagraphParser extends AbstractBlockParser {
 
     private final Paragraph block = new Paragraph();
-    private LinkReferenceDefinitionParser linkReferenceDefinitionParser = new LinkReferenceDefinitionParser();
+    private final LinkReferenceDefinitionParser linkReferenceDefinitionParser = new LinkReferenceDefinitionParser();
 
     @Override
     public boolean canHaveLazyContinuationLines() {
@@ -40,22 +41,31 @@ public class ParagraphParser extends AbstractBlockParser {
     }
 
     @Override
+    public void addSourceSpan(SourceSpan sourceSpan) {
+        // Some source spans might belong to link reference definitions, others to the paragraph.
+        // The parser will handle that.
+        linkReferenceDefinitionParser.addSourceSpan(sourceSpan);
+    }
+
+    @Override
     public void closeBlock() {
-        if (linkReferenceDefinitionParser.getParagraphContent().length() == 0) {
+        if (linkReferenceDefinitionParser.getParagraphLines().isEmpty()) {
             block.unlink();
+        } else {
+            block.setSourceSpans(linkReferenceDefinitionParser.getParagraphSourceSpans());
         }
     }
 
     @Override
     public void parseInlines(InlineParser inlineParser) {
-        CharSequence content = linkReferenceDefinitionParser.getParagraphContent();
-        if (content.length() > 0) {
-            inlineParser.parse(content.toString(), block);
+        List<CharSequence> lines = linkReferenceDefinitionParser.getParagraphLines();
+        if (!lines.isEmpty()) {
+            inlineParser.parse(lines, block);
         }
     }
 
-    public CharSequence getContentString() {
-        return linkReferenceDefinitionParser.getParagraphContent();
+    public List<CharSequence> getParagraphLines() {
+        return linkReferenceDefinitionParser.getParagraphLines();
     }
 
     public List<LinkReferenceDefinition> getDefinitions() {

@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.commonmark.parser.block;
 
 import me.mattstudios.mfmsg.commonmark.node.Block;
+import me.mattstudios.mfmsg.commonmark.node.SourceSpan;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParser;
 
 public abstract class AbstractBlockParser implements BlockParser {
@@ -22,6 +23,11 @@ public abstract class AbstractBlockParser implements BlockParser {
 
     @Override
     public void addLine(CharSequence line) {
+    }
+
+    @Override
+    public void addSourceSpan(SourceSpan sourceSpan) {
+        getBlock().addSourceSpan(sourceSpan);
     }
 
     @Override

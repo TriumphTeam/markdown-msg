@@ -111,12 +111,6 @@ public class Escaping {
         return replaceAll(ESCAPE_IN_URI, s, URI_REPLACER);
     }
 
-    public static String normalizeReference(String input) {
-        // Strip '[' and ']'
-        String stripped = input.substring(1, input.length() - 1);
-        return normalizeLabelContent(stripped);
-    }
-
     public static String normalizeLabelContent(String input) {
         String lowercase = input.toLowerCase(Locale.ROOT);
         return WHITESPACE.matcher(lowercase).replaceAll(" ");

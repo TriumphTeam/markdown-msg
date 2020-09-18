@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.commonmark.internal;
 
+import me.mattstudios.mfmsg.commonmark.internal.inline.Position;
 import me.mattstudios.mfmsg.commonmark.node.Text;
 
 /**
@@ -8,7 +9,10 @@ import me.mattstudios.mfmsg.commonmark.node.Text;
 public class Bracket {
 
     public final Text node;
-    public final int index;
+    /**
+     * The position of the content (after the opening bracket)
+     */
+    public final Position contentPosition;
     public final boolean image;
 
     /**
@@ -31,17 +35,17 @@ public class Bracket {
      */
     public boolean bracketAfter = false;
 
-    static public Bracket link(Text node, int index, Bracket previous, Delimiter previousDelimiter) {
-        return new Bracket(node, index, previous, previousDelimiter, false);
+    static public Bracket link(Text node, Position contentPosition, Bracket previous, Delimiter previousDelimiter) {
+        return new Bracket(node, contentPosition, previous, previousDelimiter, false);
     }
 
-    static public Bracket image(Text node, int index, Bracket previous, Delimiter previousDelimiter) {
-        return new Bracket(node, index, previous, previousDelimiter, true);
+    static public Bracket image(Text node, Position contentPosition, Bracket previous, Delimiter previousDelimiter) {
+        return new Bracket(node, contentPosition, previous, previousDelimiter, true);
     }
 
-    private Bracket(Text node, int index, Bracket previous, Delimiter previousDelimiter, boolean image) {
+    private Bracket(Text node, Position contentPosition, Bracket previous, Delimiter previousDelimiter, boolean image) {
         this.node = node;
-        this.index = index;
+        this.contentPosition = contentPosition;
         this.image = image;
         this.previous = previous;
         this.previousDelimiter = previousDelimiter;
