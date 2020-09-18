@@ -1,22 +1,11 @@
 
 .idea/
 
-target/
+.gradle/
+build/
 
 *.iml
 
 temp.java.asc
 
 temp.java
-
-src/main/java/me/mattstudios/mfgui/CMD.java
-src/main/java/me/mattstudios/mfgui/Main.java
-src/main/resources/
-
-src/main/java/me/mattstudios/mfmsg/Cmd.java
-
-src/main/java/me/mattstudios/mfmsg/Main.java
-
-src/main/java/me/mattstudios/mfmsg/Plugin.java
-
-src/main/java/me/mattstudios/mfmsg/base/bungee/Test.java

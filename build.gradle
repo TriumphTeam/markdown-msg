@@ -1,0 +1,19 @@
+allprojects {
+    apply plugin: 'java'
+
+    group 'me.mattstudios'
+    version '1.1.5'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+}

@@ -1,0 +1,6 @@
+rootProject.name = 'mf-msg'
+
+include 'msg'
+include 'commonmark'
+include 'plugin-test'
+

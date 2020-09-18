@@ -1,0 +1,9 @@
+group 'me.mattstudios'
+version '1.1.5'
+
+dependencies {
+
+    implementation project(":msg")
+    implementation project(":commonmark")
+
+}

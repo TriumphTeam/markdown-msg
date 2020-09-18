@@ -1,0 +1,24 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+group 'me.mattstudios'
+version '1.1.5'
+
+dependencies {
+
+    implementation project(":commonmark")
+    implementation "org.jetbrains:annotations:17.0.0"
+
+    compileOnly "org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT"
+
+    implementation("com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.15.2") {
+        exclude group: "com.atlassian.commonmark", module: "commonmark"
+    }
+
+}
+
+shadowJar {
+    relocate("org.commonmark", "me.mattstudios.mfmsg.commonmark")
+}
+
