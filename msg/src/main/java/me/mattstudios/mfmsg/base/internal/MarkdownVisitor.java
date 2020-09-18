@@ -2,8 +2,8 @@ package me.mattstudios.mfmsg.base.internal;
 
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
+import me.mattstudios.mfmsg.base.internal.extension.node.Strikethrough;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
-import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import me.mattstudios.mfmsg.commonmark.node.AbstractVisitor;
 import me.mattstudios.mfmsg.commonmark.node.CustomNode;
 import me.mattstudios.mfmsg.commonmark.node.Emphasis;

@@ -1,0 +1,4 @@
+name: MFMSG
+version: @version@
+main: me.mattstudios.mfmsg.TestPlugin
+api-version: 1.13
