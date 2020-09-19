@@ -1,0 +1,36 @@
+package me.mattstudios.mfmsg.commonmark.node.mf;
+
+import me.mattstudios.mfmsg.commonmark.node.Node;
+import me.mattstudios.mfmsg.commonmark.node.Visitor;
+
+public class Rainbow extends Node {
+
+    private float saturation;
+    private float brightness;
+
+    public Rainbow(final float saturation, final float brightness) {
+        this.saturation = saturation;
+        this.brightness = brightness;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    public float getSaturation() {
+        return saturation;
+    }
+
+    public void setSaturation(final float saturation) {
+        this.saturation = saturation;
+    }
+
+    public float getBrightness() {
+        return brightness;
+    }
+
+    public void setBrightness(final float brightness) {
+        this.brightness = brightness;
+    }
+}

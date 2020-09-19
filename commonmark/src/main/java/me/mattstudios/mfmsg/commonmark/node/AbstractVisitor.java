@@ -1,6 +1,8 @@
 package me.mattstudios.mfmsg.commonmark.node;
 
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
+import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
+import me.mattstudios.mfmsg.commonmark.node.mf.Rainbow;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
 
 /**
@@ -26,15 +28,29 @@ public abstract class AbstractVisitor implements Visitor {
         visitChildren(code);
     }
 
+    /* MF NODES START ERE */
+
     @Override
     public void visit(Color color) {
         visitChildren(color);
     }
 
     @Override
+    public void visit(Rainbow rainbow) {
+        visitChildren(rainbow);
+    }
+
+    @Override
+    public void visit(Gradient gradient) {
+        visitChildren(gradient);
+    }
+
+    @Override
     public void visit(Reset reset) {
         visitChildren(reset);
     }
+
+    /* MF NODES END HERE */
 
     @Override
     public void visit(Document document) {

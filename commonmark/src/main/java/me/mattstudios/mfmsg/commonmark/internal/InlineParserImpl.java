@@ -2,6 +2,8 @@ package me.mattstudios.mfmsg.commonmark.internal;
 
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
 import me.mattstudios.mfmsg.commonmark.internal.inline.*;
+import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ClosedColorInlineParser;
+import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ColorInlineParser;
 import me.mattstudios.mfmsg.commonmark.internal.util.Escaping;
 import me.mattstudios.mfmsg.commonmark.internal.util.LinkScanner;
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
@@ -25,7 +27,7 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
     private final BitSet delimiterCharacters;
     private final Map<Character, DelimiterProcessor> delimiterProcessors;
     private final InlineParserContext context;
-    private final Map<Character, List<InlineContentParser>> inlineParsers;
+    private final Map<Character, InlineContentParser> inlineParsers;
 
     private Scanner scanner;
     private int trailingSpaces;
@@ -46,10 +48,10 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
 
         this.context = inlineParserContext;
         this.inlineParsers = new HashMap<>();
-        this.inlineParsers.put('\\', Collections.singletonList(new BackslashInlineParser()));
+        this.inlineParsers.put('\\', new BackslashInlineParser());
         //this.inlineParsers.put('`', Collections.singletonList(new BackticksInlineParser()));
-        this.inlineParsers.put('&', Collections.singletonList(new AndSymbolInlineParser()));
-        //this.inlineParsers.put('<', Arrays.asList(new AutolinkInlineParser(), new HtmlInlineParser()));
+        this.inlineParsers.put('&', new ColorInlineParser());
+        this.inlineParsers.put('<', new ClosedColorInlineParser());
 
         this.delimiterCharacters = calculateDelimiterCharacters(this.delimiterProcessors.keySet());
         this.specialCharacters = calculateSpecialCharacters(delimiterCharacters, inlineParsers.keySet());
@@ -164,18 +166,16 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         }
 
         Position position = scanner.position();
-        List<InlineContentParser> inlineParsers = this.inlineParsers.get(c);
-        if (inlineParsers != null) {
-            for (InlineContentParser inlineParser : inlineParsers) {
-                ParsedInline parsedInline = inlineParser.tryParse(this);
-                if (parsedInline instanceof ParsedInlineImpl) {
-                    ParsedInlineImpl parsedInlineImpl = (ParsedInlineImpl) parsedInline;
-                    scanner.setPosition(parsedInlineImpl.getPosition());
-                    return parsedInlineImpl.getNode();
-                } else {
-                    // Reset position
-                    scanner.setPosition(position);
-                }
+        InlineContentParser inlineParser = this.inlineParsers.get(c);
+        if (inlineParser != null) {
+            ParsedInline parsedInline = inlineParser.tryParse(this);
+            if (parsedInline instanceof ParsedInlineImpl) {
+                ParsedInlineImpl parsedInlineImpl = (ParsedInlineImpl) parsedInline;
+                scanner.setPosition(parsedInlineImpl.getPosition());
+                return parsedInlineImpl.getNode();
+            } else {
+                // Reset position
+                scanner.setPosition(position);
             }
         }
 
