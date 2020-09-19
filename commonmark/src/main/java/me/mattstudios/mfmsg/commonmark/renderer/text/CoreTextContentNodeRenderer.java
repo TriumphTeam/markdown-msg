@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.commonmark.renderer.text;
 
 import me.mattstudios.mfmsg.commonmark.node.*;
+import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.renderer.NodeRenderer;
 import me.mattstudios.mfmsg.commonmark.internal.renderer.text.BulletListHolder;
 import me.mattstudios.mfmsg.commonmark.internal.renderer.text.ListHolder;
@@ -91,6 +92,11 @@ public class CoreTextContentNodeRenderer extends AbstractVisitor implements Node
         textContent.write('\"');
         textContent.write(code.getLiteral());
         textContent.write('\"');
+    }
+
+    @Override
+    public void visit(final Color color) {
+
     }
 
     @Override

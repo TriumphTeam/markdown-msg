@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.commonmark.renderer.html;
 
 import me.mattstudios.mfmsg.commonmark.node.*;
+import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.renderer.NodeRenderer;
 
 import java.util.*;
@@ -225,6 +226,11 @@ public class CoreHtmlNodeRenderer extends AbstractVisitor implements NodeRendere
     }
 
     @Override
+    public void visit(final Color color) {
+
+    }
+
+    @Override
     public void visit(HtmlInline htmlInline) {
         if (context.shouldEscapeHtml()) {
             html.text(htmlInline.getLiteral());
@@ -310,6 +316,11 @@ public class CoreHtmlNodeRenderer extends AbstractVisitor implements NodeRendere
         @Override
         public void visit(SoftLineBreak softLineBreak) {
             sb.append('\n');
+        }
+
+        @Override
+        public void visit(final Color color) {
+
         }
 
         @Override

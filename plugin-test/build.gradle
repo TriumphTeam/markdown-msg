@@ -14,3 +14,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
 }
+
+shadowJar {
+    destinationDir file("C:/Users/xpsyk/Desktop/servers/paper-1.16/plugins")
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}

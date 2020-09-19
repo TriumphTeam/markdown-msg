@@ -1,2 +1,6 @@
 group 'me.mattstudios'
 version '1.1.5'
+
+dependencies {
+    implementation "org.jetbrains:annotations:17.0.0"
+}

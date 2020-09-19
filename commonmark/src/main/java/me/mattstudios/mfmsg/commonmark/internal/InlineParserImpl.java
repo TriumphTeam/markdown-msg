@@ -46,10 +46,10 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
 
         this.context = inlineParserContext;
         this.inlineParsers = new HashMap<>();
-        this.inlineParsers.put('\\', Collections.<InlineContentParser>singletonList(new BackslashInlineParser()));
-        this.inlineParsers.put('`', Collections.<InlineContentParser>singletonList(new BackticksInlineParser()));
-        this.inlineParsers.put('&', Collections.<InlineContentParser>singletonList(new EntityInlineParser()));
-        this.inlineParsers.put('<', Arrays.asList(new AutolinkInlineParser(), new HtmlInlineParser()));
+        this.inlineParsers.put('\\', Collections.singletonList(new BackslashInlineParser()));
+        //this.inlineParsers.put('`', Collections.singletonList(new BackticksInlineParser()));
+        this.inlineParsers.put('&', Collections.singletonList(new AndSymbolInlineParser()));
+        //this.inlineParsers.put('<', Arrays.asList(new AutolinkInlineParser(), new HtmlInlineParser()));
 
         this.delimiterCharacters = calculateDelimiterCharacters(this.delimiterProcessors.keySet());
         this.specialCharacters = calculateSpecialCharacters(delimiterCharacters, inlineParsers.keySet());
@@ -71,14 +71,14 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         }
         bitSet.set('[');
         bitSet.set(']');
-        bitSet.set('!');
+        //bitSet.set('!');
         bitSet.set('\n');
         return bitSet;
     }
 
     public static Map<Character, DelimiterProcessor> calculateDelimiterProcessors(List<DelimiterProcessor> delimiterProcessors) {
         Map<Character, DelimiterProcessor> map = new HashMap<>();
-        addDelimiterProcessors(Arrays.<DelimiterProcessor>asList(new AsteriskDelimiterProcessor(), new UnderscoreDelimiterProcessor()), map);
+        addDelimiterProcessors(Arrays.asList(new AsteriskDelimiterProcessor(), new UnderscoreDelimiterProcessor()), map);
         addDelimiterProcessors(delimiterProcessors, map);
         return map;
     }
@@ -182,8 +182,8 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         switch (c) {
             case '[':
                 return parseOpenBracket();
-            case '!':
-                return parseBang();
+            /*case '!':
+                return parseBang();*/
             case ']':
                 return parseCloseBracket();
             case '\n':
@@ -522,6 +522,7 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         boolean canOpen;
         boolean canClose;
 
+        // Changed here to allow the syntax `He__llo__`
         canOpen = leftFlanking && delimiterChar == delimiterProcessor.getOpeningCharacter();
         canClose = rightFlanking && delimiterChar == delimiterProcessor.getClosingCharacter();
 

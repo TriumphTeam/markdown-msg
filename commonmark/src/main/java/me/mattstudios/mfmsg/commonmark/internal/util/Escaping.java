@@ -68,7 +68,7 @@ public class Escaping {
             char c = input.charAt(i);
             String replacement;
             switch (c) {
-                case '&':
+                /*case '&':
                     replacement = "&amp;";
                     break;
                 case '<':
@@ -76,7 +76,7 @@ public class Escaping {
                     break;
                 case '>':
                     replacement = "&gt;";
-                    break;
+                    break;*/
                 case '\"':
                     replacement = "&quot;";
                     break;

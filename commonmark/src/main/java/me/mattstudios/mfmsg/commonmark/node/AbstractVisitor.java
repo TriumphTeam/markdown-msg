@@ -1,5 +1,8 @@
 package me.mattstudios.mfmsg.commonmark.node;
 
+import me.mattstudios.mfmsg.commonmark.node.mf.Color;
+import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
+
 /**
  * Abstract visitor that visits all children by default.
  * <p>
@@ -21,6 +24,16 @@ public abstract class AbstractVisitor implements Visitor {
     @Override
     public void visit(Code code) {
         visitChildren(code);
+    }
+
+    @Override
+    public void visit(Color color) {
+        visitChildren(color);
+    }
+
+    @Override
+    public void visit(Reset reset) {
+        visitChildren(reset);
     }
 
     @Override

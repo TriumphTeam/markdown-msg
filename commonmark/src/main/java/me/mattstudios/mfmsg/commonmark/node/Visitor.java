@@ -1,5 +1,8 @@
 package me.mattstudios.mfmsg.commonmark.node;
 
+import me.mattstudios.mfmsg.commonmark.node.mf.Color;
+import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
+
 /**
  * Node visitor.
  * <p>
@@ -12,6 +15,10 @@ public interface Visitor {
     void visit(BulletList bulletList);
 
     void visit(Code code);
+
+    void visit(Color color);
+
+    void visit(Reset reset);
 
     void visit(Document document);
 

@@ -8,7 +8,7 @@ import me.mattstudios.mfmsg.base.internal.color.handler.ColorMapping;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.color.handler.RainbowHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
-import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,20 +40,20 @@ public final class StringSerializer {
     }
 
     @NotNull
-    private static String convertLine(@NotNull final List<MessagePart> parts) {
+    private static String convertLine(@NotNull final List<MessageNode> parts) {
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < parts.size(); i++) {
-            final MessagePart part = parts.get(i);
+            final MessageNode part = parts.get(i);
 
             final MessageColor color = part.getColor();
 
             if (color instanceof Gradient) {
-                final List<MessagePart> gradientParts = new ArrayList<>();
+                final List<MessageNode> gradientParts = new ArrayList<>();
                 final Gradient gradient = (Gradient) color;
                 gradientParts.add(part);
 
                 while (i + 1 < parts.size()) {
-                    final MessagePart newPart = parts.get(i + 1);
+                    final MessageNode newPart = parts.get(i + 1);
                     if (!color.equals(newPart.getColor())) break;
 
                     gradientParts.add(newPart);
@@ -65,12 +65,12 @@ public final class StringSerializer {
             }
 
             if (color instanceof Rainbow) {
-                final List<MessagePart> rainbowParts = new ArrayList<>();
+                final List<MessageNode> rainbowParts = new ArrayList<>();
                 final Rainbow rainbow = (Rainbow) color;
                 rainbowParts.add(part);
 
                 while (i + 1 < parts.size()) {
-                    final MessagePart newPart = parts.get(i + 1);
+                    final MessageNode newPart = parts.get(i + 1);
                     if (!color.equals(newPart.getColor())) break;
 
                     rainbowParts.add(newPart);
@@ -111,14 +111,14 @@ public final class StringSerializer {
     }
 
     @NotNull
-    public static String toGradient(@NotNull final List<MessagePart> parts, @NotNull final Gradient gradient) {
+    public static String toGradient(@NotNull final List<MessageNode> parts, @NotNull final Gradient gradient) {
         final StringBuilder stringBuilder = new StringBuilder();
         final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
         final List<Color> colors = gradient.getColors();
 
         final GradientHandler gradientHandler = new GradientHandler(colors, length);
 
-        for (final MessagePart part : parts) {
+        for (final MessageNode part : parts) {
             for (char character : part.getText().toCharArray()) {
                 stringBuilder.append(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated()));
             }
@@ -128,13 +128,13 @@ public final class StringSerializer {
     }
 
     @NotNull
-    private static String toRainbow(@NotNull final List<MessagePart> parts, @NotNull final Rainbow rainbow) {
+    private static String toRainbow(@NotNull final List<MessageNode> parts, @NotNull final Rainbow rainbow) {
         final StringBuilder stringBuilder = new StringBuilder();
         final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
 
         final RainbowHandler rainbowHandler = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
 
-        for (final MessagePart part : parts) {
+        for (final MessageNode part : parts) {
             for (char character : part.getText().toCharArray()) {
                 stringBuilder.append(serializePart(String.valueOf(character), rainbowHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated()));
             }

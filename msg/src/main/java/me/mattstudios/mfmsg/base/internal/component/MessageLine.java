@@ -10,24 +10,24 @@ import java.util.List;
 public final class MessageLine {
 
     @NotNull
-    private final List<MessagePart> parts;
+    private final List<MessageNode> parts;
 
     /**
      * Main constructor to add all the parts
      *
-     * @param parts The {@link MessagePart}s to add to the line
+     * @param parts The {@link MessageNode}s to add to the line
      */
-    public MessageLine(@NotNull final List<MessagePart> parts) {
+    public MessageLine(@NotNull final List<MessageNode> parts) {
         this.parts = parts;
     }
 
     /**
      * Gets all the parts in the current line
      *
-     * @return The {@link MessagePart}s of the line
+     * @return The {@link MessageNode}s of the line
      */
     @NotNull
-    public List<MessagePart> getParts() {
+    public List<MessageNode> getParts() {
         return parts;
     }
 

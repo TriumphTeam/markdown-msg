@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Stores all the information about each message part
+ * Stores all the information about each message node
  */
-public final class MessagePart {
+public final class MessageNode {
 
     @NotNull
     private final String text;
@@ -38,7 +38,7 @@ public final class MessagePart {
      * @param obfuscated Whether or not the text is to be obfuscated
      * @param actions    The list with all the actions
      */
-    public MessagePart(@NotNull String text, @NotNull final MessageColor color, boolean bold, boolean italic, boolean strike, boolean underlined, boolean obfuscated, @NotNull final List<Action> actions) {
+    public MessageNode(@NotNull String text, @NotNull final MessageColor color, boolean bold, boolean italic, boolean strike, boolean underlined, boolean obfuscated, @NotNull final List<Action> actions) {
         this.text = text;
         this.color = color;
         this.bold = bold;

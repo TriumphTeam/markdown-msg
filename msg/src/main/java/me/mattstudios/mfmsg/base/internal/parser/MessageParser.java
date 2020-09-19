@@ -9,7 +9,8 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
-import me.mattstudios.mfmsg.base.internal.component.MessagePart;
+import me.mattstudios.mfmsg.base.internal.component.MessageNode;
+import me.mattstudios.mfmsg.base.internal.extension.KeywordExtension;
 import me.mattstudios.mfmsg.base.internal.extension.ObfuscatedExtension;
 import me.mattstudios.mfmsg.base.internal.extension.StrikethroughExtension;
 import me.mattstudios.mfmsg.base.internal.extension.UnderlineExtension;
@@ -35,7 +36,15 @@ import java.util.regex.Matcher;
 public final class MessageParser {
 
     // The parser that'll be used with the strikethrough, underline, obfuscated extensions
-    private static final Parser PARSER = Parser.builder().extensions(Arrays.asList(StrikethroughExtension.create(), UnderlineExtension.create(), ObfuscatedExtension.create())).build();
+    private final Parser PARSER = Parser.builder()
+            .extensions(
+                    Arrays.asList(
+                            StrikethroughExtension.create(),
+                            UnderlineExtension.create(),
+                            ObfuscatedExtension.create(),
+                            KeywordExtension.create()
+                    )
+            ).build();
 
     // List of all the generated tokens
     @NotNull
@@ -47,7 +56,7 @@ public final class MessageParser {
     private final MessageColor defaultColor;
 
     @NotNull
-    private final List<MessagePart> parts = new ArrayList<>();
+    private final List<MessageNode> parts = new ArrayList<>();
 
     @NotNull
     private final Appender appender;
@@ -163,7 +172,7 @@ public final class MessageParser {
         // Adds the click and hover events
         appender.addActions(actions);
         visit(PARSER.parse(token.getActionText()));
-        final List<MessagePart> parts = appender.build();
+        final List<MessageNode> parts = appender.build();
         if (parts.isEmpty()) return;
         this.parts.addAll(parts);
     }
@@ -173,7 +182,7 @@ public final class MessageParser {
      *
      * @return The list of all the parsed parts
      */
-    public List<MessagePart> build() {
+    public List<MessageNode> build() {
         return parts;
     }
 

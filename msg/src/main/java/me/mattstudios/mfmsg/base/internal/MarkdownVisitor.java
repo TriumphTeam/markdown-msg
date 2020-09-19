@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.base.internal;
 
 import me.mattstudios.mfmsg.base.internal.component.Appender;
+import me.mattstudios.mfmsg.base.internal.extension.node.KeywordNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Strikethrough;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
@@ -104,14 +105,22 @@ public final class MarkdownVisitor extends AbstractVisitor {
             return;
         }
 
-        if (!(customNode instanceof Strikethrough)) return;
-        if (!formats.contains(Format.STRIKETHROUGH)) {
+        if (customNode instanceof Strikethrough) {
+            if (!formats.contains(Format.STRIKETHROUGH)) {
+                visitChildren(customNode);
+                return;
+            }
+
+            strike = true;
             visitChildren(customNode);
-            return;
+            strike = false;
         }
-        strike = true;
-        visitChildren(customNode);
-        strike = false;
+
+        if (customNode instanceof KeywordNode) {
+            System.out.println(customNode);
+            visitChildren(customNode);
+        }
+
     }
 
     /**

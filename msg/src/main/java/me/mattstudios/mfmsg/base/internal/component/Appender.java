@@ -35,6 +35,6 @@ public interface Appender {
      * @return The list of message parts
      */
     @NotNull
-    List<MessagePart> build();
+    List<MessageNode> build();
 
 }
