@@ -41,9 +41,8 @@ public final class ActionScanner {
             if (c == ':') {
                 type = builder.toString();
 
-                if (!ACTIONS.contains(type)) {
+                if (!ACTIONS.contains(type.toUpperCase())) {
                     return actions;
-                    // TODO THIS TOMORROW
                 }
 
                 builder.setLength(0);
@@ -53,7 +52,8 @@ public final class ActionScanner {
 
             if (c == '|') {
                 if (type != null && builder.length() != 0) {
-                    actions.put(type, builder.toString());
+                    // Trims the first space if has it
+                    actions.put(type, builder.toString().trim());
                     type = null;
                 }
 
@@ -75,10 +75,8 @@ public final class ActionScanner {
                 if (parens == 0) {
                     if (type != null && builder.length() != 0) {
                         actions.put(type, builder.toString());
-                        type = null;
                     }
-                    //actions.add(builder.toString());
-                    break;
+                    return actions;
                 }
 
                 parens--;
@@ -94,7 +92,7 @@ public final class ActionScanner {
 
         System.out.println(actions);
 
-        return "";
+        return actions;
     }
 
 }

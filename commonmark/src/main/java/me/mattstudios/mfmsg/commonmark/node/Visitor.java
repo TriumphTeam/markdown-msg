@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.commonmark.node;
 
+import me.mattstudios.mfmsg.commonmark.node.mf.Action;
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
 import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
@@ -28,6 +29,8 @@ public interface Visitor {
     void visit(Rainbow rainbow);
 
     void visit(Gradient gradient);
+
+    void visit(Action action);
 
     void visit(LineBreak lineBreak);
 

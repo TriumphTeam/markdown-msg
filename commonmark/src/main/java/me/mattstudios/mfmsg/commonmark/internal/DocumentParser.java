@@ -116,9 +116,8 @@ public class DocumentParser implements ParserState {
     }
 
     public static List<BlockParserFactory> calculateBlockParserFactories(List<BlockParserFactory> customBlockParserFactories, Set<Class<? extends Block>> enabledBlockTypes) {
-        List<BlockParserFactory> list = new ArrayList<>();
         // By having the custom factories come first, extensions are able to change behavior of core syntax.
-        list.addAll(customBlockParserFactories);
+        List<BlockParserFactory> list = new ArrayList<>(customBlockParserFactories);
         for (Class<? extends Block> blockType : enabledBlockTypes) {
             list.add(NODES_TO_CORE_FACTORIES.get(blockType));
         }
@@ -130,17 +129,8 @@ public class DocumentParser implements ParserState {
      */
     public Document parse(String input) {
         int lineStart = 0;
-        int lineBreak;
-        while ((lineBreak = Parsing.findLineBreak(input, lineStart)) != -1) {
-            String line = input.substring(lineStart, lineBreak);
-            incorporateLine(line);
-            if (lineBreak + 1 < input.length() && input.charAt(lineBreak) == '\r' && input.charAt(lineBreak + 1) == '\n') {
-                lineStart = lineBreak + 2;
-            } else {
-                lineStart = lineBreak + 1;
-            }
-        }
-        if (input.length() > 0 && (lineStart == 0 || lineStart < input.length())) {
+
+        if (input.length() > 0) {
             String line = input.substring(lineStart);
             incorporateLine(line);
         }

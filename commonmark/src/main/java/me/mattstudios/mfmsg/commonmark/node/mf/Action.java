@@ -2,25 +2,25 @@ package me.mattstudios.mfmsg.commonmark.node.mf;
 
 import me.mattstudios.mfmsg.commonmark.node.Node;
 import me.mattstudios.mfmsg.commonmark.node.Visitor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class Action extends Node {
 
-    private String literal;
+    private Map<String, String> actions;
 
-    public Action(String literal) {
-        this.literal = literal;
+    public Action(@NotNull Map<String, String> actions) {
+        this.actions = actions;
     }
 
     @Override
     public void accept(Visitor visitor) {
-        //visitor.visit(this);
+        visitor.visit(this);
     }
 
-    public String getLiteral() {
-        return literal;
-    }
 
-    public void setLiteral(String literal) {
-        this.literal = literal;
+    public Map<String, String> getActions() {
+        return actions;
     }
 }

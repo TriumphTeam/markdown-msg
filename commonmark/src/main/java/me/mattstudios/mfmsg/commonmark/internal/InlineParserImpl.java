@@ -1,19 +1,33 @@
 package me.mattstudios.mfmsg.commonmark.internal;
 
+import me.mattstudios.mfmsg.commonmark.internal.inline.AsteriskDelimiterProcessor;
+import me.mattstudios.mfmsg.commonmark.internal.inline.BackslashInlineParser;
+import me.mattstudios.mfmsg.commonmark.internal.inline.InlineContentParser;
+import me.mattstudios.mfmsg.commonmark.internal.inline.InlineParserState;
+import me.mattstudios.mfmsg.commonmark.internal.inline.ParsedInline;
+import me.mattstudios.mfmsg.commonmark.internal.inline.ParsedInlineImpl;
+import me.mattstudios.mfmsg.commonmark.internal.inline.Position;
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
-import me.mattstudios.mfmsg.commonmark.internal.inline.*;
+import me.mattstudios.mfmsg.commonmark.internal.inline.UnderscoreDelimiterProcessor;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ActionScanner;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ClosedColorInlineParser;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ColorInlineParser;
-import me.mattstudios.mfmsg.commonmark.internal.util.Escaping;
-import me.mattstudios.mfmsg.commonmark.internal.util.LinkScanner;
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
-import me.mattstudios.mfmsg.commonmark.node.*;
+import me.mattstudios.mfmsg.commonmark.node.HardLineBreak;
+import me.mattstudios.mfmsg.commonmark.node.Node;
+import me.mattstudios.mfmsg.commonmark.node.SoftLineBreak;
+import me.mattstudios.mfmsg.commonmark.node.Text;
+import me.mattstudios.mfmsg.commonmark.node.mf.Action;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParser;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParserContext;
 import me.mattstudios.mfmsg.commonmark.parser.delimiter.DelimiterProcessor;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class InlineParserImpl implements InlineParser, InlineParserState {
@@ -73,7 +87,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         }
         bitSet.set('[');
         bitSet.set(']');
-        bitSet.set('\n');
         return bitSet;
     }
 
@@ -183,8 +196,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
                 return parseOpenBracket();
             case ']':
                 return parseCloseBracket();
-            case '\n':
-                return parseLineBreak();
         }
 
         boolean isDelimiter = delimiterCharacters.get(c);
@@ -263,7 +274,7 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         scanner.next();
         Position afterClose = scanner.position();
 
-        // Get previous `[` or `![`
+        // Get previous `[`
         Bracket opener = lastBracket;
         if (opener == null) {
             // No matching opener, just return a literal.
@@ -277,76 +288,41 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         }
 
         // Check to see if we have a link/image
-        String dest = null;
-        String title = null;
+        Map<String, String> actions = null;
 
-        // Maybe a inline link like `[foo](/uri "title")`
+        // Maybe a inline link like `[foo](hover: Test)`
         if (scanner.next('(')) {
             scanner.whitespace();
 
-            dest = parseAction(scanner);
+            actions = ActionScanner.scanAction(scanner);
 
-            if (dest.isEmpty()) {
+            if (actions.isEmpty()) {
                 scanner.setPosition(afterClose);
             } else {
-                int whitespace = scanner.whitespace();
-                // title needs a whitespace before
-                if (whitespace >= 1) {
-                    title = parseLinkTitle(scanner);
-                    scanner.whitespace();
-                }
+
                 if (!scanner.next(')')) {
                     // Don't have a closing `)`, so it's not a destination and title -> reset.
                     // Note that something like `[foo](` could be valid, `(` will just be text.
                     scanner.setPosition(afterClose);
-                    dest = null;
-                    title = null;
+                    actions = null;
                 }
             }
         }
 
-        //System.out.println(dest);
-
-        // Maybe a reference link like `[foo][bar]`, `[foo][]` or `[foo]`.
-        // Note that even `[foo](` could be a valid link if there's a reference, which is why this is not just an `else`
-        // here.
-        if (dest == null) {
-            // See if there's a link label like `[bar]` or `[]`
-            String ref = parseLinkLabel(scanner);
-            if (ref == null) {
-                scanner.setPosition(afterClose);
-            }
-            if ((ref == null || ref.isEmpty()) && !opener.bracketAfter) {
-                // If the second label is empty `[foo][]` or missing `[foo]`, then the first label is the reference.
-                // But it can only be a reference when there's no (unescaped) bracket in it.
-                // If there is, we don't even need to try to look up the reference. This is an optimization.
-                ref = scanner.textBetween(opener.contentPosition, beforeClose).toString();
-            }
-
-            if (ref != null) {
-                String label = Escaping.normalizeLabelContent(ref);
-                LinkReferenceDefinition definition = context.getLinkReferenceDefinition(label);
-                if (definition != null) {
-                    dest = definition.getDestination();
-                    title = definition.getTitle();
-                }
-            }
-        }
-
-        if (dest != null) {
+        if (actions != null && !actions.isEmpty()) {
             // If we got here, open is a potential opener
-            Node linkOrImage = opener.image ? new Image(dest, title) : new Link(dest, title);
+            Node action = new Action(actions);
 
             Node node = opener.node.getNext();
             while (node != null) {
                 Node next = node.getNext();
-                linkOrImage.appendChild(node);
+                action.appendChild(node);
                 node = next;
             }
 
             // Process delimiters such as emphasis inside link/image
             processDelimiters(opener.previousDelimiter);
-            mergeChildTextNodes(linkOrImage);
+            mergeChildTextNodes(action);
             // We don't need the corresponding text node anymore, we turned it into a link/image node
             opener.node.unlink();
             removeLastBracket();
@@ -363,7 +339,7 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
                 }
             }
 
-            return linkOrImage;
+            return action;
 
         } else {
             // No link or image, parse just the bracket as text and continue
@@ -383,53 +359,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
 
     private void removeLastBracket() {
         lastBracket = lastBracket.previous;
-    }
-
-
-    private String parseAction(Scanner scanner) {
-        return ActionScanner.scanAction(scanner);
-    }
-
-    /**
-     * Attempt to parse link title (sans quotes), returning the string or null if no match.
-     */
-    private String parseLinkTitle(Scanner scanner) {
-        Position start = scanner.position();
-        if (!LinkScanner.scanLinkTitle(scanner)) {
-            return null;
-        }
-
-        // chop off ', " or parens
-        CharSequence rawTitle = scanner.textBetween(start, scanner.position());
-        String title = rawTitle.subSequence(1, rawTitle.length() - 1).toString();
-        return Escaping.unescapeString(title);
-    }
-
-    /**
-     * Attempt to parse a link label, returning the label between the brackets or null.
-     */
-    String parseLinkLabel(Scanner scanner) {
-        if (!scanner.next('[')) {
-            return null;
-        }
-
-        Position start = scanner.position();
-        if (!LinkScanner.scanLinkLabelContent(scanner)) {
-            return null;
-        }
-        Position end = scanner.position();
-
-        if (!scanner.next(']')) {
-            return null;
-        }
-
-        String content = scanner.textBetween(start, end).toString();
-        // spec: A link label can have at most 999 characters inside the square brackets.
-        if (content.length() > 999) {
-            return null;
-        }
-
-        return content;
     }
 
     private Node parseLineBreak() {

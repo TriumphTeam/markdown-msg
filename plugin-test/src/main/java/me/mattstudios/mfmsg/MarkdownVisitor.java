@@ -2,6 +2,8 @@ package me.mattstudios.mfmsg;
 
 import me.mattstudios.mfmsg.commonmark.node.AbstractVisitor;
 import me.mattstudios.mfmsg.commonmark.node.Node;
+import me.mattstudios.mfmsg.commonmark.node.Text;
+import me.mattstudios.mfmsg.commonmark.node.mf.Action;
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
 import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
@@ -41,6 +43,18 @@ public final class MarkdownVisitor extends AbstractVisitor {
     public void visit(final Gradient gradient) {
         System.out.println(gradient.getHexes());
         visitChildren(gradient);
+    }
+
+    @Override
+    public void visit(final Action action) {
+        System.out.println(action.getActions());
+        visitChildren(action);
+    }
+
+    @Override
+    public void visit(final Text text) {
+        System.out.println(text.getLiteral());
+        visitChildren(text);
     }
 
     @Override

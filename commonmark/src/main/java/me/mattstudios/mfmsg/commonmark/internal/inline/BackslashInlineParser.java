@@ -21,7 +21,8 @@ public class BackslashInlineParser implements InlineContentParser {
         scanner.next();
 
         char next = scanner.peek();
-        if (next == '\n') {
+        //System.out.println(next);
+        if (next == 'n') {
             scanner.next();
             return ParsedInline.of(new LineBreak(), scanner.position());
         } else if (ESCAPABLE.matcher(String.valueOf(next)).matches()) {
