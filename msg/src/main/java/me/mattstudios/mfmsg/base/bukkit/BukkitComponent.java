@@ -97,6 +97,7 @@ public final class BukkitComponent implements MessageComponent {
         return JsonSerializer.toString(nodes);
     }
 
+
     @Override
     @NotNull
     public List<MessageNode> getMessageLines() {

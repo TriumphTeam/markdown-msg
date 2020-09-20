@@ -17,6 +17,7 @@ import me.mattstudios.mfmsg.base.internal.component.BasicNode;
 import me.mattstudios.mfmsg.base.internal.component.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -33,79 +34,94 @@ public final class JsonSerializer {
 
     private JsonSerializer() {}
 
+    public static String toString(@NotNull final List<MessageNode> nodeList) {
+        return GSON.toJson(toJson(nodeList));
+    }
+
+
     @NotNull
-    public static String toString(@NotNull final List<MessageNode> nodes) {
+    public static JsonArray toJson(@NotNull final List<MessageNode> nodeList) {
         final JsonArray jsonArray = new JsonArray();
         jsonArray.add("");
 
-        for (int i = 0; i < nodes.size(); i++) {
-            final MessageNode node = nodes.get(i);
+        final NodeScanner nodeScanner = new NodeScanner(nodeList);
 
-            if (node instanceof LineBreakNode) {
+        while (nodeScanner.hasNext()) {
+            nodeScanner.next();
+
+            final MessageNode messageNode = nodeScanner.peek();
+            System.out.println(messageNode.toString());
+            if (messageNode instanceof LineBreakNode) {
                 jsonArray.add("\n");
                 continue;
             }
 
-            final BasicNode basicNode = (BasicNode) node;
+            final BasicNode node = (BasicNode) messageNode;
 
-            final MessageColor color = basicNode.getColor();
+            final MessageColor color = node.getColor();
 
             if (color instanceof Gradient) {
-                final List<BasicNode> gradientParts = new ArrayList<>();
+                final List<MessageNode> gradientNodes = new ArrayList<>();
                 final Gradient gradient = (Gradient) color;
-                gradientParts.add(basicNode);
+                gradientNodes.add(node);
 
-                while (i + 1 < nodes.size()) {
-                    if (nodes.get(i + 1) instanceof LineBreakNode) {
-                        i++;
-                        continue;
-                    }
+                getColoredNodes(nodeScanner, gradientNodes, color);
 
-                    final BasicNode newPart = (BasicNode) nodes.get(i + 1);
-                    if (!color.equals(newPart.getColor())) break;
-
-                    gradientParts.add(newPart);
-                    i++;
-                }
-
-                jsonArray.addAll(toGradient(gradientParts, gradient));
+                jsonArray.addAll(toGradient(gradientNodes, gradient));
                 continue;
             }
 
             if (color instanceof Rainbow) {
-                final List<BasicNode> rainbowParts = new ArrayList<>();
+                final List<MessageNode> rainbowNodes = new ArrayList<>();
                 final Rainbow rainbow = (Rainbow) color;
-                rainbowParts.add(basicNode);
+                rainbowNodes.add(node);
 
-                while (i + 1 < nodes.size()) {
-                    System.out.println("Hello?");
-                    if (nodes.get(i + 1) instanceof LineBreakNode) {
-                        i++;
-                        continue;
-                    }
-                    System.out.println("passed?");
-                    final BasicNode newPart = (BasicNode) nodes.get(i + 1);
-                    if (!color.equals(newPart.getColor())) break;
+                getColoredNodes(nodeScanner, rainbowNodes, color);
 
-                    rainbowParts.add(newPart);
-                    i++;
-                }
-
-                jsonArray.addAll(toRainbow(rainbowParts, rainbow));
+                jsonArray.addAll(toRainbow(rainbowNodes, rainbow));
                 continue;
             }
 
-            String colorString = null;
-            if (color != null) colorString = ((FlatColor) color).getColor();
+            jsonArray.add(
+                    renderNode(
+                            node.getText(),
+                            ((FlatColor) color).getColor(),
+                            node.isBold(),
+                            node.isItalic(),
+                            node.isStrike(),
+                            node.isUnderlined(),
+                            node.isObfuscated(),
+                            node.getActions()
+                    )
+            );
 
-            jsonArray.add(serializePart(basicNode.getText(), colorString, basicNode.isBold(), basicNode.isItalic(), basicNode.isStrike(), basicNode.isUnderlined(), basicNode.isObfuscated(), basicNode.getActions()));
         }
 
-        return  GSON.toJson(jsonArray);
+        return jsonArray;
     }
 
-    @NotNull
-    public static JsonObject serializePart(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @NotNull final List<MessageAction> messageActions) {
+    private static void getColoredNodes(final NodeScanner nodeScanner, final List<MessageNode> nodes, final MessageColor color) {
+        while (nodeScanner.hasNext()) {
+            nodeScanner.next();
+
+            final MessageNode nextNode = nodeScanner.peek();
+
+            if (nextNode instanceof LineBreakNode) {
+                nodes.add(nextNode);
+                continue;
+            }
+
+            final BasicNode basicNode = (BasicNode) nextNode;
+            if (!color.equals(basicNode.getColor())) {
+                nodeScanner.previous();
+                break;
+            }
+
+            nodes.add(basicNode);
+        }
+    }
+
+    private static JsonObject renderNode(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @Nullable final List<MessageAction> actions) {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);
 
@@ -117,16 +133,16 @@ public final class JsonSerializer {
 
         jsonObject.addProperty("color", color);
 
-        if (messageActions == null || messageActions.isEmpty()) return jsonObject;
+        if (actions == null || actions.isEmpty()) return jsonObject;
 
-        for (final MessageAction messageAction : messageActions) {
+        for (final MessageAction messageAction : actions) {
             if (messageAction instanceof HoverMessageAction) {
                 final JsonObject hoverObject = new JsonObject();
                 hoverObject.addProperty("action", "show_text");
                 if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
-                    //hoverObject.add("value", toJson(((HoverMessageAction) messageAction).getLines()));
+                    hoverObject.add("value", toJson(((HoverMessageAction) messageAction).getNodes()));
                 } else {
-                    //hoverObject.add("contents", toJson(((HoverMessageAction) messageAction).getLines()));
+                    hoverObject.add("contents", toJson(((HoverMessageAction) messageAction).getNodes()));
                 }
                 jsonObject.add("hoverEvent", hoverObject);
                 continue;
@@ -156,16 +172,39 @@ public final class JsonSerializer {
     }
 
     @NotNull
-    private static JsonArray toGradient(@NotNull final List<BasicNode> parts, @NotNull final Gradient gradient) {
+    private static JsonArray toGradient(@NotNull final List<MessageNode> parts, @NotNull final Gradient gradient) {
         final JsonArray jsonArray = new JsonArray();
-        final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
+
+        final int length = parts.stream().
+                filter(BasicNode.class::isInstance)
+                .mapToInt(part -> ((BasicNode) part).getText().length())
+                .sum();
+
         final List<Color> colors = gradient.getColors();
 
         final GradientHandler gradientHandler = new GradientHandler(colors, length);
 
-        for (final BasicNode part : parts) {
-            for (char character : part.getText().toCharArray()) {
-                jsonArray.add(serializePart(String.valueOf(character), gradientHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated(), part.getActions()));
+        for (final MessageNode node : parts) {
+            if (node instanceof LineBreakNode) {
+                jsonArray.add("\n");
+                continue;
+            }
+
+            final BasicNode basicNode = (BasicNode) node;
+
+            for (char character : basicNode.getText().toCharArray()) {
+                jsonArray.add(
+                        renderNode(
+                                String.valueOf(character),
+                                gradientHandler.next(),
+                                basicNode.isBold(),
+                                basicNode.isItalic(),
+                                basicNode.isStrike(),
+                                basicNode.isUnderlined(),
+                                basicNode.isObfuscated(),
+                                basicNode.getActions()
+                        )
+                );
             }
         }
 
@@ -173,15 +212,36 @@ public final class JsonSerializer {
     }
 
     @NotNull
-    private static JsonArray toRainbow(@NotNull final List<BasicNode> parts, @NotNull final Rainbow rainbow) {
+    private static JsonArray toRainbow(@NotNull final List<MessageNode> parts, @NotNull final Rainbow rainbow) {
         final JsonArray jsonArray = new JsonArray();
-        final int length = parts.stream().mapToInt(part -> part.getText().length()).sum();
+
+        final int length = parts.stream().
+                filter(BasicNode.class::isInstance)
+                .mapToInt(part -> ((BasicNode) part).getText().length())
+                .sum();
 
         final RainbowHandler rainbowHandler = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
 
-        for (final BasicNode part : parts) {
-            for (char character : part.getText().toCharArray()) {
-                jsonArray.add(serializePart(String.valueOf(character), rainbowHandler.next(), part.isBold(), part.isItalic(), part.isStrike(), part.isUnderlined(), part.isObfuscated(), part.getActions()));
+        for (final MessageNode node : parts) {
+            if (node instanceof LineBreakNode) {
+                jsonArray.add("\n");
+                continue;
+            }
+
+            final BasicNode basicNode = (BasicNode) node;
+            for (char character : basicNode.getText().toCharArray()) {
+                jsonArray.add(
+                        renderNode(
+                                String.valueOf(character),
+                                rainbowHandler.next(),
+                                basicNode.isBold(),
+                                basicNode.isItalic(),
+                                basicNode.isStrike(),
+                                basicNode.isUnderlined(),
+                                basicNode.isObfuscated(),
+                                basicNode.getActions()
+                        )
+                );
             }
         }
 

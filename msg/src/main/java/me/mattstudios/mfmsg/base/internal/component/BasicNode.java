@@ -104,7 +104,7 @@ public final class BasicNode implements MessageNode {
      *
      * @return The message actions
      */
-    @NotNull
+    @Nullable
     public List<MessageAction> getActions() {
         return messageActions;
     }

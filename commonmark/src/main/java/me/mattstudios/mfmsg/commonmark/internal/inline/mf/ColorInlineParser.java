@@ -50,7 +50,7 @@ public class ColorInlineParser implements InlineContentParser {
 
         // Checks if matches legacy code
         if (HEX.matches(c)) {
-            return color(scanner, start);
+            return color(scanner, start, true);
         }
 
         // Checks for reset character
@@ -63,8 +63,12 @@ public class ColorInlineParser implements InlineContentParser {
     }
 
     private ParsedInline color(@NotNull final Scanner scanner, @NotNull final Position start) {
+        return color(scanner, start, false);
+    }
+
+    private ParsedInline color(@NotNull final Scanner scanner, @NotNull final Position start, final boolean legacy) {
         final String hex = scanner.textBetween(start, scanner.position()).toString();
-        return ParsedInline.of(new Color(hex), scanner.position());
+        return ParsedInline.of(new Color(hex, legacy), scanner.position());
     }
 
 }

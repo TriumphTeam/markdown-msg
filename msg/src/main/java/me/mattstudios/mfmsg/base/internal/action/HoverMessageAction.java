@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.action;
 
-import me.mattstudios.mfmsg.base.internal.component.MessageLine;
+import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -11,25 +11,25 @@ import java.util.List;
 public final class HoverMessageAction implements MessageAction {
 
     @NotNull
-    private final List<MessageLine> lines;
+    private final List<MessageNode> nodes;
 
     /**
      * Main constructor that takes a {@link List} of lines
      *
-     * @param lines The {@link List} of {@link MessageLine}
+     * @param nodes The {@link List} of {@link MessageNode}
      */
-    public HoverMessageAction(@NotNull final List<MessageLine> lines) {
-        this.lines = lines;
+    public HoverMessageAction(@NotNull final List<MessageNode> nodes) {
+        this.nodes = nodes;
     }
 
     /**
-     * Gets the {@link List} of {@link MessageLine}
+     * Gets the {@link List} of {@link MessageNode}
      *
-     * @return The {@link List} of {@link MessageLine}
+     * @return The {@link List} of {@link MessageNode}
      */
     @NotNull
-    public List<MessageLine> getLines() {
-        return lines;
+    public List<MessageNode> getNodes() {
+        return nodes;
     }
 
 }

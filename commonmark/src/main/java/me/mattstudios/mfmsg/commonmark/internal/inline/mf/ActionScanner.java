@@ -3,7 +3,6 @@ package me.mattstudios.mfmsg.commonmark.internal.inline.mf;
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -54,8 +53,12 @@ public final class ActionScanner {
             }
 
             if (c == '|') {
-                add(type, builder.toString().trim(), actions);
-                type = null;
+                if (type != null && builder.length() != 0) {
+                    // TODO DRY
+                    // Trims the first space if has it
+                    actions.put(type, builder.toString().trim());
+                    type = null;
+                }
 
                 builder.setLength(0);
                 scanner.next();
@@ -66,14 +69,18 @@ public final class ActionScanner {
                 parens++;
                 // Limit to 32 nested parens for pathological cases
                 if (parens > 32) {
-                    add(type, builder.toString().trim(), actions);
-                    return actions;
+                    if (type != null && builder.length() != 0) {
+                        actions.put(type, builder.toString().trim());
+                    }
+                    break;
                 }
             }
 
             if (c == ')') {
                 if (parens == 0) {
-                    add(type, builder.toString().trim(), actions);
+                    if (type != null && builder.length() != 0) {
+                        actions.put(type, builder.toString().trim());
+                    }
                     return actions;
                 }
 
@@ -88,13 +95,9 @@ public final class ActionScanner {
             if (!foundEscape) scanner.next();
         }
 
-        return actions;
-    }
+        System.out.println(actions);
 
-    private static void add(@Nullable final String type, @NotNull final String value, @NotNull final Map<String, String> actions) {
-        if (type != null && value.isEmpty()) {
-            actions.put(type, value);
-        }
+        return actions;
     }
 
 }

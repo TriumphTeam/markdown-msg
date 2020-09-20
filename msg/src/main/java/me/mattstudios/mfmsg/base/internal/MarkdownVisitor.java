@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.base.internal;
 
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
+import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
@@ -11,6 +12,7 @@ import me.mattstudios.mfmsg.base.internal.extension.node.KeywordNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Strikethrough;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
+import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import me.mattstudios.mfmsg.commonmark.node.AbstractVisitor;
 import me.mattstudios.mfmsg.commonmark.node.CustomNode;
 import me.mattstudios.mfmsg.commonmark.node.Emphasis;
@@ -174,9 +176,10 @@ public final class MarkdownVisitor extends AbstractVisitor {
         for (final Entry<String, String> entry : action.getActions().entrySet()) {
             switch (entry.getKey().toLowerCase()) {
                 case "hover":
-                    /*if (!formats.contains(Format.ACTION_HOVER)) break;
-
-                    messageActions.add(new HoverMessageAction(lines));*/
+                    if (!formats.contains(Format.ACTION_HOVER)) break;
+                    final MessageParser parser = new MessageParser(formats, new FlatColor("white"));
+                    parser.parse(entry.getValue());
+                    actions.add(new HoverMessageAction(parser.build()));
                     break;
 
                 case "command":

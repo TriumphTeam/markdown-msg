@@ -10,7 +10,7 @@ val gson = GsonBuilder().setPrettyPrinting().create()
 
 fun main(args: Array<String>) {
 
-    val component = Message.create().parse("&#000[**this**](command: Test) **is &r*Sparta***")
+    val component = Message.create().parse("&c[**this**](command: Test) &r**is &r*Sparta***")
     val jsonElement: JsonElement = JsonParser().parse(component.toJson())
     val json = gson.toJson(jsonElement)
 
