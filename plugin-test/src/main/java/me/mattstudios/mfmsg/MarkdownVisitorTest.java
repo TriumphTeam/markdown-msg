@@ -1,10 +1,7 @@
-package me.mattstudios.mfmsg.base.internal;
+package me.mattstudios.mfmsg;
 
-import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
-import me.mattstudios.mfmsg.base.internal.action.MessageAction;
-import me.mattstudios.mfmsg.base.internal.color.FlatColor;
-import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.component.MessageNode;
+import me.mattstudios.mfmsg.base.internal.Format;
+import me.mattstudios.mfmsg.base.internal.component.Appender;
 import me.mattstudios.mfmsg.base.internal.extension.node.KeywordNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Strikethrough;
@@ -22,41 +19,39 @@ import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
 import me.mattstudios.mfmsg.commonmark.node.mf.Rainbow;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
 
-public final class MarkdownVisitor extends AbstractVisitor {
+public final class MarkdownVisitorTest extends AbstractVisitor {
 
     private final Set<Format> formats;
 
     // Text properties
-    private boolean bold = false;
-    private boolean italic = false;
-    private boolean strike = false;
-    private boolean underline = false;
-    private boolean obfuscated = false;
+    private boolean bold;
+    private boolean italic;
+    private boolean strike;
+    private boolean underline;
+    private boolean obfuscated;
 
-    private boolean lineBreak = false;
+    private Appender appender;
 
-    private List<MessageNode> nodes;
+    private String currentColor = "white";
+    private Map<String,String> actions = null;
 
-    private MessageColor currentColor = new FlatColor("white");
-    private List<MessageAction> actions = null;
+    private boolean lineBreak;
 
-    public MarkdownVisitor(final Set<Format> formats) {
+    public MarkdownVisitorTest(final Set<Format> formats) {
         this.formats = formats;
     }
 
     /**
      * Visits the node's components
      *
-     * @param node The node to visit
-     *             //* @param appender The appender to append text to
+     * @param node     The node to visit
+     * @param appender The appender to append text to
      */
-    public void visitComponents(final Node node, final List<MessageNode> nodes) {
-        if (this.nodes != nodes) this.nodes = nodes;
+    public void visitComponents(final Node node, final Appender appender) {
+        //if (this.appender != appender) this.appender = appender;
         node.accept(this);
     }
 
@@ -143,65 +138,36 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Color color) {
-        if (color.isLegacy()) currentColor = MessageColor.of(color.getColor().charAt(0));
-        else currentColor = MessageColor.of(color.getColor());
+        currentColor = color.getColor();
         visitChildren(color);
+        //currentColor = "white";
     }
 
     @Override
     public void visit(final Reset reset) {
-        currentColor = MessageColor.of("white");
+        currentColor = "white";
         visitChildren(reset);
     }
 
     @Override
     public void visit(final Rainbow rainbow) {
-        currentColor = MessageColor.of(rainbow.getSaturation(), rainbow.getBrightness());
+        currentColor = "RAINBOW";
+        //System.out.println("sat: " + rainbow.getSaturation() + " bri: " + rainbow.getBrightness());
         visitChildren(rainbow);
     }
 
     @Override
     public void visit(final Gradient gradient) {
-        currentColor = MessageColor.of(gradient.getHexes());
+        currentColor = "GRADIENT";
+        //System.out.println(gradient.getHexes());
         visitChildren(gradient);
     }
 
     @Override
     public void visit(final Action action) {
-        final List<MessageAction> actions = new ArrayList<>();
-        for (final Entry<String, String> entry : action.getActions().entrySet()) {
-            switch (entry.getKey().toLowerCase()) {
-                case "hover":
-                    /*if (!formats.contains(Format.ACTION_HOVER)) break;
-
-                    messageActions.add(new HoverMessageAction(lines));*/
-                    break;
-
-                case "command":
-                    if (!formats.contains(Format.ACTION_COMMAND)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_COMMAND, entry.getValue()));
-                    break;
-
-                case "suggest":
-                    if (!formats.contains(Format.ACTION_SUGGEST)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_SUGGEST, entry.getValue()));
-                    break;
-
-                case "clipboard":
-                    if (!formats.contains(Format.ACTION_CLIPBOARD)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_CLIPBOARD, entry.getValue()));
-                    break;
-
-                case "url":
-                    if (!formats.contains(Format.ACTION_URL)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_URL, entry.getValue()));
-                    break;
-            }
-        }
-
-        this.actions = actions;
+        actions = action.getActions();
         visitChildren(action);
-        this.actions = null;
+        actions = null;
     }
 
     @Override
@@ -218,20 +184,8 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final Text text) {
-        final MessageNode messageNode = new MessageNode(text.getLiteral());
-
-        messageNode.setColor(currentColor);
-
-        if (bold) messageNode.setBold(true);
-        if (italic) messageNode.setItalic(true);
-        if (strike) messageNode.setStrike(true);
-        if (underline) messageNode.setUnderlined(true);
-        if (obfuscated) messageNode.setObfuscated(true);
-
-        if (actions != null) messageNode.setActions(actions);
-
-        nodes.add(messageNode);
-
+        //appender.append(text.getLiteral(), italic, bold, strike, underline, obfuscated);
+        System.out.println(text.getLiteral() + " -> " + italic + " - " + bold + " - " + strike + " - " + underline + " - " + obfuscated + " - " + currentColor + " - " + actions);
         visitChildren(text);
     }
 

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Click action part
  */
-public final class ClickAction implements Action {
+public final class ClickMessageAction implements MessageAction {
 
     @NotNull
     private final Format actionType;
@@ -19,7 +19,7 @@ public final class ClickAction implements Action {
      * @param actionType The action {@link Format} for identifying the click type
      * @param action     The action to be resolved
      */
-    public ClickAction(@NotNull final Format actionType, @NotNull final String action) {
+    public ClickMessageAction(@NotNull final Format actionType, @NotNull final String action) {
         this.actionType = actionType;
         this.action = action;
     }

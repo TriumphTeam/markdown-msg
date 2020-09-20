@@ -23,7 +23,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Color color) {
-        System.out.println(color.getLiteral());
+        System.out.println(color.getColor());
         visitChildren(color);
     }
 

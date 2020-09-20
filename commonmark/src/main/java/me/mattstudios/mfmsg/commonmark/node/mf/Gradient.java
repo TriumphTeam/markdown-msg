@@ -16,7 +16,7 @@ public class Gradient extends Node {
     }
 
     @Override
-    public void accept(Visitor visitor) {
+    public void accept(@NotNull final Visitor visitor) {
         visitor.visit(this);
     }
 

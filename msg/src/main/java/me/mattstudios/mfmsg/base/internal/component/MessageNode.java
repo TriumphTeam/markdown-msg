@@ -1,8 +1,10 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
-import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.action.MessageAction;
+import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -15,38 +17,24 @@ public final class MessageNode {
     private final String text;
 
     @NotNull
-    private final MessageColor color;
+    private MessageColor color = new FlatColor("white");
 
-    private final boolean bold;
-    private final boolean italic;
-    private final boolean strike;
-    private final boolean underlined;
-    private final boolean obfuscated;
+    private boolean bold = false;
+    private boolean italic = false;
+    private boolean strike = false;
+    private boolean underlined = false;
+    private boolean obfuscated = false;
 
-    @NotNull
-    private final List<Action> actions;
+    @Nullable
+    private List<MessageAction> messageActions = null;
 
     /**
      * Main part constructor with all it's attributes
      *
-     * @param text       The text literal
-     * @param color      The color of the part
-     * @param bold       Whether or not the text is to be bold
-     * @param italic     Whether or not the text is to be italic
-     * @param strike     Whether or not the text is to be strikethrough
-     * @param underlined Whether or not the text is to be underline
-     * @param obfuscated Whether or not the text is to be obfuscated
-     * @param actions    The list with all the actions
+     * @param text The text literal
      */
-    public MessageNode(@NotNull String text, @NotNull final MessageColor color, boolean bold, boolean italic, boolean strike, boolean underlined, boolean obfuscated, @NotNull final List<Action> actions) {
+    public MessageNode(@NotNull String text) {
         this.text = text;
-        this.color = color;
-        this.bold = bold;
-        this.italic = italic;
-        this.strike = strike;
-        this.underlined = underlined;
-        this.obfuscated = obfuscated;
-        this.actions = actions;
     }
 
     /**
@@ -120,8 +108,53 @@ public final class MessageNode {
      * @return The message actions
      */
     @NotNull
-    public List<Action> getActions() {
-        return actions;
+    public List<MessageAction> getActions() {
+        return messageActions;
+    }
+
+    public void setColor(final MessageColor color) {
+        this.color = color;
+    }
+
+    public void setBold(final boolean bold) {
+        this.bold = bold;
+    }
+
+    public void setItalic(final boolean italic) {
+        this.italic = italic;
+    }
+
+    public void setStrike(final boolean strike) {
+        this.strike = strike;
+    }
+
+    public void setUnderlined(final boolean underlined) {
+        this.underlined = underlined;
+    }
+
+    public void setObfuscated(final boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    public void setActions(final List<MessageAction> messageActions) {
+        this.messageActions = messageActions;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(text);
+
+        if (bold) stringBuilder.append(" - Bold");
+        if (italic) stringBuilder.append(" - Italic");
+        if (strike) stringBuilder.append(" - Strike");
+        if (underlined) stringBuilder.append(" - Underlined");
+        if (obfuscated) stringBuilder.append(" - Obfuscated");
+
+        stringBuilder.append(" - ").append(color);
+        if (messageActions != null) stringBuilder.append(messageActions);
+
+        return stringBuilder.toString();
     }
 
 }

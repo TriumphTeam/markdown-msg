@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ColorInlineParser implements InlineContentParser {
 
+    @NotNull
     private static final AsciiMatcher HEX = AsciiMatcher.builder().range('0', '9').range('A', 'F').range('a', 'f').build();
 
     @Override

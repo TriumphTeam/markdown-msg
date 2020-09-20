@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
 import me.mattstudios.mfmsg.base.internal.Format;
-import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.handler.ColorHandler;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public final class MessageAppender implements Appender {
     @NotNull
     private final List<MessageNode> parts = new ArrayList<>();
     @NotNull
-    private final List<Action> actions = new ArrayList<>();
+    private final List<MessageAction> messageActions = new ArrayList<>();
 
     /**
      * Main constructor
@@ -45,18 +45,18 @@ public final class MessageAppender implements Appender {
      */
     @Override
     public void append(@NotNull final String message, final boolean italic, final boolean bold, final boolean strike, final boolean underline, final boolean obfuscated) {
-        parts.addAll(colorHandler.colorize(message, bold, italic, strike, underline, obfuscated, new ArrayList<>(actions)));
+        parts.addAll(colorHandler.colorize(message, bold, italic, strike, underline, obfuscated, new ArrayList<>(messageActions)));
     }
 
     /**
      * Adds the actions to the message
      *
-     * @param actions The actions to add
+     * @param messageActions The actions to add
      */
     @Override
-    public void addActions(@Nullable final List<Action> actions) {
-        if (actions == null) return;
-        this.actions.addAll(actions);
+    public void addActions(@Nullable final List<MessageAction> messageActions) {
+        if (messageActions == null) return;
+        this.messageActions.addAll(messageActions);
     }
 
     /**
@@ -78,7 +78,7 @@ public final class MessageAppender implements Appender {
      */
     private void reset() {
         parts.clear();
-        actions.clear();
+        messageActions.clear();
     }
 
 }

@@ -3,11 +3,12 @@ package me.mattstudios.mfmsg.base.bukkit;
 import me.mattstudios.mfmsg.base.bukkit.nms.NmsMessage;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
+import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
-import me.mattstudios.mfmsg.base.serializer.StringSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,15 +17,15 @@ import java.util.List;
 public final class BukkitComponent implements MessageComponent {
 
     @NotNull
-    private final List<MessageLine> lines;
+    private final List<MessageNode> nodes;
 
     /**
      * Main constructor that takes in the parsed Lines
      *
-     * @param lines The parsed lines from {@link me.mattstudios.mfmsg.base.Message}
+     * @param nodes The parsed lines from {@link me.mattstudios.mfmsg.base.Message}
      */
-    public BukkitComponent(@NotNull final List<MessageLine> lines) {
-        this.lines = lines;
+    public BukkitComponent(@NotNull final List<MessageNode> nodes) {
+        this.nodes = nodes;
     }
 
     /**
@@ -84,7 +85,7 @@ public final class BukkitComponent implements MessageComponent {
     @NotNull
     @Override
     public String toString() {
-        return StringSerializer.toString(lines);
+        return "";//StringSerializer.toString(nodes);
     }
 
     /**
@@ -95,13 +96,13 @@ public final class BukkitComponent implements MessageComponent {
     @NotNull
     @Override
     public String toJson() {
-        return JsonSerializer.toString(lines);
+        return JsonSerializer.toString(Collections.singletonList(new MessageLine(nodes)));
     }
 
     @Override
     @NotNull
-    public List<MessageLine> getMessageLines() {
-        return lines;
+    public List<MessageNode> getMessageLines() {
+        return nodes;
     }
 
 }

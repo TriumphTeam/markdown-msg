@@ -2,6 +2,7 @@ package me.mattstudios.mfmsg.commonmark.internal.inline.mf;
 
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -10,9 +11,10 @@ import java.util.Map;
 
 public final class ActionScanner {
 
+    @NotNull
     private static final List<String> ACTIONS = Arrays.asList("COMMAND", "HOVER", "URL", "SUGGEST", "CLIPBOARD");
 
-    public static Map<String, String> scanAction(Scanner scanner) {
+    public static Map<String, String> scanAction(@NotNull final Scanner scanner) {
         // Counts parenthesis
         int parens = 0;
 

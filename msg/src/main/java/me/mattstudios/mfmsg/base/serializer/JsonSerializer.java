@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
-import me.mattstudios.mfmsg.base.internal.action.Action;
-import me.mattstudios.mfmsg.base.internal.action.ClickAction;
-import me.mattstudios.mfmsg.base.internal.action.HoverAction;
+import me.mattstudios.mfmsg.base.internal.action.MessageAction;
+import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
+import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
@@ -107,7 +107,7 @@ public final class JsonSerializer {
     }
 
     @NotNull
-    public static JsonObject serializePart(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @NotNull final List<Action> actions) {
+    public static JsonObject serializePart(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @NotNull final List<MessageAction> messageActions) {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);
 
@@ -119,22 +119,22 @@ public final class JsonSerializer {
 
         jsonObject.addProperty("color", color);
 
-        if (actions.isEmpty()) return jsonObject;
+        if (messageActions == null || messageActions.isEmpty()) return jsonObject;
 
-        for (final Action action : actions) {
-            if (action instanceof HoverAction) {
+        for (final MessageAction messageAction : messageActions) {
+            if (messageAction instanceof HoverMessageAction) {
                 final JsonObject hoverObject = new JsonObject();
                 hoverObject.addProperty("action", "show_text");
                 if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
-                    hoverObject.add("value", toJson(((HoverAction) action).getLines()));
+                    hoverObject.add("value", toJson(((HoverMessageAction) messageAction).getLines()));
                 } else {
-                    hoverObject.add("contents", toJson(((HoverAction) action).getLines()));
+                    hoverObject.add("contents", toJson(((HoverMessageAction) messageAction).getLines()));
                 }
                 jsonObject.add("hoverEvent", hoverObject);
                 continue;
             }
 
-            final ClickAction clickAction = (ClickAction) action;
+            final ClickMessageAction clickAction = (ClickMessageAction) messageAction;
 
             switch (clickAction.getActionType()) {
                 case ACTION_COMMAND:
@@ -191,7 +191,7 @@ public final class JsonSerializer {
     }
 
     @NotNull
-    private static JsonObject getClickEvent(@NotNull final ClickAction clickAction, @NotNull final String type) {
+    private static JsonObject getClickEvent(@NotNull final ClickMessageAction clickAction, @NotNull final String type) {
         final JsonObject clickObject = new JsonObject();
         clickObject.addProperty("action", type);
         clickObject.addProperty("value", clickAction.getAction());

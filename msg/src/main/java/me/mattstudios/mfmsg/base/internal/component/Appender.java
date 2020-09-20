@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.component;
 
-import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -25,9 +25,9 @@ public interface Appender {
     /**
      * Adds the actions to the appender
      *
-     * @param actions The actions to add
+     * @param messageActions The actions to add
      */
-    void addActions(@NotNull final List<Action> actions);
+    void addActions(@NotNull final List<MessageAction> messageActions);
 
     /**
      * Builds into a list of message parts

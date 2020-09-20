@@ -2,6 +2,7 @@ package me.mattstudios.mfmsg.commonmark.node.mf;
 
 import me.mattstudios.mfmsg.commonmark.node.Node;
 import me.mattstudios.mfmsg.commonmark.node.Visitor;
+import org.jetbrains.annotations.NotNull;
 
 public class Rainbow extends Node {
 
@@ -14,7 +15,7 @@ public class Rainbow extends Node {
     }
 
     @Override
-    public void accept(Visitor visitor) {
+    public void accept(@NotNull final Visitor visitor) {
         visitor.visit(this);
     }
 

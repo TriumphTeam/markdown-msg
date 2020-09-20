@@ -4,13 +4,10 @@ import me.mattstudios.mfmsg.base.bukkit.BukkitComponent;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -61,7 +58,7 @@ public final class Message {
      * @return The {@link MessageComponent} generated
      */
     public MessageComponent parse(@NotNull final String message) {
-        if (!formats.contains(Format.NEW_LINE)) {
+        /*if (!formats.contains(Format.NEW_LINE)) {
             return new BukkitComponent(Collections.singletonList(new MessageLine(new MessageParser(message, formats, defaultColor).build())));
         }
 
@@ -69,9 +66,13 @@ public final class Message {
 
         for (final String line : message.split("\\n")) {
             lines.add(new MessageLine(new MessageParser(line, formats, defaultColor).build()));
-        }
+        }*/
 
-        return new BukkitComponent(lines);
+        final MessageParser parser = new MessageParser(formats, defaultColor);
+        parser.parse(message);
+        //System.out.println(parser.build());
+
+        return new BukkitComponent(parser.build());
     }
 
 }

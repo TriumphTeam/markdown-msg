@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Hover action part
  */
-public final class HoverAction implements Action {
+public final class HoverMessageAction implements MessageAction {
 
     @NotNull
     private final List<MessageLine> lines;
@@ -18,7 +18,7 @@ public final class HoverAction implements Action {
      *
      * @param lines The {@link List} of {@link MessageLine}
      */
-    public HoverAction(@NotNull final List<MessageLine> lines) {
+    public HoverMessageAction(@NotNull final List<MessageLine> lines) {
         this.lines = lines;
     }
 

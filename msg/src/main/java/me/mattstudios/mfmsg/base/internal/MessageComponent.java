@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base.internal;
 
-import me.mattstudios.mfmsg.base.internal.component.MessageLine;
+import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,6 +66,6 @@ public interface MessageComponent {
     String toJson();
 
     @NotNull
-    List<MessageLine> getMessageLines();
+    List<MessageNode> getMessageLines();
 
 }

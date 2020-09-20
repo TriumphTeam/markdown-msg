@@ -2,7 +2,7 @@ package me.mattstudios.mfmsg.base.internal.color.handler;
 
 import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
 import me.mattstudios.mfmsg.base.internal.Format;
-import me.mattstudios.mfmsg.base.internal.action.Action;
+import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
@@ -48,11 +48,11 @@ public final class ColorHandler {
      * @param strike     Whether or not the message is strikethrough
      * @param underline  Whether or not the message is underlined
      * @param obfuscated Whether or not the message is obfuscated
-     * @param actions    All the actions the message has
+     * @param messageActions    All the actions the message has
      * @return A list with the current {@link MessageNode}s
      */
     @NotNull
-    public List<MessageNode> colorize(@NotNull String message, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @NotNull final List<Action> actions) {
+    public List<MessageNode> colorize(@NotNull String message, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @NotNull final List<MessageAction> messageActions) {
         final List<MessageNode> parts = new ArrayList<>();
         final Matcher matcher = RegexUtils.COLOR_PATTERN.matcher(message);
 
@@ -65,7 +65,7 @@ public final class ColorHandler {
             // Gets the mes sage before the match and adds it
             final String before = message.substring(start, matcher.start());
             if (!before.isEmpty()) {
-                parts.add(new MessageNode(before, currentColor, bold, italic, strike, underline, obfuscated, actions));
+                //parts.add(new MessageNode(before, currentColor, bold, italic, strike, underline, obfuscated, actions));
             }
 
             // Looks for legacy colors and stopping points
@@ -103,7 +103,7 @@ public final class ColorHandler {
 
         // In case there is messages left that doesn't fit in the matcher adds them
         if (!rest.isEmpty()) {
-            parts.add(new MessageNode(rest, currentColor, bold, italic, strike, underline, obfuscated, actions));
+            //parts.add(new MessageNode(rest, currentColor, bold, italic, strike, underline, obfuscated, actions));
         }
 
         return parts;

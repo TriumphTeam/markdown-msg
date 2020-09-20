@@ -1,31 +1,26 @@
 package me.mattstudios.mfmsg
 
 import com.google.gson.GsonBuilder
-import me.mattstudios.mfmsg.commonmark.parser.Parser
-import me.mattstudios.mfmsg.commonmark.renderer.html.HtmlRenderer
-import org.bukkit.Bukkit
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+import me.mattstudios.mfmsg.base.Message
+
 
 private val gson = GsonBuilder().setPrettyPrinting().create()
 
 fun main(args: Array<String>) {
-    /*val message = Message.create()
-    message.parse(" &c**Hello** ever__yone__! ")
 
-    println(
-            "${
-                measureNanoTime {
-                    val messageComponent = message.parse("&c**Hello** {item} everyone!")
-                    val json = JsonParser().parse(messageComponent.toJson())
-                    println(gson.toJson(json))
-                } / 1000000
-            }ms"
-    )*/
+    val component = Message.create().parse("&#000[**this**](command: Test) **is &r*Sparta***")
+    val jsonElement: JsonElement = JsonParser().parse(component.toJson())
+    val json = gson.toJson(jsonElement)
 
-    val parser = Parser.builder().build()
-    val document = parser.parse("**this** **is\\n *Sparta*** not escaped gradient")
-    val visitor = MarkdownVisitor()
-    visitor.visitComponents(document)
-    val renderer = HtmlRenderer.builder().build()
-    println(renderer.render(document))
+    println(json)
+
+    /*val parser = Parser.builder().build()
+    val document = parser.parse("&#000[**this**](hover: Test) **is &r*Sparta*** <r>not escaped rainbow")
+    val visitor = MarkdownVisitorTest(EnumSet.allOf(Format::class.java))
+    visitor.visitComponents(document, null)*/
+    //val renderer = HtmlRenderer.builder().build()
+    //println(renderer.render(document))
 
 }

@@ -24,6 +24,8 @@ public class ClosedColorInlineParser implements InlineContentParser {
     private static final char CLOSE_CHARACTER = '>';
     private static final char SEPARATOR_CHARACTER = ':';
     private static final char HEX_CHARACTER = '#';
+
+    @NotNull
     private static final AsciiMatcher HEX = AsciiMatcher.builder().range('0', '9').range('A', 'F').range('a', 'f').build();
 
     @Override
