@@ -4,6 +4,8 @@ import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
+import me.mattstudios.mfmsg.base.internal.component.BasicNode;
+import me.mattstudios.mfmsg.base.internal.component.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.KeywordNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
@@ -206,9 +208,8 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final LineBreak lineBreak) {
-        this.lineBreak = true;
+        nodes.add(new LineBreakNode());
         visitChildren(lineBreak);
-        this.lineBreak = false;
     }
 
     /**
@@ -218,7 +219,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final Text text) {
-        final MessageNode messageNode = new MessageNode(text.getLiteral());
+        final BasicNode messageNode = new BasicNode(text.getLiteral());
 
         messageNode.setColor(currentColor);
 

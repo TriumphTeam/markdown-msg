@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base.bukkit.nms;
 
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -40,9 +41,9 @@ public enum ServerVersion {
 
     private final int versionNumber;
 
-    public static final String PACKAGE_NAME = "";//Bukkit.getServer().getClass().getPackage().getName();
-    public static final String NMS_VERSION = "";//PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
-    public static final ServerVersion CURRENT_VERSION = V1_16_R2;//getByNmsName(NMS_VERSION);
+    public static final String PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName();
+    public static final String NMS_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
+    public static final ServerVersion CURRENT_VERSION = getByNmsName(NMS_VERSION);
 
     /**
      * Main constructor that defines a protocol version representing NX where N is the main version and X is the R version

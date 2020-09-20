@@ -1,19 +1,8 @@
 package me.mattstudios.mfmsg.base.serializer;
 
-import me.mattstudios.mfmsg.base.internal.color.FlatColor;
-import me.mattstudios.mfmsg.base.internal.color.Gradient;
-import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.color.Rainbow;
-import me.mattstudios.mfmsg.base.internal.color.handler.ColorMapping;
-import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
-import me.mattstudios.mfmsg.base.internal.color.handler.RainbowHandler;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
-import me.mattstudios.mfmsg.base.internal.component.MessageNode;
-import me.mattstudios.mfmsg.base.internal.util.RegexUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,7 +19,7 @@ public final class StringSerializer {
 
         final Iterator<MessageLine> iterator = lines.iterator();
         while (iterator.hasNext()) {
-            stringBuilder.append(convertLine(iterator.next().getParts()));
+            //stringBuilder.append(convertLine(iterator.next().getParts()));
             if (iterator.hasNext()) {
                 stringBuilder.append("\n");
             }
@@ -39,7 +28,7 @@ public final class StringSerializer {
         return stringBuilder.toString();
     }
 
-    @NotNull
+    /*@NotNull
     private static String convertLine(@NotNull final List<MessageNode> parts) {
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < parts.size(); i++) {
@@ -86,9 +75,9 @@ public final class StringSerializer {
         }
 
         return stringBuilder.toString();
-    }
+    }*/
 
-    @NotNull
+    /*@NotNull
     public static String serializePart(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated) {
         final StringBuilder stringBuilder = new StringBuilder();
 
@@ -141,6 +130,6 @@ public final class StringSerializer {
         }
 
         return stringBuilder.toString();
-    }
+    }*/
 
 }

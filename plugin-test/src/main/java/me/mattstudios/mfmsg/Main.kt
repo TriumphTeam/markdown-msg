@@ -6,7 +6,7 @@ import com.google.gson.JsonParser
 import me.mattstudios.mfmsg.base.Message
 
 
-private val gson = GsonBuilder().setPrettyPrinting().create()
+val gson = GsonBuilder().setPrettyPrinting().create()
 
 fun main(args: Array<String>) {
 

@@ -6,8 +6,6 @@ import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.component.Appender;
-import me.mattstudios.mfmsg.base.internal.component.MessageAppender;
 import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import me.mattstudios.mfmsg.base.internal.extension.KeywordExtension;
@@ -50,8 +48,8 @@ public final class MessageParser {
     @NotNull
     private final List<MessageNode> nodes = new ArrayList<>();
 
-    @NotNull
-    private final Appender appender;
+    //@NotNull
+    //private final Appender appender;
     @NotNull
     private final MarkdownVisitor visitor;
 
@@ -65,7 +63,7 @@ public final class MessageParser {
         this.formats = formats;
         this.defaultColor = defaultColor;
 
-        appender = new MessageAppender(formats, defaultColor);
+        //appender = new MessageAppender(formats, defaultColor);
         visitor = new MarkdownVisitor(formats);
     }
 
@@ -106,9 +104,9 @@ public final class MessageParser {
 
                     final List<MessageLine> lines = new ArrayList<>();
                     for (final String line : RegexUtils.NEW_LINE.split(actionText)) {
-                        final Appender appender = new MessageAppender(formats, defaultColor);
+                        //final Appender appender = new MessageAppender(formats, defaultColor);
                         //visitor.visitComponents(PARSER.parse(line), appender);
-                        lines.add(new MessageLine(appender.build()));
+                        //lines.add(new MessageLine(appender.build()));
                     }
                     messageActions.add(new HoverMessageAction(lines));
                     break;
@@ -136,11 +134,11 @@ public final class MessageParser {
         }
 
         // Adds the click and hover events
-        appender.addActions(messageActions);
-        visit(PARSER.parse(token.getActionText()));
+        //appender.addActions(messageActions);
+        /*visit(PARSER.parse(token.getActionText()));
         final List<MessageNode> parts = appender.build();
         if (parts.isEmpty()) return;
-        this.nodes.addAll(parts);
+        this.nodes.addAll(parts);*/
     }
 
     /**

@@ -2,13 +2,11 @@ package me.mattstudios.mfmsg.base.bukkit;
 
 import me.mattstudios.mfmsg.base.bukkit.nms.NmsMessage;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
-import me.mattstudios.mfmsg.base.internal.component.MessageLine;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -96,7 +94,7 @@ public final class BukkitComponent implements MessageComponent {
     @NotNull
     @Override
     public String toJson() {
-        return JsonSerializer.toString(Collections.singletonList(new MessageLine(nodes)));
+        return JsonSerializer.toString(nodes);
     }
 
     @Override

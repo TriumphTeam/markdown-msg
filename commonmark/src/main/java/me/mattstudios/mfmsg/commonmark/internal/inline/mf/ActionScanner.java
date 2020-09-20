@@ -3,6 +3,7 @@ package me.mattstudios.mfmsg.commonmark.internal.inline.mf;
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -53,11 +54,8 @@ public final class ActionScanner {
             }
 
             if (c == '|') {
-                if (type != null && builder.length() != 0) {
-                    // Trims the first space if has it
-                    actions.put(type, builder.toString().trim());
-                    type = null;
-                }
+                add(type, builder.toString().trim(), actions);
+                type = null;
 
                 builder.setLength(0);
                 scanner.next();
@@ -68,16 +66,14 @@ public final class ActionScanner {
                 parens++;
                 // Limit to 32 nested parens for pathological cases
                 if (parens > 32) {
-                    //actions.add(builder.toString());
-                    break;
+                    add(type, builder.toString().trim(), actions);
+                    return actions;
                 }
             }
 
             if (c == ')') {
                 if (parens == 0) {
-                    if (type != null && builder.length() != 0) {
-                        actions.put(type, builder.toString());
-                    }
+                    add(type, builder.toString().trim(), actions);
                     return actions;
                 }
 
@@ -92,9 +88,13 @@ public final class ActionScanner {
             if (!foundEscape) scanner.next();
         }
 
-        System.out.println(actions);
-
         return actions;
+    }
+
+    private static void add(@Nullable final String type, @NotNull final String value, @NotNull final Map<String, String> actions) {
+        if (type != null && value.isEmpty()) {
+            actions.put(type, value);
+        }
     }
 
 }
