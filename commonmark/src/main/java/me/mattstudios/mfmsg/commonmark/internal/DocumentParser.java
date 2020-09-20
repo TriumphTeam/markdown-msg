@@ -220,7 +220,7 @@ public class DocumentParser implements ParserState {
         for (int i = 1; i < openBlockParsers.size(); i++) {
             OpenBlockParser openBlockParser = openBlockParsers.get(i);
             BlockParser blockParser = openBlockParser.blockParser;
-            findNextNonSpace();
+            findNext();
 
             BlockContinue result = blockParser.tryContinue(this);
             if (result instanceof BlockContinueImpl) {
@@ -254,7 +254,7 @@ public class DocumentParser implements ParserState {
         boolean tryBlockStarts = blockParser.getBlock() instanceof Paragraph || blockParser.isContainer();
         while (tryBlockStarts) {
             lastIndex = index;
-            findNextNonSpace();
+            findNext();
 
             // this is a little performance optimization:
             if (isBlank() || (indent < Parsing.CODE_BLOCK_INDENT && Parsing.isLetter(line, nextNonSpace))) {
@@ -336,7 +336,7 @@ public class DocumentParser implements ParserState {
         }
     }
 
-    private void findNextNonSpace() {
+    private void findNext() {
         int i = index;
         int cols = column;
 

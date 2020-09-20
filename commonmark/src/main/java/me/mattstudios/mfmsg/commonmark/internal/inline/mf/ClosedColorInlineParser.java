@@ -71,7 +71,7 @@ public class ClosedColorInlineParser implements InlineContentParser {
 
             final List<Float> values = new ArrayList<>();
             final StringBuilder valueBuilder = new StringBuilder();
-            while (true) {
+            while (scanner.hasNext()) {
                 scanner.next();
                 final char currentChar = scanner.peek();
                 if (values.size() >= 2) break;
@@ -112,7 +112,7 @@ public class ClosedColorInlineParser implements InlineContentParser {
             final StringBuilder hexBuilder = new StringBuilder();
 
             // Loops through all the possible hex codes
-            while (true) {
+            while (scanner.hasNext()) {
                 scanner.next();
                 char currentChar = scanner.peek();
 

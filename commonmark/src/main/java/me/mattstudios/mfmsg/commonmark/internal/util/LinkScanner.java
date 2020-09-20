@@ -35,33 +35,7 @@ public class LinkScanner {
      * Attempt to scan a link destination, stopping after the destination or returning false.
      */
     public static boolean scanLinkDestination(Scanner scanner) {
-        if (!scanner.hasNext()) {
-            return false;
-        }
-
-        if (scanner.next('<')) {
-            while (scanner.hasNext()) {
-                switch (scanner.peek()) {
-                    case '\\':
-                        scanner.next();
-                        if (Parsing.isEscapable(scanner.peek())) {
-                            scanner.next();
-                        }
-                        break;
-                    case '\n':
-                    case '<':
-                        return false;
-                    case '>':
-                        scanner.next();
-                        return true;
-                    default:
-                        scanner.next();
-                }
-            }
-            return false;
-        } else {
-            return scanLinkDestinationWithBalancedParens(scanner);
-        }
+        return scanLinkDestinationWithBalancedParens(scanner);
     }
 
     public static boolean scanLinkTitle(Scanner scanner) {

@@ -2,6 +2,7 @@ package me.mattstudios.mfmsg.commonmark.node;
 
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
+import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
 import me.mattstudios.mfmsg.commonmark.node.mf.Rainbow;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
 
@@ -48,6 +49,11 @@ public abstract class AbstractVisitor implements Visitor {
     @Override
     public void visit(Reset reset) {
         visitChildren(reset);
+    }
+
+    @Override
+    public void visit(LineBreak lineBreak) {
+        visitChildren(lineBreak);
     }
 
     /* MF NODES END HERE */

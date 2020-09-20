@@ -1,8 +1,8 @@
 package me.mattstudios.mfmsg.commonmark.internal.inline;
 
 import me.mattstudios.mfmsg.commonmark.internal.util.Escaping;
-import me.mattstudios.mfmsg.commonmark.node.HardLineBreak;
 import me.mattstudios.mfmsg.commonmark.node.Text;
+import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
 
 import java.util.regex.Pattern;
 
@@ -23,7 +23,7 @@ public class BackslashInlineParser implements InlineContentParser {
         char next = scanner.peek();
         if (next == '\n') {
             scanner.next();
-            return ParsedInline.of(new HardLineBreak(), scanner.position());
+            return ParsedInline.of(new LineBreak(), scanner.position());
         } else if (ESCAPABLE.matcher(String.valueOf(next)).matches()) {
             scanner.next();
             return ParsedInline.of(new Text(String.valueOf(next)), scanner.position());

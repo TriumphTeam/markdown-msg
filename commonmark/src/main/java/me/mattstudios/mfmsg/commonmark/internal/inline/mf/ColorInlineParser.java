@@ -28,7 +28,7 @@ public class ColorInlineParser implements InlineContentParser {
         if (c == '#') {
             // Handling HEX
             int i = 0;
-            while (true) {
+            while (scanner.hasNext()) {
                 // Goes for the next and skips #
                 scanner.next();
                 // Checks if the character is valid hex, need to be either 3 or 6 characters

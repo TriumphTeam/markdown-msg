@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
     )*/
 
     val parser = Parser.builder().build()
-    val document = parser.parse("<g:#123:#123456:#123:#123:#123>This \\&cis *Sparta* not escaped")
+    val document = parser.parse("[**this**](hover: **test**|command: /test) &cis &#000*Sparta* <#fff>not <r>escaped <g:#000:#fff>gradient")
     val visitor = MarkdownVisitor()
     visitor.visitComponents(document)
     val renderer = HtmlRenderer.builder().build()

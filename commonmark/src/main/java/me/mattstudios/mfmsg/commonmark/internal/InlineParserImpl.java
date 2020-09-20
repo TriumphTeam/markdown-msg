@@ -2,6 +2,7 @@ package me.mattstudios.mfmsg.commonmark.internal;
 
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
 import me.mattstudios.mfmsg.commonmark.internal.inline.*;
+import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ActionScanner;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ClosedColorInlineParser;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ColorInlineParser;
 import me.mattstudios.mfmsg.commonmark.internal.util.Escaping;
@@ -49,7 +50,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         this.context = inlineParserContext;
         this.inlineParsers = new HashMap<>();
         this.inlineParsers.put('\\', new BackslashInlineParser());
-        //this.inlineParsers.put('`', Collections.singletonList(new BackticksInlineParser()));
         this.inlineParsers.put('&', new ColorInlineParser());
         this.inlineParsers.put('<', new ClosedColorInlineParser());
 
@@ -73,7 +73,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         }
         bitSet.set('[');
         bitSet.set(']');
-        //bitSet.set('!');
         bitSet.set('\n');
         return bitSet;
     }
@@ -182,8 +181,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         switch (c) {
             case '[':
                 return parseOpenBracket();
-            /*case '!':
-                return parseBang();*/
             case ']':
                 return parseCloseBracket();
             case '\n':
@@ -286,8 +283,10 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         // Maybe a inline link like `[foo](/uri "title")`
         if (scanner.next('(')) {
             scanner.whitespace();
-            dest = parseLinkDestination(scanner);
-            if (dest == null) {
+
+            dest = parseAction(scanner);
+
+            if (dest.isEmpty()) {
                 scanner.setPosition(afterClose);
             } else {
                 int whitespace = scanner.whitespace();
@@ -305,6 +304,8 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
                 }
             }
         }
+
+        //System.out.println(dest);
 
         // Maybe a reference link like `[foo][bar]`, `[foo][]` or `[foo]`.
         // Note that even `[foo](` could be a valid link if there's a reference, which is why this is not just an `else`
@@ -384,26 +385,9 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         lastBracket = lastBracket.previous;
     }
 
-    /**
-     * Attempt to parse link destination, returning the string or null if no match.
-     */
-    private String parseLinkDestination(Scanner scanner) {
-        char delimiter = scanner.peek();
-        Position start = scanner.position();
-        if (!LinkScanner.scanLinkDestination(scanner)) {
-            return null;
-        }
 
-        String dest;
-        if (delimiter == '<') {
-            // chop off surrounding <..>:
-            CharSequence rawDestination = scanner.textBetween(start, scanner.position());
-            dest = rawDestination.subSequence(1, rawDestination.length() - 1).toString();
-        } else {
-            dest = scanner.textBetween(start, scanner.position()).toString();
-        }
-
-        return Escaping.unescapeString(dest);
+    private String parseAction(Scanner scanner) {
+        return ActionScanner.scanAction(scanner);
     }
 
     /**
@@ -596,10 +580,10 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
             closer.length -= useDelims;
             openerNode.setLiteral(
                     openerNode.getLiteral().substring(0,
-                            openerNode.getLiteral().length() - useDelims));
+                                                      openerNode.getLiteral().length() - useDelims));
             closerNode.setLiteral(
                     closerNode.getLiteral().substring(0,
-                            closerNode.getLiteral().length() - useDelims));
+                                                      closerNode.getLiteral().length() - useDelims));
 
             removeDelimitersBetween(opener, closer);
             // The delimiter processor can re-parent the nodes between opener and closer,
