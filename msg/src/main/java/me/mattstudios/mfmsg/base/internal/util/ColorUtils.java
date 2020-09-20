@@ -1,28 +1,19 @@
 package me.mattstudios.mfmsg.base.internal.util;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.primitives.Floats;
 import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
-import me.mattstudios.mfmsg.base.internal.color.FlatColor;
-import me.mattstudios.mfmsg.base.internal.color.Gradient;
-import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.color.Rainbow;
 import me.mattstudios.mfmsg.base.internal.color.handler.ColorMapping;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.Color;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class ColorUtils {
 
     private ColorUtils() {}
 
-    public static final Set<Character> COLOR_CODES = ImmutableSet.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+    // Pattern for turning #000 into #000000
+    private static final Pattern THREE_HEX = Pattern.compile("([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
 
     /**
      * Gets the color from a given hex code
@@ -67,36 +58,7 @@ public final class ColorUtils {
      */
     @NotNull
     public static String increaseHex(@NotNull final String hex) {
-        return RegexUtils.THREE_HEX.matcher(hex).replaceAll("$1$1$2$2$3$3");
-    }
-
-    @NotNull
-    public static MessageColor colorFromGradient(@NotNull final String gradient) {
-        final List<String> colors = Arrays.asList(gradient.split(":"));
-        if (colors.size() == 1) return new FlatColor(ColorUtils.ofHex(colors.get(0)));
-        return new Gradient(colors.stream().map(ColorUtils::hexToColor).collect(Collectors.toList()));
-    }
-
-    @NotNull
-    public static MessageColor colorFromRainbow(@Nullable final String satString, @Nullable final String ligString) {
-        float saturation = 1.0f;
-        float brightness = 1.0f;
-
-        if (satString != null) {
-            final Float sat = Floats.tryParse(satString.substring(1));
-            if (sat != null && sat <= 1.0 && sat >= 0.0) {
-                saturation = sat;
-            }
-        }
-
-        if (ligString != null) {
-            final Float light = Floats.tryParse(ligString.substring(1));
-            if (light != null && light <= 1.0 && light >= 0.0) {
-                brightness = light;
-            }
-        }
-
-        return new Rainbow(saturation, brightness);
+        return THREE_HEX.matcher(hex).replaceAll("$1$1$2$2$3$3");
     }
 
 }
