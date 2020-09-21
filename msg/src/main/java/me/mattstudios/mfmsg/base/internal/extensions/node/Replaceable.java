@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.base.internal.extension.node;
+package me.mattstudios.mfmsg.base.internal.extensions.node;
 
 import me.mattstudios.mfmsg.commonmark.node.CustomNode;
 import me.mattstudios.mfmsg.commonmark.node.Delimited;

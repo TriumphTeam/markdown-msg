@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.base.internal.component;
+package me.mattstudios.mfmsg.base.internal.components;
 
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;

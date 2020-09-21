@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.base.internal.color.handler;
+package me.mattstudios.mfmsg.base.internal.color.handlers;
 
 import org.jetbrains.annotations.NotNull;
 

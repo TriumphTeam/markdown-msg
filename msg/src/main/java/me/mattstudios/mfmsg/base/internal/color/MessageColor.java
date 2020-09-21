@@ -1,6 +1,6 @@
 package me.mattstudios.mfmsg.base.internal.color;
 
-import me.mattstudios.mfmsg.base.internal.color.handler.ColorMapping;
+import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import me.mattstudios.mfmsg.base.internal.util.ColorUtils;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,6 @@
-package me.mattstudios.mfmsg.base.internal.extension.delimiter;
+package me.mattstudios.mfmsg.base.internal.extensions.delimiter;
 
-import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
+import me.mattstudios.mfmsg.base.internal.extensions.node.Obfuscated;
 import me.mattstudios.mfmsg.commonmark.node.Node;
 import me.mattstudios.mfmsg.commonmark.node.Text;
 import me.mattstudios.mfmsg.commonmark.parser.delimiter.DelimiterProcessor;

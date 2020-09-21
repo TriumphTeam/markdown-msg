@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.base.internal.component;
+package me.mattstudios.mfmsg.base.internal.components;
 
 /**
  * Stores all the information about each message node
