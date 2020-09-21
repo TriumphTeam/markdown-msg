@@ -6,7 +6,10 @@ import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Default
 import me.mattstudios.mf.base.CommandBase
 import me.mattstudios.mfmsg.base.Message
+import me.mattstudios.mfmsg.base.MessageOptions
+import me.mattstudios.mfmsg.base.internal.Format
 import org.bukkit.entity.Player
+import java.util.EnumSet
 import kotlin.system.measureNanoTime
 
 @Command("parse")
@@ -14,7 +17,11 @@ internal class Cmd : CommandBase() {
 
     @Default
     fun parse(player: Player, args: Array<String>) {
-        val component = Message.create().parse(args.joinToString(" "))
+        val options = MessageOptions.Builder(EnumSet.allOf(Format::class.java))
+        //options.removeFormat(Format.NEW_LINE)
+
+        val component = Message.create(options.build()).parse(args.joinToString(" "))
+
         player.sendMessage("${
             measureNanoTime {
                 component.sendMessage(player)

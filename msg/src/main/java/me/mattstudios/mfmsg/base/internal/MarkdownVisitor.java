@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base.internal;
 
+import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
-import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
@@ -24,15 +24,19 @@ import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
 import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
 import me.mattstudios.mfmsg.commonmark.node.mf.Rainbow;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public final class MarkdownVisitor extends AbstractVisitor {
 
-    private final Set<Format> formats;
+    @NotNull
+    private final MessageOptions messageOptions;
+    @NotNull
+    private List<MessageNode> nodes;
 
     // Text properties
     private boolean bold = false;
@@ -41,15 +45,18 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private boolean underline = false;
     private boolean obfuscated = false;
 
+    @Nullable
     private Replaceable replaceable = null;
 
-    private List<MessageNode> nodes;
-
-    private MessageColor currentColor = new FlatColor("white");
+    @NotNull
+    private MessageColor currentColor;
+    @Nullable
     private List<MessageAction> actions = null;
 
-    public MarkdownVisitor(final Set<Format> formats) {
-        this.formats = formats;
+    public MarkdownVisitor(@NotNull final List<MessageNode> nodes, @NotNull final MessageOptions messageOptions) {
+        this.nodes = nodes;
+        this.messageOptions = messageOptions;
+        this.currentColor = messageOptions.getDefaultColor();
     }
 
     /**
@@ -58,8 +65,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
      * @param node The node to visit
      *             //* @param appender The appender to append text to
      */
-    public void visitComponents(final Node node, final List<MessageNode> nodes) {
-        if (this.nodes != nodes) this.nodes = nodes;
+    public void visitComponents(final Node node) {
         node.accept(this);
     }
 
@@ -70,7 +76,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final Emphasis emphasis) {
-        if (!formats.contains(Format.ITALIC)) {
+        if (!messageOptions.hasFormat(Format.ITALIC)) {
             visitChildren(emphasis);
             return;
         }
@@ -87,7 +93,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final StrongEmphasis strongEmphasis) {
-        if (!formats.contains(Format.BOLD)) {
+        if (!messageOptions.hasFormat(Format.BOLD)) {
             visitChildren(strongEmphasis);
             return;
         }
@@ -105,7 +111,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
     @Override
     public void visit(final CustomNode customNode) {
         if (customNode instanceof Underline) {
-            if (!formats.contains(Format.UNDERLINE)) {
+            if (!messageOptions.hasFormat(Format.UNDERLINE)) {
                 visitChildren(customNode);
                 return;
             }
@@ -116,10 +122,11 @@ public final class MarkdownVisitor extends AbstractVisitor {
         }
 
         if (customNode instanceof Obfuscated) {
-            if (!formats.contains(Format.OBFUSCATED)) {
+            if (!messageOptions.hasFormat(Format.OBFUSCATED)) {
                 visitChildren(customNode);
                 return;
             }
+
             obfuscated = true;
             visitChildren(customNode);
             obfuscated = false;
@@ -127,7 +134,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
         }
 
         if (customNode instanceof Strikethrough) {
-            if (!formats.contains(Format.STRIKETHROUGH)) {
+            if (!messageOptions.hasFormat(Format.STRIKETHROUGH)) {
                 visitChildren(customNode);
                 return;
             }
@@ -154,7 +161,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Reset reset) {
-        currentColor = MessageColor.from("white");
+        currentColor = messageOptions.getDefaultColor();
         visitChildren(reset);
     }
 
@@ -176,29 +183,29 @@ public final class MarkdownVisitor extends AbstractVisitor {
         for (final Entry<String, String> entry : action.getActions().entrySet()) {
             switch (entry.getKey().toLowerCase()) {
                 case "hover":
-                    if (!formats.contains(Format.ACTION_HOVER)) break;
-                    final MessageParser parser = new MessageParser(formats, new FlatColor("white"));
+                    if (!messageOptions.hasFormat(Format.ACTION_HOVER)) break;
+                    final MessageParser parser = new MessageParser(messageOptions);
                     parser.parse(entry.getValue());
                     actions.add(MessageAction.from(parser.build()));
                     break;
 
                 case "command":
-                    if (!formats.contains(Format.ACTION_COMMAND)) break;
+                    if (!messageOptions.hasFormat(Format.ACTION_COMMAND)) break;
                     actions.add(MessageAction.from(Format.ACTION_COMMAND, entry.getValue()));
                     break;
 
                 case "suggest":
-                    if (!formats.contains(Format.ACTION_SUGGEST)) break;
+                    if (!messageOptions.hasFormat(Format.ACTION_SUGGEST)) break;
                     actions.add(MessageAction.from(Format.ACTION_SUGGEST, entry.getValue()));
                     break;
 
                 case "clipboard":
-                    if (!formats.contains(Format.ACTION_CLIPBOARD)) break;
+                    if (!messageOptions.hasFormat(Format.ACTION_CLIPBOARD)) break;
                     actions.add(MessageAction.from(Format.ACTION_CLIPBOARD, entry.getValue()));
                     break;
 
                 case "url":
-                    if (!formats.contains(Format.ACTION_URL)) break;
+                    if (!messageOptions.hasFormat(Format.ACTION_URL)) break;
                     actions.add(MessageAction.from(Format.ACTION_URL, entry.getValue()));
                     break;
             }
@@ -211,6 +218,12 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final LineBreak lineBreak) {
+        if (!messageOptions.hasFormat(Format.NEW_LINE)) {
+            appendNode("\\n");
+            visitChildren(lineBreak);
+            return;
+        }
+
         nodes.add(new LineBreakNode());
         visitChildren(lineBreak);
     }
@@ -231,7 +244,12 @@ public final class MarkdownVisitor extends AbstractVisitor {
             return;
         }
 
-        final TextNode messageNode = new TextNode(text.getLiteral());
+        appendNode(text.getLiteral());
+        visitChildren(text);
+    }
+
+    private void appendNode(@NotNull final String literal) {
+        final TextNode messageNode = new TextNode(literal);
 
         messageNode.setColor(currentColor);
 
@@ -244,8 +262,6 @@ public final class MarkdownVisitor extends AbstractVisitor {
         if (actions != null) messageNode.setActions(actions);
 
         nodes.add(messageNode);
-
-        visitChildren(text);
     }
 
 }

@@ -7,6 +7,7 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -15,9 +16,7 @@ import java.util.Set;
 public final class Message {
 
     @NotNull
-    private final Set<Format> formats;
-    @NotNull
-    private final MessageColor defaultColor;
+    private final MessageOptions messageOptions;
 
     /**
      * Main constructor with the format options
@@ -25,8 +24,7 @@ public final class Message {
      * @param messageOptions The format options with the data needed for the parser
      */
     private Message(@NotNull final MessageOptions messageOptions) {
-        formats = messageOptions.getFormats();
-        defaultColor = messageOptions.getDefaultColor();
+        this.messageOptions = messageOptions;
     }
 
     /**
@@ -47,7 +45,7 @@ public final class Message {
      */
     @NotNull
     public static Message create() {
-        return new Message(new MessageOptions());
+        return new Message(new MessageOptions.Builder(EnumSet.allOf(Format.class)).build());
     }
 
     /**
@@ -57,20 +55,8 @@ public final class Message {
      * @return The {@link MessageComponent} generated
      */
     public MessageComponent parse(@NotNull final String message) {
-        /*if (!formats.contains(Format.NEW_LINE)) {
-            return new BukkitComponent(Collections.singletonList(new MessageLine(new MessageParser(message, formats, defaultColor).build())));
-        }
-
-        final List<MessageLine> lines = new ArrayList<>();
-
-        for (final String line : message.split("\\n")) {
-            lines.add(new MessageLine(new MessageParser(line, formats, defaultColor).build()));
-        }*/
-
-        final MessageParser parser = new MessageParser(formats, defaultColor);
+        final MessageParser parser = new MessageParser(messageOptions);
         parser.parse(message);
-        //System.out.println(parser.build());
-
         return new BukkitComponent(parser.build());
     }
 
