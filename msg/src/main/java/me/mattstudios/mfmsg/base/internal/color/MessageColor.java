@@ -35,6 +35,17 @@ public interface MessageColor {
     }
 
     /**
+     * Gets a MessageColor from a given String (hex code)
+     *
+     * @param color The hex color
+     * @return A FlatColor from the given Hex
+     */
+    @NotNull
+    static MessageColor toLegacy(final String color) {
+        return new FlatColor(ColorMapping.toLegacy(ColorUtils.hexToColor(color)));
+    }
+
+    /**
      * Gets a MessageColor from a given saturation and brightness
      *
      * @param saturation The saturation

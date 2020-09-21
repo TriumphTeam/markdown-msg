@@ -1,12 +1,13 @@
 package me.mattstudios.mfmsg.base.internal;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
+import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
-import me.mattstudios.mfmsg.base.internal.components.ReplaceableNode;
 import me.mattstudios.mfmsg.base.internal.components.TextNode;
+import me.mattstudios.mfmsg.base.internal.extensions.ReplaceableHandler;
 import me.mattstudios.mfmsg.base.internal.extensions.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extensions.node.Replaceable;
 import me.mattstudios.mfmsg.base.internal.extensions.node.Strikethrough;
@@ -154,8 +155,24 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Color color) {
-        if (color.isLegacy()) currentColor = MessageColor.from(color.getColor().charAt(0));
-        else currentColor = MessageColor.from(color.getColor());
+        if (color.isLegacy() && messageOptions.hasFormat(Format.COLOR)) {
+            currentColor = MessageColor.from(color.getColor().charAt(0));
+            visitChildren(color);
+            return;
+        }
+
+        if (!messageOptions.hasFormat(Format.HEX)) {
+            visitChildren(color);
+            return;
+        }
+
+        if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+            currentColor = MessageColor.toLegacy(color.getColor());
+            visitChildren(color);
+            return;
+        }
+
+        currentColor = MessageColor.from(color.getColor());
         visitChildren(color);
     }
 
@@ -167,12 +184,22 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Rainbow rainbow) {
+        if (!messageOptions.hasFormat(Format.RAINBOW) || ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+            visitChildren(rainbow);
+            return;
+        }
+
         currentColor = MessageColor.from(rainbow.getSaturation(), rainbow.getBrightness());
         visitChildren(rainbow);
     }
 
     @Override
     public void visit(final Gradient gradient) {
+        if (!messageOptions.hasFormat(Format.GRADIENT) || ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+            visitChildren(gradient);
+            return;
+        }
+
         currentColor = MessageColor.from(gradient.getHexes());
         visitChildren(gradient);
     }
@@ -211,7 +238,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
             }
         }
 
-        this.actions = actions;
+        if (!actions.isEmpty()) this.actions = actions;
         visitChildren(action);
         this.actions = null;
     }
@@ -219,7 +246,6 @@ public final class MarkdownVisitor extends AbstractVisitor {
     @Override
     public void visit(final LineBreak lineBreak) {
         if (!messageOptions.hasFormat(Format.NEW_LINE)) {
-            appendNode("\\n");
             visitChildren(lineBreak);
             return;
         }
@@ -228,6 +254,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
         visitChildren(lineBreak);
     }
 
+
     /**
      * Handles the appending of the component
      *
@@ -235,10 +262,24 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final Text text) {
-
         if (replaceable != null) {
-            final ReplaceableNode node = new ReplaceableNode(text.getLiteral());
-            // TODO HAVE THE EXTENSION GET HERE
+            final ReplaceableHandler replaceableHandler = messageOptions.getReplaceableHandler();
+
+            // Likely never happen
+            if (replaceableHandler == null) {
+                appendNode(text.getLiteral());
+                visitChildren(text);
+                return;
+            }
+
+            final MessageNode node = replaceableHandler.getNode(text.getLiteral());
+
+            if (node == null) {
+                appendNode(replaceableHandler.getOpener() + text.getLiteral() + replaceableHandler.getCloser());
+                visitChildren(text);
+                return;
+            }
+
             nodes.add(node);
             visitChildren(text);
             return;

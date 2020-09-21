@@ -11,16 +11,16 @@ import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.Rainbow;
+import me.mattstudios.mfmsg.base.internal.color.handlers.Fancy;
 import me.mattstudios.mfmsg.base.internal.color.handlers.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.color.handlers.RainbowHandler;
-import me.mattstudios.mfmsg.base.internal.components.TextNode;
 import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.components.ReplaceableNode;
+import me.mattstudios.mfmsg.base.internal.components.TextNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,19 +52,7 @@ public final class JsonSerializer {
 
             final MessageNode messageNode = nodeScanner.peek();
 
-            if (messageNode instanceof LineBreakNode) {
-                jsonArray.add("\n");
-                continue;
-            }
-
-            if (messageNode instanceof ReplaceableNode) {
-                System.out.println("what");
-                ((ReplaceableNode) messageNode).getNodes().forEach(node -> {
-                    System.out.println("fuck");
-                    jsonArray.add(renderNode(node.getText(), "white", node.isBold(), node.isItalic(), node.isStrike(), node.isUnderlined(), node.isObfuscated(), null));
-                });
-                continue;
-            }
+            if (renderSpecial(messageNode, jsonArray)) continue;
 
             final TextNode node = (TextNode) messageNode;
 
@@ -77,7 +65,7 @@ public final class JsonSerializer {
 
                 getColoredNodes(nodeScanner, gradientNodes, color);
 
-                jsonArray.addAll(toGradient(gradientNodes, gradient));
+                jsonArray.addAll(fancify(gradientNodes, gradient));
                 continue;
             }
 
@@ -88,7 +76,7 @@ public final class JsonSerializer {
 
                 getColoredNodes(nodeScanner, rainbowNodes, color);
 
-                jsonArray.addAll(toRainbow(rainbowNodes, rainbow));
+                jsonArray.addAll(fancify(rainbowNodes, rainbow));
                 continue;
             }
 
@@ -116,7 +104,7 @@ public final class JsonSerializer {
 
             final MessageNode nextNode = nodeScanner.peek();
 
-            if (nextNode instanceof LineBreakNode) {
+            if (nextNode instanceof LineBreakNode || nextNode instanceof ReplaceableNode) {
                 nodes.add(nextNode);
                 continue;
             }
@@ -131,7 +119,7 @@ public final class JsonSerializer {
         }
     }
 
-    private static JsonObject renderNode(@NotNull final String text, @NotNull final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @Nullable final List<MessageAction> actions) {
+    private static JsonObject renderNode(@NotNull final String text, @Nullable final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @Nullable final List<MessageAction> actions) {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);
 
@@ -141,7 +129,7 @@ public final class JsonSerializer {
         if (underline) jsonObject.addProperty("underlined", true);
         if (obfuscated) jsonObject.addProperty("obfuscated", true);
 
-        jsonObject.addProperty("color", color);
+        if (color != null) jsonObject.addProperty("color", color);
 
         if (actions == null || actions.isEmpty()) return jsonObject;
 
@@ -182,31 +170,34 @@ public final class JsonSerializer {
     }
 
     @NotNull
-    private static JsonArray toGradient(@NotNull final List<MessageNode> parts, @NotNull final Gradient gradient) {
+    private static JsonArray fancify(@NotNull final List<MessageNode> parts, @NotNull final MessageColor color) {
         final JsonArray jsonArray = new JsonArray();
 
-        final int length = parts.stream().
-                filter(TextNode.class::isInstance)
+        final int length = parts.stream()
+                .filter(TextNode.class::isInstance)
                 .mapToInt(part -> ((TextNode) part).getText().length())
                 .sum();
 
-        final List<Color> colors = gradient.getColors();
-
-        final GradientHandler gradientHandler = new GradientHandler(colors, length);
+        final Fancy fancy;
+        if (color instanceof Rainbow) {
+            final Rainbow rainbow = (Rainbow) color;
+            fancy = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
+        } else if (color instanceof Gradient) {
+            final Gradient gradient = (Gradient) color;
+            fancy = new GradientHandler(gradient.getColors(), length);
+        } else {
+            return jsonArray;
+        }
 
         for (final MessageNode node : parts) {
-            if (node instanceof LineBreakNode) {
-                jsonArray.add("\n");
-                continue;
-            }
+            if (renderSpecial(node, jsonArray)) continue;
 
             final TextNode textNode = (TextNode) node;
-
             for (char character : textNode.getText().toCharArray()) {
                 jsonArray.add(
                         renderNode(
                                 String.valueOf(character),
-                                gradientHandler.next(),
+                                fancy.next(),
                                 textNode.isBold(),
                                 textNode.isItalic(),
                                 textNode.isStrike(),
@@ -221,41 +212,33 @@ public final class JsonSerializer {
         return jsonArray;
     }
 
-    @NotNull
-    private static JsonArray toRainbow(@NotNull final List<MessageNode> parts, @NotNull final Rainbow rainbow) {
-        final JsonArray jsonArray = new JsonArray();
-
-        final int length = parts.stream().
-                filter(TextNode.class::isInstance)
-                .mapToInt(part -> ((TextNode) part).getText().length())
-                .sum();
-
-        final RainbowHandler rainbowHandler = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
-
-        for (final MessageNode node : parts) {
-            if (node instanceof LineBreakNode) {
-                jsonArray.add("\n");
-                continue;
-            }
-
-            final TextNode textNode = (TextNode) node;
-            for (char character : textNode.getText().toCharArray()) {
-                jsonArray.add(
-                        renderNode(
-                                String.valueOf(character),
-                                rainbowHandler.next(),
-                                textNode.isBold(),
-                                textNode.isItalic(),
-                                textNode.isStrike(),
-                                textNode.isUnderlined(),
-                                textNode.isObfuscated(),
-                                textNode.getActions()
-                        )
-                );
-            }
+    private static boolean renderSpecial(@NotNull final MessageNode node, @NotNull final JsonArray jsonArray) {
+        if (node instanceof LineBreakNode) {
+            jsonArray.add("\n");
+            return true;
         }
 
-        return jsonArray;
+        if (node instanceof ReplaceableNode) {
+           final ReplaceableNode replaceableNode = (ReplaceableNode) node;
+
+           for (final TextNode textNode : replaceableNode.getNodes()) {
+               jsonArray.add(
+                       renderNode(
+                               textNode.getText(),
+                               null,
+                               textNode.isBold(),
+                               textNode.isItalic(),
+                               textNode.isStrike(),
+                               textNode.isUnderlined(),
+                               textNode.isObfuscated(),
+                               null)
+               );
+           }
+
+            return true;
+        }
+
+        return false;
     }
 
     @NotNull

@@ -9,7 +9,7 @@ import java.awt.Color;
  *
  * Original author: https://github.com/Esophose
  */
-public final class RainbowHandler {
+public final class RainbowHandler implements Fancy {
 
     private final float hueStep, saturation, brightness;
     private float hue;
@@ -34,6 +34,7 @@ public final class RainbowHandler {
      * @return the next color of the rainbow
      */
     @NotNull
+    @Override
     public String next() {
         Color color = Color.getHSBColor(this.hue, this.saturation, this.brightness);
         this.hue += this.hueStep;

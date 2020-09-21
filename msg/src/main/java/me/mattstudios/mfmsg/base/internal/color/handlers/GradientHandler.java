@@ -10,7 +10,7 @@ import java.util.List;
  *
  * Original author: https://github.com/Esophose
  */
-public final class GradientHandler {
+public final class GradientHandler implements Fancy {
 
     @NotNull
     private final List<Color> colors;
@@ -36,6 +36,7 @@ public final class GradientHandler {
      * @return The next color
      */
     @NotNull
+    @Override
     public String next() {
         final Color color;
         if (stepIndex + 1 < colors.size()) {
