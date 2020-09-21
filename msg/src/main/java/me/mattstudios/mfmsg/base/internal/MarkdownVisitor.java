@@ -5,9 +5,10 @@ import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.component.BasicNode;
+import me.mattstudios.mfmsg.base.internal.component.TextNode;
 import me.mattstudios.mfmsg.base.internal.component.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
+import me.mattstudios.mfmsg.base.internal.component.ReplaceableNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.KeywordNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extension.node.Strikethrough;
@@ -42,7 +43,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private boolean underline = false;
     private boolean obfuscated = false;
 
-    private boolean lineBreak = false;
+    private boolean replaceable = false;
 
     private List<MessageNode> nodes;
 
@@ -139,8 +140,9 @@ public final class MarkdownVisitor extends AbstractVisitor {
         }
 
         if (customNode instanceof KeywordNode) {
-            System.out.println(customNode);
+            replaceable = true;
             visitChildren(customNode);
+            replaceable = false;
         }
 
     }
@@ -222,7 +224,15 @@ public final class MarkdownVisitor extends AbstractVisitor {
      */
     @Override
     public void visit(final Text text) {
-        final BasicNode messageNode = new BasicNode(text.getLiteral());
+
+        if (replaceable) {
+            final ReplaceableNode node = new ReplaceableNode(text.getLiteral());
+            nodes.add(node);
+            visitChildren(text);
+            return;
+        }
+
+        final TextNode messageNode = new TextNode(text.getLiteral());
 
         messageNode.setColor(currentColor);
 

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public final class BasicNode implements MessageNode {
+public final class TextNode implements MessageNode {
 
     @NotNull
     private final String text;
@@ -30,7 +30,7 @@ public final class BasicNode implements MessageNode {
      *
      * @param text The text literal
      */
-    public BasicNode(@NotNull String text) {
+    public TextNode(@NotNull final String text) {
         this.text = text;
     }
 
@@ -109,7 +109,7 @@ public final class BasicNode implements MessageNode {
         return messageActions;
     }
 
-    public void setColor(final MessageColor color) {
+    public void setColor(@NotNull final MessageColor color) {
         this.color = color;
     }
 
@@ -135,23 +135,6 @@ public final class BasicNode implements MessageNode {
 
     public void setActions(final List<MessageAction> messageActions) {
         this.messageActions = messageActions;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(text);
-
-        if (bold) stringBuilder.append(" - Bold");
-        if (italic) stringBuilder.append(" - Italic");
-        if (strike) stringBuilder.append(" - Strike");
-        if (underlined) stringBuilder.append(" - Underlined");
-        if (obfuscated) stringBuilder.append(" - Obfuscated");
-
-        stringBuilder.append(" - ").append(color);
-        if (messageActions != null) stringBuilder.append(messageActions);
-
-        return stringBuilder.toString();
     }
 
 }

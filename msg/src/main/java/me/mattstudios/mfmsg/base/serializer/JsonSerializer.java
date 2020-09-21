@@ -13,9 +13,10 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.Rainbow;
 import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.color.handler.RainbowHandler;
-import me.mattstudios.mfmsg.base.internal.component.BasicNode;
+import me.mattstudios.mfmsg.base.internal.component.TextNode;
 import me.mattstudios.mfmsg.base.internal.component.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
+import me.mattstudios.mfmsg.base.internal.component.ReplaceableNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,13 +51,22 @@ public final class JsonSerializer {
             nodeScanner.next();
 
             final MessageNode messageNode = nodeScanner.peek();
-            System.out.println(messageNode.toString());
+
             if (messageNode instanceof LineBreakNode) {
                 jsonArray.add("\n");
                 continue;
             }
 
-            final BasicNode node = (BasicNode) messageNode;
+            if (messageNode instanceof ReplaceableNode) {
+                System.out.println("what");
+                ((ReplaceableNode) messageNode).getNodes().forEach(node -> {
+                    System.out.println("fuck");
+                    jsonArray.add(renderNode(node.getText(), "white", node.isBold(), node.isItalic(), node.isStrike(), node.isUnderlined(), node.isObfuscated(), null));
+                });
+                continue;
+            }
+
+            final TextNode node = (TextNode) messageNode;
 
             final MessageColor color = node.getColor();
 
@@ -111,13 +121,13 @@ public final class JsonSerializer {
                 continue;
             }
 
-            final BasicNode basicNode = (BasicNode) nextNode;
-            if (!color.equals(basicNode.getColor())) {
+            final TextNode textNode = (TextNode) nextNode;
+            if (!color.equals(textNode.getColor())) {
                 nodeScanner.previous();
                 break;
             }
 
-            nodes.add(basicNode);
+            nodes.add(textNode);
         }
     }
 
@@ -176,8 +186,8 @@ public final class JsonSerializer {
         final JsonArray jsonArray = new JsonArray();
 
         final int length = parts.stream().
-                filter(BasicNode.class::isInstance)
-                .mapToInt(part -> ((BasicNode) part).getText().length())
+                filter(TextNode.class::isInstance)
+                .mapToInt(part -> ((TextNode) part).getText().length())
                 .sum();
 
         final List<Color> colors = gradient.getColors();
@@ -190,19 +200,19 @@ public final class JsonSerializer {
                 continue;
             }
 
-            final BasicNode basicNode = (BasicNode) node;
+            final TextNode textNode = (TextNode) node;
 
-            for (char character : basicNode.getText().toCharArray()) {
+            for (char character : textNode.getText().toCharArray()) {
                 jsonArray.add(
                         renderNode(
                                 String.valueOf(character),
                                 gradientHandler.next(),
-                                basicNode.isBold(),
-                                basicNode.isItalic(),
-                                basicNode.isStrike(),
-                                basicNode.isUnderlined(),
-                                basicNode.isObfuscated(),
-                                basicNode.getActions()
+                                textNode.isBold(),
+                                textNode.isItalic(),
+                                textNode.isStrike(),
+                                textNode.isUnderlined(),
+                                textNode.isObfuscated(),
+                                textNode.getActions()
                         )
                 );
             }
@@ -216,8 +226,8 @@ public final class JsonSerializer {
         final JsonArray jsonArray = new JsonArray();
 
         final int length = parts.stream().
-                filter(BasicNode.class::isInstance)
-                .mapToInt(part -> ((BasicNode) part).getText().length())
+                filter(TextNode.class::isInstance)
+                .mapToInt(part -> ((TextNode) part).getText().length())
                 .sum();
 
         final RainbowHandler rainbowHandler = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
@@ -228,18 +238,18 @@ public final class JsonSerializer {
                 continue;
             }
 
-            final BasicNode basicNode = (BasicNode) node;
-            for (char character : basicNode.getText().toCharArray()) {
+            final TextNode textNode = (TextNode) node;
+            for (char character : textNode.getText().toCharArray()) {
                 jsonArray.add(
                         renderNode(
                                 String.valueOf(character),
                                 rainbowHandler.next(),
-                                basicNode.isBold(),
-                                basicNode.isItalic(),
-                                basicNode.isStrike(),
-                                basicNode.isUnderlined(),
-                                basicNode.isObfuscated(),
-                                basicNode.getActions()
+                                textNode.isBold(),
+                                textNode.isItalic(),
+                                textNode.isStrike(),
+                                textNode.isUnderlined(),
+                                textNode.isObfuscated(),
+                                textNode.getActions()
                         )
                 );
             }

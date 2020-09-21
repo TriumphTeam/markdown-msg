@@ -8,6 +8,8 @@ import me.mattstudios.mfmsg.base.Message
 
 val gson = GsonBuilder().setPrettyPrinting().create()
 
+fun String.test() = this + "Hey"
+
 fun main(args: Array<String>) {
 
     val component = Message.create().parse("&c[**this**](command: Test) &r**is &r*Sparta***")

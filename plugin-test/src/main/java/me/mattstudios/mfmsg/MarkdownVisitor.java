@@ -59,8 +59,10 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final LineBreak lineBreak) {
-        System.out.println("break?");
+        System.out.println(MainKt.test("test"));
         visitChildren(lineBreak);
     }
+
+    // TODO, MAKE REPLACEABLE NODE WHERE IT'LL RENDER DIFFERENTLY
 
 }

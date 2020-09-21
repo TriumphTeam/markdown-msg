@@ -16,6 +16,7 @@ dependencies {
 }
 
 shadowJar {
+    //minimize()
     destinationDir file("C:/Users/xpsyk/Desktop/servers/paper-1.16/plugins")
 }
 
