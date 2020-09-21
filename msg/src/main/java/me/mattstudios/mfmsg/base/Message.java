@@ -7,7 +7,6 @@ import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -23,22 +22,22 @@ public final class Message {
     /**
      * Main constructor with the format options
      *
-     * @param formatOptions The format options with the data needed for the parser
+     * @param messageOptions The format options with the data needed for the parser
      */
-    private Message(@NotNull final FormatOptions formatOptions) {
-        formats = formatOptions.getFormats();
-        defaultColor = formatOptions.getDefaultColor();
+    private Message(@NotNull final MessageOptions messageOptions) {
+        formats = messageOptions.getFormats();
+        defaultColor = messageOptions.getDefaultColor();
     }
 
     /**
      * Creates a new {@link Message}
      *
-     * @param formatOptions The format options to use
+     * @param messageOptions The format options to use
      * @return A new {@link Message}
      */
     @NotNull
-    public static Message create(@NotNull final FormatOptions formatOptions) {
-        return new Message(formatOptions);
+    public static Message create(@NotNull final MessageOptions messageOptions) {
+        return new Message(messageOptions);
     }
 
     /**
@@ -48,7 +47,7 @@ public final class Message {
      */
     @NotNull
     public static Message create() {
-        return new Message(new FormatOptions());
+        return new Message(new MessageOptions());
     }
 
     /**

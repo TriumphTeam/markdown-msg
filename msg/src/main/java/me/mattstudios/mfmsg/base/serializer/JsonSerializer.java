@@ -11,12 +11,12 @@ import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.Gradient;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.color.Rainbow;
-import me.mattstudios.mfmsg.base.internal.color.handler.GradientHandler;
-import me.mattstudios.mfmsg.base.internal.color.handler.RainbowHandler;
-import me.mattstudios.mfmsg.base.internal.component.TextNode;
-import me.mattstudios.mfmsg.base.internal.component.LineBreakNode;
-import me.mattstudios.mfmsg.base.internal.component.MessageNode;
-import me.mattstudios.mfmsg.base.internal.component.ReplaceableNode;
+import me.mattstudios.mfmsg.base.internal.color.handlers.GradientHandler;
+import me.mattstudios.mfmsg.base.internal.color.handlers.RainbowHandler;
+import me.mattstudios.mfmsg.base.internal.components.TextNode;
+import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
+import me.mattstudios.mfmsg.base.internal.components.MessageNode;
+import me.mattstudios.mfmsg.base.internal.components.ReplaceableNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

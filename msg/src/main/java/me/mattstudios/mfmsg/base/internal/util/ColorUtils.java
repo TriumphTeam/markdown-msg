@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.util;
 
 import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
-import me.mattstudios.mfmsg.base.internal.color.handler.ColorMapping;
+import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;

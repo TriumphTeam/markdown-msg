@@ -1,7 +1,5 @@
 package me.mattstudios.mfmsg.base.internal;
 
-import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
-import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
@@ -43,7 +41,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
     private boolean underline = false;
     private boolean obfuscated = false;
 
-    private boolean replaceable = false;
+    private Replaceable replaceable = null;
 
     private List<MessageNode> nodes;
 
@@ -140,35 +138,35 @@ public final class MarkdownVisitor extends AbstractVisitor {
         }
 
         if (customNode instanceof Replaceable) {
-            replaceable = true;
+            replaceable = (Replaceable) customNode;
             visitChildren(customNode);
-            replaceable = false;
+            replaceable = null;
         }
 
     }
 
     @Override
     public void visit(final Color color) {
-        if (color.isLegacy()) currentColor = MessageColor.of(color.getColor().charAt(0));
-        else currentColor = MessageColor.of(color.getColor());
+        if (color.isLegacy()) currentColor = MessageColor.from(color.getColor().charAt(0));
+        else currentColor = MessageColor.from(color.getColor());
         visitChildren(color);
     }
 
     @Override
     public void visit(final Reset reset) {
-        currentColor = MessageColor.of("white");
+        currentColor = MessageColor.from("white");
         visitChildren(reset);
     }
 
     @Override
     public void visit(final Rainbow rainbow) {
-        currentColor = MessageColor.of(rainbow.getSaturation(), rainbow.getBrightness());
+        currentColor = MessageColor.from(rainbow.getSaturation(), rainbow.getBrightness());
         visitChildren(rainbow);
     }
 
     @Override
     public void visit(final Gradient gradient) {
-        currentColor = MessageColor.of(gradient.getHexes());
+        currentColor = MessageColor.from(gradient.getHexes());
         visitChildren(gradient);
     }
 
@@ -181,27 +179,27 @@ public final class MarkdownVisitor extends AbstractVisitor {
                     if (!formats.contains(Format.ACTION_HOVER)) break;
                     final MessageParser parser = new MessageParser(formats, new FlatColor("white"));
                     parser.parse(entry.getValue());
-                    actions.add(new HoverMessageAction(parser.build()));
+                    actions.add(MessageAction.from(parser.build()));
                     break;
 
                 case "command":
                     if (!formats.contains(Format.ACTION_COMMAND)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_COMMAND, entry.getValue()));
+                    actions.add(MessageAction.from(Format.ACTION_COMMAND, entry.getValue()));
                     break;
 
                 case "suggest":
                     if (!formats.contains(Format.ACTION_SUGGEST)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_SUGGEST, entry.getValue()));
+                    actions.add(MessageAction.from(Format.ACTION_SUGGEST, entry.getValue()));
                     break;
 
                 case "clipboard":
                     if (!formats.contains(Format.ACTION_CLIPBOARD)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_CLIPBOARD, entry.getValue()));
+                    actions.add(MessageAction.from(Format.ACTION_CLIPBOARD, entry.getValue()));
                     break;
 
                 case "url":
                     if (!formats.contains(Format.ACTION_URL)) break;
-                    actions.add(new ClickMessageAction(Format.ACTION_URL, entry.getValue()));
+                    actions.add(MessageAction.from(Format.ACTION_URL, entry.getValue()));
                     break;
             }
         }
@@ -225,9 +223,9 @@ public final class MarkdownVisitor extends AbstractVisitor {
     @Override
     public void visit(final Text text) {
 
-        if (replaceable) {
+        if (replaceable != null) {
             final ReplaceableNode node = new ReplaceableNode(text.getLiteral());
-            System.out.println(text.getLiteral());
+            // TODO HAVE THE EXTENSION GET HERE
             nodes.add(node);
             visitChildren(text);
             return;

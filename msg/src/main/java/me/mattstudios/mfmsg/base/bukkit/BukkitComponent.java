@@ -1,5 +1,6 @@
 package me.mattstudios.mfmsg.base.bukkit;
 
+import me.mattstudios.mfmsg.base.Message;
 import me.mattstudios.mfmsg.base.bukkit.nms.NmsMessage;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
@@ -20,7 +21,7 @@ public final class BukkitComponent implements MessageComponent {
     /**
      * Main constructor that takes in the parsed Lines
      *
-     * @param nodes The parsed lines from {@link me.mattstudios.mfmsg.base.Message}
+     * @param nodes The parsed lines from {@link Message}
      */
     public BukkitComponent(@NotNull final List<MessageNode> nodes) {
         this.nodes = nodes;

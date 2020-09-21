@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Options to enable and disable for the formats
  */
-public final class FormatOptions {
+public final class MessageOptions {
 
     @NotNull
     private final Set<Format> formats;
@@ -23,7 +23,7 @@ public final class FormatOptions {
     /**
      * Main constructor with all the formats
      */
-    FormatOptions() {
+    MessageOptions() {
         this.formats = EnumSet.allOf(Format.class);
     }
 
@@ -33,8 +33,8 @@ public final class FormatOptions {
      * @return The format options builder
      */
     @NotNull
-    public static FormatOptions builder() {
-        return new FormatOptions();
+    public static MessageOptions builder() {
+        return new MessageOptions();
     }
 
     /**
@@ -44,7 +44,7 @@ public final class FormatOptions {
      * @return The format options object
      */
     @NotNull
-    public FormatOptions with(@NotNull final Format... formats) {
+    public MessageOptions with(@NotNull final Format... formats) {
         this.formats.clear();
         this.formats.addAll(Arrays.asList(formats));
         return this;
@@ -57,7 +57,7 @@ public final class FormatOptions {
      * @return The format options object
      */
     @NotNull
-    public FormatOptions without(@NotNull final Format... formats) {
+    public MessageOptions without(@NotNull final Format... formats) {
         this.formats.removeAll(Arrays.asList(formats));
         return this;
     }
@@ -69,7 +69,7 @@ public final class FormatOptions {
      * @return The format options object
      */
     @NotNull
-    public FormatOptions defaultColor(@NotNull final MessageColor defaultColor) {
+    public MessageOptions defaultColor(@NotNull final MessageColor defaultColor) {
         this.defaultColor = defaultColor;
         return this;
     }
