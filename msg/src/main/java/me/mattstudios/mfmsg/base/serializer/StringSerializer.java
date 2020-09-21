@@ -1,9 +1,8 @@
 package me.mattstudios.mfmsg.base.serializer;
 
-import me.mattstudios.mfmsg.base.internal.component.MessageLine;
+import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,16 +13,16 @@ public final class StringSerializer {
     private StringSerializer() {}
 
     @NotNull
-    public static String toString(@NotNull final List<MessageLine> lines) {
+    public static String toString(@NotNull final List<MessageNode> lines) {
         final StringBuilder stringBuilder = new StringBuilder();
 
-        final Iterator<MessageLine> iterator = lines.iterator();
+        /*final Iterator<MessageLine> iterator = lines.iterator();
         while (iterator.hasNext()) {
             //stringBuilder.append(convertLine(iterator.next().getParts()));
             if (iterator.hasNext()) {
                 stringBuilder.append("\n");
             }
-        }
+        }*/
 
         return stringBuilder.toString();
     }

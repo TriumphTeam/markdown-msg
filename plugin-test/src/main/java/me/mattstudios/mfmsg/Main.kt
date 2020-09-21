@@ -1,22 +1,22 @@
 package me.mattstudios.mfmsg
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
-import me.mattstudios.mfmsg.base.Message
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 
 
-val gson = GsonBuilder().setPrettyPrinting().create()
-
-fun String.test() = this + "Hey"
-
+//val gson = GsonBuilder().setPrettyPrinting().create()
 fun main(args: Array<String>) {
 
-    val component = Message.create().parse("&c[**this**](command: Test) &r**is &r*Sparta***")
+    /*val component = Message.create().parse("&c[**this**](command: Test) &r**is &r*Sparta***")
     val jsonElement: JsonElement = JsonParser().parse(component.toJson())
     val json = gson.toJson(jsonElement)
 
-    println(json)
+    println(json)*/
+
+    val parser: Parser = Parser.builder().build()
+    val document = parser.parse("**a *hello* c*Boy* this**")
+    val renderer = HtmlRenderer.builder().build()
+    println(renderer.render(document))
 
     /*val parser = Parser.builder().build()
     val document = parser.parse("&#000[**this**](hover: Test) **is &r*Sparta*** <r>not escaped rainbow")

@@ -5,12 +5,12 @@ import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.component.TextNode;
 import me.mattstudios.mfmsg.base.internal.component.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
 import me.mattstudios.mfmsg.base.internal.component.ReplaceableNode;
-import me.mattstudios.mfmsg.base.internal.extension.node.KeywordNode;
+import me.mattstudios.mfmsg.base.internal.component.TextNode;
 import me.mattstudios.mfmsg.base.internal.extension.node.Obfuscated;
+import me.mattstudios.mfmsg.base.internal.extension.node.Replaceable;
 import me.mattstudios.mfmsg.base.internal.extension.node.Strikethrough;
 import me.mattstudios.mfmsg.base.internal.extension.node.Underline;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
@@ -139,7 +139,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
             strike = false;
         }
 
-        if (customNode instanceof KeywordNode) {
+        if (customNode instanceof Replaceable) {
             replaceable = true;
             visitChildren(customNode);
             replaceable = false;
@@ -227,6 +227,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
         if (replaceable) {
             final ReplaceableNode node = new ReplaceableNode(text.getLiteral());
+            System.out.println(text.getLiteral());
             nodes.add(node);
             visitChildren(text);
             return;

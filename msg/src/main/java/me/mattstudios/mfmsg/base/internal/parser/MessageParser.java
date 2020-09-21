@@ -4,7 +4,7 @@ import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MarkdownVisitor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.component.MessageNode;
-import me.mattstudios.mfmsg.base.internal.extension.KeywordExtension;
+import me.mattstudios.mfmsg.base.internal.extension.ReplaceableExtension;
 import me.mattstudios.mfmsg.base.internal.extension.ObfuscatedExtension;
 import me.mattstudios.mfmsg.base.internal.extension.StrikethroughExtension;
 import me.mattstudios.mfmsg.base.internal.extension.UnderlineExtension;
@@ -29,7 +29,7 @@ public final class MessageParser {
                             StrikethroughExtension.create(),
                             UnderlineExtension.create(),
                             ObfuscatedExtension.create(),
-                            KeywordExtension.create()
+                            ReplaceableExtension.create('{', '}', 1)
                     )
             ).build();
 

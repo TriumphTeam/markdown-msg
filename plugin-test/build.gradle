@@ -13,6 +13,8 @@ dependencies {
     implementation "me.mattstudios.utils:matt-framework:1.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
+    implementation "com.atlassian.commonmark:commonmark:0.15.2"
+
 }
 
 shadowJar {

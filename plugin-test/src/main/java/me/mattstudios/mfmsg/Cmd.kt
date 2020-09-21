@@ -22,9 +22,9 @@ internal class Cmd : CommandBase() {
         }ms")
 
         val jsonElement: JsonElement = JsonParser().parse(component.toJson())
-        val json = gson.toJson(jsonElement)
+        //val json = gson.toJson(jsonElement)
 
-        println(json)
+        //println(json)
     }
 
 }
