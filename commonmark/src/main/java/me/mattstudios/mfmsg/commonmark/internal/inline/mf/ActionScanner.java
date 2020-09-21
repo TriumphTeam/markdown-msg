@@ -40,7 +40,7 @@ public final class ActionScanner {
                 foundEscape = true;
             }
 
-            if (c == ':') {
+            if (c == ':' && type == null) {
                 type = builder.toString();
 
                 if (!ACTIONS.contains(type.toUpperCase())) {
