@@ -25,7 +25,7 @@ internal class Cmd : CommandBase() {
 
         player.sendMessage("${
             measureNanoTime {
-                component.sendMessage(player)
+                player.sendMessage(component.toString())
             } / 1000000.0
         }ms")
 

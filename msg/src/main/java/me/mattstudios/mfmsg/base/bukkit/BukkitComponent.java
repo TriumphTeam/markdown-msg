@@ -5,6 +5,7 @@ import me.mattstudios.mfmsg.base.bukkit.nms.NmsMessage;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
+import me.mattstudios.mfmsg.base.serializer.StringSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,7 +85,7 @@ public final class BukkitComponent implements MessageComponent {
     @NotNull
     @Override
     public String toString() {
-        return "";//StringSerializer.toString(nodes);
+        return StringSerializer.toString(nodes);
     }
 
     /**
