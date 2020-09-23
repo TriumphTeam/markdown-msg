@@ -2,8 +2,7 @@ package me.mattstudios.mfmsg.bukkit;
 
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
-import me.mattstudios.mfmsg.bukkit.serializer.JsonSerializer;
-import me.mattstudios.mfmsg.bukkit.serializer.StringSerializer;
+import me.mattstudios.mfmsg.bukkit.serializer.NodeSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -83,7 +82,7 @@ public final class BukkitComponent implements MessageComponent {
     @NotNull
     @Override
     public String toString() {
-        return StringSerializer.toString(nodes);
+        return NodeSerializer.toString(nodes);
     }
 
     /**
@@ -94,7 +93,7 @@ public final class BukkitComponent implements MessageComponent {
     @NotNull
     @Override
     public String toJson() {
-        return JsonSerializer.toString(nodes);
+        return NodeSerializer.toJson(nodes);
     }
 
 

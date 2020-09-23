@@ -3,5 +3,6 @@ rootProject.name = 'mf-msg'
 include 'commonmark'
 include 'msg'
 include 'bukkit'
+include 'adventure'
 include 'plugin-test'
 

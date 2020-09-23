@@ -137,6 +137,11 @@ public final class TextNode implements MessageNode {
         this.messageActions = messageActions;
     }
 
+    /**
+     * For testing, mostly
+     *
+     * @return Testing String
+     */
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
@@ -149,4 +154,5 @@ public final class TextNode implements MessageNode {
         if (messageActions != null) builder.append(" - ACTIONS");
         return builder.toString();
     }
+
 }

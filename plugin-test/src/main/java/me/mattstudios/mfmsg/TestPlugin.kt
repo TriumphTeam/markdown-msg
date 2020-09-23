@@ -8,7 +8,7 @@ class TestPlugin : JavaPlugin() {
 
     override fun onEnable() {
         val commandManager = CommandManager(this)
-        commandManager.register(Cmd())
+        commandManager.register(Cmd(this))
     }
 
 }

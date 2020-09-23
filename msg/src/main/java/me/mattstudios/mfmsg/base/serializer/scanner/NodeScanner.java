@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.bukkit.serializer;
+package me.mattstudios.mfmsg.base.serializer.scanner;
 
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public class NodeScanner {
     // Current line or "" if at the end of the lines (using "" instead of null saves a null check)
     private MessageNode node = null;
 
-    NodeScanner(@NotNull final List<MessageNode> nodes) {
+    public NodeScanner(@NotNull final List<MessageNode> nodes) {
         this.nodes = nodes;
         this.index = -1;
     }

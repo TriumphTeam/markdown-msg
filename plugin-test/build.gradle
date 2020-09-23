@@ -9,12 +9,19 @@ version parent.version
 dependencies {
 
     implementation project(":bukkit")
+    implementation project(":adventure")
 
     implementation "me.mattstudios.utils:matt-framework:1.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation "com.atlassian.commonmark:commonmark:0.15.2"
+    implementation "net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT"
 
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    kotlinOptions.javaParameters = true
 }
 
 shadowJar {
