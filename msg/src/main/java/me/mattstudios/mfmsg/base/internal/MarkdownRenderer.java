@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base.internal;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
-import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
+import me.mattstudios.mfmsg.base.internal.util.Version;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
@@ -32,7 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-public final class MarkdownVisitor extends AbstractVisitor {
+public final class MarkdownRenderer extends AbstractVisitor {
+
+    private final Version version;
 
     @NotNull
     private final MessageOptions messageOptions;
@@ -54,10 +56,12 @@ public final class MarkdownVisitor extends AbstractVisitor {
     @Nullable
     private List<MessageAction> actions = null;
 
-    public MarkdownVisitor(@NotNull final List<MessageNode> nodes, @NotNull final MessageOptions messageOptions) {
+    public MarkdownRenderer(@NotNull final List<MessageNode> nodes, @NotNull final MessageOptions messageOptions, @NotNull final Version version) {
         this.nodes = nodes;
         this.messageOptions = messageOptions;
         this.currentColor = messageOptions.getDefaultColor();
+
+        this.version = version;
     }
 
     /**
@@ -166,7 +170,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
             return;
         }
 
-        if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+        if (version.isColorLegacy()) {
             currentColor = MessageColor.toLegacy(color.getColor());
             visitChildren(color);
             return;
@@ -184,7 +188,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Rainbow rainbow) {
-        if (!messageOptions.hasFormat(Format.RAINBOW) || ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+        if (!messageOptions.hasFormat(Format.RAINBOW) || version.isColorLegacy()) {
             visitChildren(rainbow);
             return;
         }
@@ -195,7 +199,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
 
     @Override
     public void visit(final Gradient gradient) {
-        if (!messageOptions.hasFormat(Format.GRADIENT) || ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+        if (!messageOptions.hasFormat(Format.GRADIENT) || version.isColorLegacy()) {
             visitChildren(gradient);
             return;
         }
@@ -211,7 +215,7 @@ public final class MarkdownVisitor extends AbstractVisitor {
             switch (entry.getKey().toLowerCase()) {
                 case "hover":
                     if (!messageOptions.hasFormat(Format.ACTION_HOVER)) break;
-                    final MessageParser parser = new MessageParser(messageOptions);
+                    final MessageParser parser = new MessageParser(messageOptions, version);
                     parser.parse(entry.getValue());
                     actions.add(MessageAction.from(parser.build()));
                     break;

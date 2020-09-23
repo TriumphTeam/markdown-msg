@@ -1,14 +1,12 @@
-package me.mattstudios.mfmsg.base;
+package me.mattstudios.mfmsg.bukkit;
 
-import me.mattstudios.mfmsg.base.bukkit.BukkitComponent;
+import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
-import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * Main handler of the message lib
@@ -55,7 +53,7 @@ public final class Message {
      * @return The {@link MessageComponent} generated
      */
     public MessageComponent parse(@NotNull final String message) {
-        final MessageParser parser = new MessageParser(messageOptions);
+        final MessageParser parser = new MessageParser(messageOptions, NmsMessage.CURRENT_VERSION);
         parser.parse(message);
         return new BukkitComponent(parser.build());
     }

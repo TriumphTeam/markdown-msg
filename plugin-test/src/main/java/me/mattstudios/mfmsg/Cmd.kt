@@ -5,10 +5,9 @@ import com.google.gson.JsonParser
 import me.mattstudios.mf.annotations.Command
 import me.mattstudios.mf.annotations.Default
 import me.mattstudios.mf.base.CommandBase
-import me.mattstudios.mfmsg.base.Message
+import me.mattstudios.mfmsg.bukkit.Message
 import me.mattstudios.mfmsg.base.MessageOptions
 import me.mattstudios.mfmsg.base.internal.Format
-import me.mattstudios.mfmsg.base.internal.extensions.ReplaceableExtension
 import org.bukkit.entity.Player
 import java.util.EnumSet
 import kotlin.system.measureNanoTime

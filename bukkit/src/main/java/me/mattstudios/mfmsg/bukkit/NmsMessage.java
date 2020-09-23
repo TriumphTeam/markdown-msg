@@ -1,5 +1,7 @@
-package me.mattstudios.mfmsg.base.bukkit.nms;
+package me.mattstudios.mfmsg.bukkit;
 
+import me.mattstudios.mfmsg.base.internal.util.Version;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +17,12 @@ import java.util.UUID;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public final class NmsMessage {
 
+    private static final String PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName();
+    private static final String NMS_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf('.') + 1);
+
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+
+    protected static final Version CURRENT_VERSION = Version.getByNmsName(NMS_VERSION);
 
     private static final Class<?> CHAT_COMPONENT, CHAT_PACKET, TITLE_PACKET;
 
@@ -31,9 +38,9 @@ public final class NmsMessage {
             CHAT_COMPONENT = getNmsClass("IChatBaseComponent");
 
             // Because of all the NMS changes throughout the versions
-            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1)) {
+            if (CURRENT_VERSION.isOlderThan(Version.V1_12_R1)) {
                 CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(CHAT_COMPONENT, String.class));
-            } else if (ServerVersion.CURRENT_VERSION.isLegacy()) {
+            } else if (CURRENT_VERSION.isLegacy()) {
                 CHAT_SERIALIZER = LOOKUP.findStatic(getNmsClass("IChatBaseComponent$ChatSerializer"), "a", MethodType.methodType(CHAT_COMPONENT, String.class));
                 CHAT_TYPE = getNmsClass("ChatMessageType");
             } else {
@@ -70,7 +77,7 @@ public final class NmsMessage {
         try {
             final Object packet;
             // For versions from 1.8 - 1.11
-            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1)) {
+            if (CURRENT_VERSION.isOlderThan(Version.V1_12_R1)) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT)
                 ).invokeWithArguments(
@@ -82,7 +89,7 @@ public final class NmsMessage {
             }
 
             // For versions 1.12 - 1.15
-            if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+            if (CURRENT_VERSION.isColorLegacy()) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, CHAT_TYPE)
                 ).invokeWithArguments(
@@ -120,7 +127,7 @@ public final class NmsMessage {
         try {
             final Object packet;
             // For versions older than 1.12 and only for Actionbar since it used to be in the ChatPacket
-            if (ServerVersion.CURRENT_VERSION.isOlderThan(ServerVersion.V1_12_R1) && titleType == TitleType.ACTIONBAR) {
+            if (CURRENT_VERSION.isOlderThan(Version.V1_12_R1) && titleType == TitleType.ACTIONBAR) {
                 packet = LOOKUP.findConstructor(
                         CHAT_PACKET, MethodType.methodType(void.class, CHAT_COMPONENT, byte.class)
                 ).invokeWithArguments(
@@ -176,7 +183,7 @@ public final class NmsMessage {
      */
     @NotNull
     private static Class<?> getNmsClass(@NotNull final String path) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + ServerVersion.NMS_VERSION + "." + path);
+        return Class.forName("net.minecraft.server." + NMS_VERSION + "." + path);
     }
 
     /**
@@ -188,7 +195,7 @@ public final class NmsMessage {
      */
     @NotNull
     private static Class<?> getCraftClass(@NotNull final String path) throws ClassNotFoundException {
-        return Class.forName("org.bukkit.craftbukkit." + ServerVersion.NMS_VERSION + "." + path);
+        return Class.forName("org.bukkit.craftbukkit." + NMS_VERSION + "." + path);
     }
 
     public enum TitleType {

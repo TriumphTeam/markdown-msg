@@ -1,7 +1,5 @@
-package me.mattstudios.mfmsg.base.bukkit;
+package me.mattstudios.mfmsg.bukkit;
 
-import me.mattstudios.mfmsg.base.Message;
-import me.mattstudios.mfmsg.base.bukkit.nms.NmsMessage;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.JsonSerializer;

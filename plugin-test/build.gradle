@@ -8,7 +8,7 @@ version parent.version
 
 dependencies {
 
-    implementation project(":msg")
+    implementation project(":bukkit")
 
     implementation "me.mattstudios.utils:matt-framework:1.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

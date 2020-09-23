@@ -3,7 +3,7 @@ package me.mattstudios.mfmsg.base.serializer;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
+import me.mattstudios.mfmsg.base.internal.util.Version;
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
@@ -137,7 +137,7 @@ public final class JsonSerializer {
             if (messageAction instanceof HoverMessageAction) {
                 final JsonObject hoverObject = new JsonObject();
                 hoverObject.addProperty("action", "show_text");
-                if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+                if (Version.CURRENT_VERSION.isColorLegacy()) {
                     hoverObject.add("value", toJson(((HoverMessageAction) messageAction).getNodes()));
                 } else {
                     hoverObject.add("contents", toJson(((HoverMessageAction) messageAction).getNodes()));

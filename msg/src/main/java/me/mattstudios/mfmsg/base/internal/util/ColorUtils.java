@@ -1,6 +1,5 @@
 package me.mattstudios.mfmsg.base.internal.util;
 
-import me.mattstudios.mfmsg.base.bukkit.nms.ServerVersion;
 import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +22,7 @@ public final class ColorUtils {
      */
     @NotNull
     public static String ofHex(@NotNull final String color) {
-        if (ServerVersion.CURRENT_VERSION.isColorLegacy()) {
+        if (Version.CURRENT_VERSION.isColorLegacy()) {
             return ColorMapping.toLegacy(hexToColor(color));
         }
         return "#" + Integer.toHexString(hexToColor(color).getRGB()).substring(2);
