@@ -137,4 +137,16 @@ public final class TextNode implements MessageNode {
         this.messageActions = messageActions;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(text);
+        if (bold) builder.append(" - BOLD");
+        if (italic) builder.append(" - ITALIC");
+        if (strike) builder.append(" - STRIKETHROUGH");
+        if (underlined) builder.append(" - UNDERLINED");
+        if (obfuscated) builder.append(" - OBFUSCATED");
+        if (messageActions != null) builder.append(" - ACTIONS");
+        return builder.toString();
+    }
 }

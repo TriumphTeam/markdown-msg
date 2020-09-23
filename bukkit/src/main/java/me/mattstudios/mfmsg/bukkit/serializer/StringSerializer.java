@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.base.serializer;
+package me.mattstudios.mfmsg.bukkit.serializer;
 
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;

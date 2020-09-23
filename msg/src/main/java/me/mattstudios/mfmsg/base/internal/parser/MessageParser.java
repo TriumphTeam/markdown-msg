@@ -1,7 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.parser;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
-import me.mattstudios.mfmsg.base.internal.MarkdownRenderer;
+import me.mattstudios.mfmsg.base.internal.renderer.MarkdownRenderer;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.extensions.ObfuscatedExtension;
 import me.mattstudios.mfmsg.base.internal.extensions.ReplaceableHandler;

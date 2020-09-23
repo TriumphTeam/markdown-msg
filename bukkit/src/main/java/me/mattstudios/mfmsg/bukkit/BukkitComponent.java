@@ -2,8 +2,8 @@ package me.mattstudios.mfmsg.bukkit;
 
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
-import me.mattstudios.mfmsg.base.serializer.JsonSerializer;
-import me.mattstudios.mfmsg.base.serializer.StringSerializer;
+import me.mattstudios.mfmsg.bukkit.serializer.JsonSerializer;
+import me.mattstudios.mfmsg.bukkit.serializer.StringSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

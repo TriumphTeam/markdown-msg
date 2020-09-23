@@ -1,6 +1,7 @@
-package me.mattstudios.mfmsg.base.internal;
+package me.mattstudios.mfmsg.base.internal.renderer;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
+import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.util.Version;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
@@ -34,12 +35,14 @@ import java.util.Map.Entry;
 
 public final class MarkdownRenderer extends AbstractVisitor {
 
+    @NotNull
     private final Version version;
 
     @NotNull
     private final MessageOptions messageOptions;
+
     @NotNull
-    private List<MessageNode> nodes;
+    private final List<MessageNode> nodes;
 
     // Text properties
     private boolean bold = false;

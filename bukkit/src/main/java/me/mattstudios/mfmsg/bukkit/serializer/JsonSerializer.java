@@ -1,9 +1,8 @@
-package me.mattstudios.mfmsg.base.serializer;
+package me.mattstudios.mfmsg.bukkit.serializer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.mattstudios.mfmsg.base.internal.util.Version;
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
@@ -18,6 +17,7 @@ import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.components.ReplaceableNode;
 import me.mattstudios.mfmsg.base.internal.components.TextNode;
+import me.mattstudios.mfmsg.bukkit.NmsMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,7 +137,7 @@ public final class JsonSerializer {
             if (messageAction instanceof HoverMessageAction) {
                 final JsonObject hoverObject = new JsonObject();
                 hoverObject.addProperty("action", "show_text");
-                if (Version.CURRENT_VERSION.isColorLegacy()) {
+                if (NmsMessage.CURRENT_VERSION.isColorLegacy()) {
                     hoverObject.add("value", toJson(((HoverMessageAction) messageAction).getNodes()));
                 } else {
                     hoverObject.add("contents", toJson(((HoverMessageAction) messageAction).getNodes()));

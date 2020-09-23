@@ -22,7 +22,7 @@ public final class NmsMessage {
 
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
-    protected static final Version CURRENT_VERSION = Version.getByNmsName(NMS_VERSION);
+    public static final Version CURRENT_VERSION = Version.getByNmsName(NMS_VERSION);
 
     private static final Class<?> CHAT_COMPONENT, CHAT_PACKET, TITLE_PACKET;
 

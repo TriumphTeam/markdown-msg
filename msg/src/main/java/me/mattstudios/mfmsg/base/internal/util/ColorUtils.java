@@ -1,6 +1,5 @@
 package me.mattstudios.mfmsg.base.internal.util;
 
-import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
@@ -22,9 +21,6 @@ public final class ColorUtils {
      */
     @NotNull
     public static String ofHex(@NotNull final String color) {
-        if (Version.CURRENT_VERSION.isColorLegacy()) {
-            return ColorMapping.toLegacy(hexToColor(color));
-        }
         return "#" + Integer.toHexString(hexToColor(color).getRGB()).substring(2);
     }
 
