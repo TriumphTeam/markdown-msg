@@ -95,8 +95,6 @@ public final class ActionScanner {
             if (!foundEscape) scanner.next();
         }
 
-        System.out.println(actions);
-
         return actions;
     }
 

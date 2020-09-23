@@ -9,3 +9,4 @@ build/
 temp.java.asc
 
 temp.java
+gradle.properties
