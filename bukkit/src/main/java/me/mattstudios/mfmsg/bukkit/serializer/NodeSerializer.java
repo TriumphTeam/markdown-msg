@@ -14,13 +14,13 @@ public final class NodeSerializer {
     private NodeSerializer() {}
 
     public static String toJson(@NotNull final List<MessageNode> nodeList) {
-        final Appender jsonAppender = new JsonAppender();
+        final Appender<String> jsonAppender = new JsonAppender();
         ScanUtils.scan(nodeList, jsonAppender);
         return jsonAppender.build();
     }
 
     public static String toString(@NotNull final List<MessageNode> nodeList) {
-        final Appender jsonAppender = new StringAppender();
+        final Appender<String> jsonAppender = new StringAppender();
         ScanUtils.scan(nodeList, jsonAppender);
         return jsonAppender.build();
     }

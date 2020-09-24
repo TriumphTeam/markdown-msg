@@ -20,7 +20,7 @@ import java.util.List;
 
 public final class ScanUtils {
 
-    public static void scan(@NotNull final List<MessageNode> nodeList, @NotNull final Appender appender) {
+    public static void scan(@NotNull final List<MessageNode> nodeList, @NotNull final Appender<?> appender) {
         appender.append("");
 
         final NodeScanner nodeScanner = new NodeScanner(nodeList);
@@ -94,7 +94,7 @@ public final class ScanUtils {
     }
 
     @NotNull
-    private static JsonArray fancify(@NotNull Appender appender, @NotNull final List<MessageNode> parts, @NotNull final MessageColor color) {
+    private static JsonArray fancify(@NotNull Appender<?> appender, @NotNull final List<MessageNode> parts, @NotNull final MessageColor color) {
         final JsonArray jsonArray = new JsonArray();
 
         final int length = parts.stream()
@@ -134,7 +134,7 @@ public final class ScanUtils {
         return jsonArray;
     }
 
-    private static boolean renderSpecial(@NotNull final MessageNode node, @NotNull final Appender appender) {
+    private static boolean renderSpecial(@NotNull final MessageNode node, @NotNull final Appender<?> appender) {
         if (node instanceof LineBreakNode) {
             appender.append("\n");
             return true;
