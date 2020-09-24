@@ -10,7 +10,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public final class StringAppender implements Appender {
+public final class StringAppender implements Appender<String> {
 
     private static final Pattern CHARACTER = Pattern.compile(".");
     private final StringBuilder builder = new StringBuilder();
@@ -49,6 +49,7 @@ public final class StringAppender implements Appender {
         builder.append(stringBuilder.toString());
     }
 
+    @NotNull
     @Override
     public String build() {
         return builder.toString();

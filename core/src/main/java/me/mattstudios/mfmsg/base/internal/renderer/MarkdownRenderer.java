@@ -2,7 +2,6 @@ package me.mattstudios.mfmsg.base.internal.renderer;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.Format;
-import me.mattstudios.mfmsg.base.internal.util.Version;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
 import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;

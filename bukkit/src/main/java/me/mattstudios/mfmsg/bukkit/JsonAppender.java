@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.util.List;
 
-public final class JsonAppender implements Appender {
+public final class JsonAppender implements Appender<String> {
 
     private static final Gson GSON = new Gson();
     private final JsonArray jsonArray = new JsonArray();
@@ -94,6 +94,7 @@ public final class JsonAppender implements Appender {
         jsonArray.add(jsonObject);
     }
 
+    @NotNull
     @Override
     public String build() {
         return GSON.toJson(jsonArray);
