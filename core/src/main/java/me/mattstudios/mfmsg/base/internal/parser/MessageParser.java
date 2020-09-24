@@ -1,13 +1,12 @@
 package me.mattstudios.mfmsg.base.internal.parser;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
-import me.mattstudios.mfmsg.base.internal.renderer.MarkdownRenderer;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.extensions.ObfuscatedExtension;
 import me.mattstudios.mfmsg.base.internal.extensions.ReplaceableHandler;
 import me.mattstudios.mfmsg.base.internal.extensions.StrikethroughExtension;
 import me.mattstudios.mfmsg.base.internal.extensions.UnderlineExtension;
-import me.mattstudios.mfmsg.base.internal.util.Version;
+import me.mattstudios.mfmsg.base.internal.renderer.MarkdownRenderer;
 import me.mattstudios.mfmsg.commonmark.Extension;
 import me.mattstudios.mfmsg.commonmark.parser.Parser;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +29,7 @@ public final class MessageParser {
     @NotNull
     private final MarkdownRenderer visitor;
 
-    public MessageParser(@NotNull final MessageOptions messageOptions, @NotNull final Version version) {
+    public MessageParser(@NotNull final MessageOptions messageOptions) {
         final List<Extension> extensions = new ArrayList<>(
                 Arrays.asList(
                         StrikethroughExtension.create(),
@@ -46,7 +45,7 @@ public final class MessageParser {
         }
 
         parser = Parser.builder().extensions(extensions).build();
-        visitor = new MarkdownRenderer(nodes, messageOptions, version);
+        visitor = new MarkdownRenderer(nodes, messageOptions);
     }
 
     public void parse(@NotNull final String message) {

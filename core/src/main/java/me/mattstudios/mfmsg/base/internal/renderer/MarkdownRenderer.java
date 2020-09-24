@@ -36,9 +36,6 @@ import java.util.Map.Entry;
 public final class MarkdownRenderer extends AbstractVisitor {
 
     @NotNull
-    private final Version version;
-
-    @NotNull
     private final MessageOptions messageOptions;
 
     @NotNull
@@ -59,12 +56,10 @@ public final class MarkdownRenderer extends AbstractVisitor {
     @Nullable
     private List<MessageAction> actions = null;
 
-    public MarkdownRenderer(@NotNull final List<MessageNode> nodes, @NotNull final MessageOptions messageOptions, @NotNull final Version version) {
+    public MarkdownRenderer(@NotNull final List<MessageNode> nodes, @NotNull final MessageOptions messageOptions) {
         this.nodes = nodes;
         this.messageOptions = messageOptions;
         this.currentColor = messageOptions.getDefaultColor();
-
-        this.version = version;
     }
 
     /**
@@ -173,12 +168,6 @@ public final class MarkdownRenderer extends AbstractVisitor {
             return;
         }
 
-        if (version.isColorLegacy()) {
-            currentColor = MessageColor.toLegacy(color.getColor());
-            visitChildren(color);
-            return;
-        }
-
         currentColor = MessageColor.from(color.getColor());
         visitChildren(color);
     }
@@ -191,7 +180,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
 
     @Override
     public void visit(final Rainbow rainbow) {
-        if (!messageOptions.hasFormat(Format.RAINBOW) || version.isColorLegacy()) {
+        if (!messageOptions.hasFormat(Format.RAINBOW)) {
             visitChildren(rainbow);
             return;
         }
@@ -202,7 +191,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
 
     @Override
     public void visit(final Gradient gradient) {
-        if (!messageOptions.hasFormat(Format.GRADIENT) || version.isColorLegacy()) {
+        if (!messageOptions.hasFormat(Format.GRADIENT)) {
             visitChildren(gradient);
             return;
         }
@@ -218,7 +207,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
             switch (entry.getKey().toLowerCase()) {
                 case "hover":
                     if (!messageOptions.hasFormat(Format.ACTION_HOVER)) break;
-                    final MessageParser parser = new MessageParser(messageOptions, version);
+                    final MessageParser parser = new MessageParser(messageOptions);
                     parser.parse(entry.getValue());
                     actions.add(MessageAction.from(parser.build()));
                     break;
