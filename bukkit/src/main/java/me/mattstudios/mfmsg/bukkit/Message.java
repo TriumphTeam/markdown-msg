@@ -53,7 +53,7 @@ public final class Message {
      * @return The {@link MessageComponent} generated
      */
     public MessageComponent parse(@NotNull final String message) {
-        final MessageParser parser = new MessageParser(messageOptions, NmsMessage.CURRENT_VERSION);
+        final MessageParser parser = new MessageParser(messageOptions);
         parser.parse(message);
         return new BukkitComponent(parser.build());
     }

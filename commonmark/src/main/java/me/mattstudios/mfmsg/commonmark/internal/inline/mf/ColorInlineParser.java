@@ -11,7 +11,7 @@ import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Attempts to parse a `&` format
+ * Attempts to parse a AND format
  */
 public class ColorInlineParser implements InlineContentParser {
 

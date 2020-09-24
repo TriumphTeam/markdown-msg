@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Attempts to parse a `&` format
+ * Attempts to parse a AND format
  */
 @SuppressWarnings("UnstableApiUsage")
 public class ClosedColorInlineParser implements InlineContentParser {
@@ -32,7 +32,7 @@ public class ClosedColorInlineParser implements InlineContentParser {
     public ParsedInline tryParse(@NotNull final InlineParserState inlineParserState) {
         final Scanner scanner = inlineParserState.scanner();
 
-        // Skip `<`
+        // Skip <
         scanner.next();
 
         final char c = scanner.peek();

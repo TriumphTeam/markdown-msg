@@ -3,7 +3,6 @@ package me.mattstudios.mfmsg.adventure;
 import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
-import me.mattstudios.mfmsg.base.internal.util.Version;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,8 +29,7 @@ public final class AdventureMessage {
     }
 
     public Component parse(@NotNull final String message) {
-        // Passing in Latest version, as it's not needed to check before since adventure will already convert it
-        final MessageParser parser = new MessageParser(messageOptions, Version.V1_16_R2);
+        final MessageParser parser = new MessageParser(messageOptions);
         parser.parse(message);
         return AdventureSerializer.toComponent(parser.build());
     }

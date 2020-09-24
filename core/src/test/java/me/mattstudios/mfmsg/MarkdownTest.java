@@ -4,7 +4,6 @@ import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
-import me.mattstudios.mfmsg.base.internal.util.Version;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,7 @@ public final class MarkdownTest {
     @Test
     public void test_bold() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("**Hello**");
 
@@ -30,7 +29,7 @@ public final class MarkdownTest {
     @Test
     public void test_italic() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("*Hello*");
 
@@ -43,7 +42,7 @@ public final class MarkdownTest {
     @Test
     public void test_strikethrough() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("~~Hello~~");
 
@@ -56,7 +55,7 @@ public final class MarkdownTest {
     @Test
     public void test_underlined() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("__Hello__");
 
@@ -69,7 +68,7 @@ public final class MarkdownTest {
     @Test
     public void test_obfuscated() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("||Hello||");
 
@@ -82,7 +81,7 @@ public final class MarkdownTest {
     @Test
     public void test_action() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("[Hello](hover: Hello!)");
 
@@ -95,7 +94,7 @@ public final class MarkdownTest {
     @Test
     public void test_complex() {
         final MessageOptions options = new MessageOptions.Builder(EnumSet.allOf(Format.class)).build();
-        final MessageParser messageParser = new MessageParser(options, Version.V1_16_R2);
+        final MessageParser messageParser = new MessageParser(options);
 
         messageParser.parse("**Bold** *italic* ~~strike~~ __underline__ ||obfuscated|| [action](hover: Hello!)");
 

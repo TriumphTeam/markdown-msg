@@ -1,8 +1,9 @@
 rootProject.name = 'mf-msg'
 
-include 'commonmark'
-include 'msg'
-include 'bukkit'
-include 'adventure'
+['commonmark', 'core', 'bukkit', 'adventure'].each {
+    include "$it"
+    findProject(":$it")?.name = "mf-msg-$it"
+}
+
 include 'plugin-test'
 

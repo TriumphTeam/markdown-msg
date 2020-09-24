@@ -3,7 +3,7 @@ version parent.version
 
 dependencies {
 
-    api project(":commonmark")
+    api project(":mf-msg-commonmark")
     compileOnly "org.jetbrains:annotations:17.0.0"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
@@ -13,4 +13,12 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+/*publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = "mf-msg-core"
+        }
+    }
+}*/
 

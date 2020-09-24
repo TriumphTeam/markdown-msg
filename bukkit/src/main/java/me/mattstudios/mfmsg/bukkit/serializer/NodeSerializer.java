@@ -2,9 +2,9 @@ package me.mattstudios.mfmsg.bukkit.serializer;
 
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.bukkit.appender.JsonAppender;
-import me.mattstudios.mfmsg.bukkit.appender.StringAppender;
 import me.mattstudios.mfmsg.base.serializer.scanner.ScanUtils;
+import me.mattstudios.mfmsg.bukkit.JsonAppender;
+import me.mattstudios.mfmsg.bukkit.StringAppender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

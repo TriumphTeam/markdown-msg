@@ -1,6 +1,6 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
 group 'me.mattstudios'
@@ -8,8 +8,8 @@ version parent.version
 
 dependencies {
 
-    implementation project(":bukkit")
-    implementation project(":adventure")
+    implementation project(":mf-msg-bukkit")
+    implementation project(":mf-msg-adventure")
 
     implementation "me.mattstudios.utils:matt-framework:1.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

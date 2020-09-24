@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.bukkit.appender;
+package me.mattstudios.mfmsg.bukkit;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -6,13 +6,14 @@ import com.google.gson.JsonObject;
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
+import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.bukkit.NmsMessage;
 import me.mattstudios.mfmsg.base.serializer.scanner.ScanUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Color;
 import java.util.List;
 
 public final class JsonAppender implements Appender {
@@ -36,7 +37,13 @@ public final class JsonAppender implements Appender {
         if (underline) jsonObject.addProperty("underlined", true);
         if (obfuscated) jsonObject.addProperty("obfuscated", true);
 
-        if (color != null) jsonObject.addProperty("color", color);
+        if (color != null) {
+            if (Version.CURRENT_VERSION.isColorLegacy() && color.startsWith("#")) {
+                jsonObject.addProperty("color", ColorMapping.toLegacy(Color.decode(color)));
+            } else {
+                jsonObject.addProperty("color", color);
+            }
+        }
 
         if (actions == null || actions.isEmpty()) {
             jsonArray.add(jsonObject);
@@ -54,7 +61,7 @@ public final class JsonAppender implements Appender {
                 ScanUtils.scan(nodes, appender);
                 final JsonArray array = appender.getJsonArray();
 
-                if (NmsMessage.CURRENT_VERSION.isColorLegacy()) {
+                if (Version.CURRENT_VERSION.isColorLegacy()) {
                     hoverObject.add("value", array);
                 } else {
                     hoverObject.add("contents", array);

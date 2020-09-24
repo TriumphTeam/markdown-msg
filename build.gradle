@@ -1,5 +1,6 @@
 allprojects {
     apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
 
     group 'me.mattstudios'
     version '1.2-BETA'
@@ -18,6 +19,63 @@ allprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+
+                from components.java
+                versionMapping {
+                    usage("java-api") {
+                        fromResolutionOf("runtimeClasspath")
+                    }
+                    usage("java-runtime") {
+                        fromResolutionResult()
+                    }
+                }
+                pom {
+                    name = "Matt\'s Markdown JSON message"
+                    description = "Message framework for markdown like syntax to be converted to Minecraft."
+                    url = "https://github.com/ipsk/MF-MSG"
+
+                    licenses {
+                        license {
+                            name = "MIT License"
+                            url = "http://www.opensource.org/licenses/mit-license.php"
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = "matt"
+                            name = "Mateus Moreira"
+                        }
+                    }
+
+                    scm {
+                        connection = "scm:git:git://github.com/ipsk/MF-MSG.git"
+                        developerConnection = "scm:git:ssh://github.com:ipsk/MF-MSG.git"
+                        url = "http://github.com/ipsk/MF-MSG"
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                credentials {
+                    username repoUsername
+                    password repoPassword
+                }
+
+                def releasesRepoUrl = repoUrl
+                def snapshotsRepoUrl = repoSnapshotsUrl
+
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
+
     }
 
 }

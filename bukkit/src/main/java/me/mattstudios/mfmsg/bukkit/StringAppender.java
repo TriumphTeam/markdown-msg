@@ -1,4 +1,4 @@
-package me.mattstudios.mfmsg.bukkit.appender;
+package me.mattstudios.mfmsg.bukkit;
 
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
 import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
@@ -6,6 +6,7 @@ import me.mattstudios.mfmsg.base.serializer.Appender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -26,7 +27,11 @@ public final class StringAppender implements Appender {
 
         if (color != null) {
             if (color.startsWith("#")) {
-                stringBuilder.append("§x").append(CHARACTER.matcher(color.substring(1)).replaceAll("§$0"));
+                if (Version.CURRENT_VERSION.isColorLegacy()) {
+                    stringBuilder.append("§").append(ColorMapping.fromName(ColorMapping.toLegacy(Color.decode(color))));
+                } else {
+                    stringBuilder.append("§x").append(CHARACTER.matcher(color.substring(1)).replaceAll("§$0"));
+                }
             } else {
                 stringBuilder.append("§").append(ColorMapping.fromName(color));
             }
