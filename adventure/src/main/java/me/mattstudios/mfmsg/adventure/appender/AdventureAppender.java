@@ -1,12 +1,16 @@
 package me.mattstudios.mfmsg.adventure.appender;
 
-import com.google.gson.JsonObject;
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
+import me.mattstudios.mfmsg.base.internal.action.content.HoverContent;
+import me.mattstudios.mfmsg.base.internal.action.content.ShowItem;
+import me.mattstudios.mfmsg.base.internal.action.content.ShowText;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.base.serializer.scanner.ScanUtils;
+import me.mattstudios.mfmsg.base.serializer.scanner.NodeScanner;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -78,16 +82,30 @@ public final class AdventureAppender implements Appender<Component> {
         // Handles the actions
         for (final MessageAction messageAction : actions) {
             if (messageAction instanceof HoverMessageAction) {
-                final JsonObject hoverObject = new JsonObject();
-                hoverObject.addProperty("action", "show_text");
+                final HoverContent hoverContent = ((HoverMessageAction) messageAction).getHoverContent();
 
-                final List<MessageNode> nodes = ((HoverMessageAction) messageAction).getNodes();
+                if (hoverContent instanceof ShowText) {
+                    final List<MessageNode> nodes = ((ShowText) hoverContent).getNodes();
 
-                final AdventureAppender appender = new AdventureAppender();
-                ScanUtils.scan(nodes, appender);
-                final Component component = appender.build();
+                    final AdventureAppender appender = new AdventureAppender();
+                    NodeScanner.scan(nodes, appender);
+                    final Component component = appender.build();
 
-                textComponent.hoverEvent(HoverEvent.showText(component));
+                    textComponent.hoverEvent(HoverEvent.showText(component));
+                    continue;
+                }
+
+                final ShowItem showItem = (ShowItem) hoverContent;
+
+                final Key key = Key.of(showItem.getId());
+
+                BinaryTagHolder nbt = null;
+
+                if (showItem.getNbt() != null) {
+                    nbt = BinaryTagHolder.of(showItem.getNbt());
+                }
+
+                textComponent.hoverEvent(HoverEvent.showItem(new HoverEvent.ShowItem(key, showItem.getCount(), nbt)));
                 continue;
             }
 

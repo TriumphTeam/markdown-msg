@@ -3,6 +3,8 @@ package me.mattstudios.mfmsg.base.internal.util;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -43,6 +45,14 @@ public final class ColorUtils {
         }
 
         return Color.decode(builder.toString());
+    }
+
+    public static List<Color> hexToColorList(@NotNull final List<String> colors) {
+        final List<Color> colorList = new ArrayList<>();
+        for (final String color : colors) {
+            colorList.add(hexToColor(color));
+        }
+        return colorList;
     }
 
     /**

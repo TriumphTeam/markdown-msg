@@ -5,7 +5,6 @@ import me.mattstudios.mfmsg.base.internal.util.ColorUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Common interface for the message color types
@@ -66,7 +65,7 @@ public interface MessageColor {
     @NotNull
     static MessageColor from(final List<String> colors) {
         if (colors.size() == 1) return new FlatColor(ColorUtils.ofHex(colors.get(0)));
-        return new Gradient(colors.stream().map(ColorUtils::hexToColor).collect(Collectors.toList()));
+        return new Gradient(ColorUtils.hexToColorList(colors));
     }
 
 }

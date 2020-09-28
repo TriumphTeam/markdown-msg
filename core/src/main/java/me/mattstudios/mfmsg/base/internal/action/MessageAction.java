@@ -1,6 +1,7 @@
 package me.mattstudios.mfmsg.base.internal.action;
 
 import me.mattstudios.mfmsg.base.internal.Format;
+import me.mattstudios.mfmsg.base.internal.action.content.HoverContent;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +30,7 @@ public interface MessageAction {
      * @return A new HoverMessageAction
      */
     static MessageAction from(@NotNull final List<MessageNode> nodes) {
-        return new HoverMessageAction(nodes);
+        return new HoverMessageAction(HoverContent.showText(nodes));
     }
 
 }

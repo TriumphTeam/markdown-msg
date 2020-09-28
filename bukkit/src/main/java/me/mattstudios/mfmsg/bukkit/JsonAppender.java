@@ -3,13 +3,17 @@ package me.mattstudios.mfmsg.bukkit;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.mattstudios.mfmsg.base.internal.action.ClickMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.HoverMessageAction;
 import me.mattstudios.mfmsg.base.internal.action.MessageAction;
+import me.mattstudios.mfmsg.base.internal.action.content.HoverContent;
+import me.mattstudios.mfmsg.base.internal.action.content.ShowItem;
+import me.mattstudios.mfmsg.base.internal.action.content.ShowText;
 import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.base.serializer.scanner.ScanUtils;
+import me.mattstudios.mfmsg.base.serializer.scanner.NodeScanner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +23,7 @@ import java.util.List;
 public final class JsonAppender implements Appender<String> {
 
     private static final Gson GSON = new Gson();
+    private static final JsonParser JSON_PARSER = new JsonParser();
     private final JsonArray jsonArray = new JsonArray();
 
     @Override
@@ -53,19 +58,40 @@ public final class JsonAppender implements Appender<String> {
         for (final MessageAction messageAction : actions) {
             if (messageAction instanceof HoverMessageAction) {
                 final JsonObject hoverObject = new JsonObject();
-                hoverObject.addProperty("action", "show_text");
 
-                final List<MessageNode> nodes = ((HoverMessageAction) messageAction).getNodes();
+                final HoverContent hoverContent = ((HoverMessageAction) messageAction).getHoverContent();
 
-                final JsonAppender appender = new JsonAppender();
-                ScanUtils.scan(nodes, appender);
-                final JsonArray array = appender.getJsonArray();
+                if (hoverContent instanceof ShowText) {
+                    hoverObject.addProperty("action", "show_text");
 
-                if (Version.CURRENT_VERSION.isColorLegacy()) {
-                    hoverObject.add("value", array);
-                } else {
-                    hoverObject.add("contents", array);
+                    final List<MessageNode> nodes = ((ShowText) hoverContent).getNodes();
+
+                    final JsonAppender appender = new JsonAppender();
+                    NodeScanner.scan(nodes, appender);
+                    final JsonArray array = appender.getJsonArray();
+
+                    if (Version.CURRENT_VERSION.isColorLegacy()) {
+                        hoverObject.add("value", array);
+                    } else {
+                        hoverObject.add("contents", array);
+                    }
+                    jsonObject.add("hoverEvent", hoverObject);
+                    continue;
                 }
+
+                final ShowItem showItem = (ShowItem) hoverContent;
+
+                hoverObject.addProperty("action", "show_item");
+
+                final JsonObject showItemObject = new JsonObject();
+                showItemObject.addProperty("id", showItem.getId());
+                showItemObject.addProperty("Count", showItem.getId());
+
+                if (showItem.getNbt() != null) {
+                    showItemObject.addProperty("tag", showItem.getNbt());
+                }
+
+                hoverObject.add("contents", showItemObject);
 
                 jsonObject.add("hoverEvent", hoverObject);
                 continue;

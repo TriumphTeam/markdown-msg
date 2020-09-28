@@ -2,11 +2,13 @@ package me.mattstudios.mfmsg.adventure;
 
 import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.Format;
+import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Adventure message to parse the markdown into adventure
@@ -56,6 +58,12 @@ public class AdventureMessage {
         final MessageParser parser = new MessageParser(messageOptions);
         parser.parse(message);
         return AdventureSerializer.toComponent(parser.build());
+    }
+
+    public List<MessageNode> parseToNodes(@NotNull final String message) {
+        final MessageParser parser = new MessageParser(messageOptions);
+        parser.parse(message);
+        return parser.build();
     }
 
 }

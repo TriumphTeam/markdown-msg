@@ -1,28 +1,64 @@
 package me.mattstudios.mfmsg
 
-import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
+import me.mattstudios.mfmsg.base.internal.components.MessageNode
+import me.mattstudios.mfmsg.base.internal.components.TextNode
+import me.mattstudios.mfmsg.base.internal.util.ColorUtils
+import java.awt.Color
+import kotlin.system.measureNanoTime
 
 
 //val gson = GsonBuilder().setPrettyPrinting().create()
 fun main(args: Array<String>) {
 
-    /*val component = Message.create().parse("&c[**this**](command: Test) &r**is &r*Sparta***")
-    val jsonElement: JsonElement = JsonParser().parse(component.toJson())
-    val json = gson.toJson(jsonElement)
+    val sampleSize = 1000
 
-    println(json)*/
+    val colors = mutableListOf(
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+    )
 
-    val parser: Parser = Parser.builder().build()
-    val document = parser.parse("**a *hello* c*Boy* this**")
-    val renderer = HtmlRenderer.builder().build()
-    println(renderer.render(document))
+    val ktList = mutableListOf<Long>()
+    repeat(sampleSize) {
+        val timeKt = measureNanoTime {
+            colors.map { ColorUtils.hexToColor(it) }
+        }
+        ktList.add(timeKt)
+    }
 
-    /*val parser = Parser.builder().build()
-    val document = parser.parse("&#000[**this**](hover: Test) **is &r*Sparta*** <r>not escaped rainbow")
-    val visitor = MarkdownVisitorTest(EnumSet.allOf(Format::class.java))
-    visitor.visitComponents(document, null)*/
-    //val renderer = HtmlRenderer.builder().build()
-    //println(renderer.render(document))
+    val ktForList = mutableListOf<Long>()
+    repeat(sampleSize) {
+        val timeFor = measureNanoTime {
+            val list = mutableListOf<Color>()
+            for (color in colors) {
+                list.add(ColorUtils.hexToColor(color))
+            }
+        }
+        ktForList.add(timeFor)
+    }
+
+    val jvStreamList = mutableListOf<Long>()
+    repeat(sampleSize) {
+        val javaStream = measureNanoTime {
+            Java.stream(colors)
+        }
+        jvStreamList.add(javaStream)
+    }
+
+    val jvForList = mutableListOf<Long>()
+    repeat(sampleSize) {
+        val javaNormal = measureNanoTime {
+            Java.normal(colors)
+        }
+        jvForList.add(javaNormal)
+    }
+
+    println("Kt: ${ktList.average() / 1000000.0}ms")
+    println("Kt for: ${ktForList.average() / 1000000.0}ms")
+    println("Jv stream: ${jvStreamList.average() / 1000000.0}ms")
+    println("Jv for: ${jvForList.average() / 1000000.0}ms")
 
 }
