@@ -16,6 +16,7 @@ dependencies {
 
     implementation "com.atlassian.commonmark:commonmark:0.15.2"
     implementation "net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT"
+    implementation "com.google.guava:guava:29.0-jre"
 
 }
 

@@ -39,7 +39,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
     private final BitSet specialCharacters;
     private final BitSet delimiterCharacters;
     private final Map<Character, DelimiterProcessor> delimiterProcessors;
-    private final InlineParserContext context;
     private final Map<Character, InlineContentParser> inlineParsers;
 
     private Scanner scanner;
@@ -59,7 +58,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
     public InlineParserImpl(InlineParserContext inlineParserContext) {
         this.delimiterProcessors = calculateDelimiterProcessors(inlineParserContext.getCustomDelimiterProcessors());
 
-        this.context = inlineParserContext;
         this.inlineParsers = new HashMap<>();
         this.inlineParsers.put('\\', new BackslashInlineParser());
         this.inlineParsers.put('&', new ColorInlineParser());
@@ -396,7 +394,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
      * @return information about delimiter run, or {@code null}
      */
     private DelimiterData scanDelimiters(DelimiterProcessor delimiterProcessor, char delimiterChar) {
-        char charBefore = scanner.peekPrevious();
         Position start = scanner.position();
 
         int delimiterCount = scanner.matchMultiple(delimiterChar);
@@ -406,26 +403,9 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
             return null;
         }
 
-        char charAfter = scanner.peek();
-        String before = charBefore == Scanner.END ? "\n" : String.valueOf(charBefore);
-        String after = charAfter == Scanner.END ? "\n" : String.valueOf(charAfter);
-
-        // We could be more lazy here, in most cases we don't need to do every match case.
-        boolean beforeIsPunctuation = PUNCTUATION.matcher(before).matches();
-        boolean beforeIsWhitespace = UNICODE_WHITESPACE_CHAR.matcher(before).matches();
-        boolean afterIsPunctuation = PUNCTUATION.matcher(after).matches();
-        boolean afterIsWhitespace = UNICODE_WHITESPACE_CHAR.matcher(after).matches();
-
-        boolean leftFlanking = !afterIsWhitespace &&
-                (!afterIsPunctuation || beforeIsWhitespace || beforeIsPunctuation);
-        boolean rightFlanking = !beforeIsWhitespace &&
-                (!beforeIsPunctuation || afterIsWhitespace || afterIsPunctuation);
-        boolean canOpen;
-        boolean canClose;
-
-        // Changed here to allow the syntax `He__llo__`
-        canOpen = leftFlanking && delimiterChar == delimiterProcessor.getOpeningCharacter();
-        canClose = rightFlanking && delimiterChar == delimiterProcessor.getClosingCharacter();
+        // Changed here to allow the syntax `He__llo__` and changed to allow `**. hello .**`
+        boolean canOpen = delimiterChar == delimiterProcessor.getOpeningCharacter();
+        boolean canClose = delimiterChar == delimiterProcessor.getClosingCharacter();
 
         String text = scanner.textBetween(start, scanner.position()).toString();
         return new DelimiterData(delimiterCount, canOpen, canClose, new Text(text));

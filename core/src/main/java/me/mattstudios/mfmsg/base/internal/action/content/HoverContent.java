@@ -8,6 +8,11 @@ import java.util.List;
 
 public interface HoverContent {
 
+    /**
+     *
+     * @param nodes
+     * @return
+     */
     static HoverContent showText(@NotNull final List<MessageNode> nodes) {
         return new ShowText(nodes);
     }

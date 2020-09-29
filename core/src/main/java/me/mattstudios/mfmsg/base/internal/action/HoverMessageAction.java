@@ -15,6 +15,7 @@ public final class HoverMessageAction implements MessageAction {
         this.hoverContent = hoverContent;
     }
 
+    @NotNull
     public HoverContent getHoverContent() {
         return hoverContent;
     }

@@ -3,7 +3,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     group 'me.mattstudios'
-    version '1.2.1.0'
+    version '2.0.0-SNAPSHOT'
 
     repositories {
         mavenCentral()
@@ -11,7 +11,7 @@ allprojects {
     }
 
     dependencies {
-        implementation "org.spigotmc:spigot:1.16.2-R0.1-SNAPSHOT"
+        compileOnly "org.spigotmc:spigot:1.16.2-R0.1-SNAPSHOT"
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -69,10 +69,7 @@ allprojects {
                     password repoPassword
                 }
 
-                def releasesRepoUrl = repoUrl
-                def snapshotsRepoUrl = repoSnapshotsUrl
-
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                url = repoUrl
             }
         }
 
