@@ -11,7 +11,7 @@ public class FencedCodeBlock extends Block {
 
     @Override
     public void accept(Visitor visitor) {
-        visitor.visit(this);
+        //visitor.visit(this);
     }
 
     public char getFenceChar() {

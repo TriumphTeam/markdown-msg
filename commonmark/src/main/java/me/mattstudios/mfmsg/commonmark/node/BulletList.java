@@ -6,7 +6,7 @@ public class BulletList extends ListBlock {
 
     @Override
     public void accept(Visitor visitor) {
-        visitor.visit(this);
+        //visitor.visit(this);
     }
 
     public char getBulletMarker() {

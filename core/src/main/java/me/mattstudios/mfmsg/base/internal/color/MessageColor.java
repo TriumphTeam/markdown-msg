@@ -53,7 +53,7 @@ public interface MessageColor {
      */
     @NotNull
     static MessageColor from(final float saturation, final float brightness) {
-        return new Rainbow(saturation, brightness);
+        return new RainbowColor(saturation, brightness);
     }
 
     /**
@@ -65,7 +65,7 @@ public interface MessageColor {
     @NotNull
     static MessageColor from(final List<String> colors) {
         if (colors.size() == 1) return new FlatColor(ColorUtils.ofHex(colors.get(0)));
-        return new Gradient(ColorUtils.hexToColorList(colors));
+        return new GradientColor(ColorUtils.hexToColorList(colors));
     }
 
 }

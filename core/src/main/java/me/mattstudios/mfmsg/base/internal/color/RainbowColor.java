@@ -3,7 +3,7 @@ package me.mattstudios.mfmsg.base.internal.color;
 /**
  * Rainbow message color
  */
-public final class Rainbow implements MessageColor {
+public final class RainbowColor implements MessageColor {
 
     private final float saturation;
     private final float brightness;
@@ -14,7 +14,7 @@ public final class Rainbow implements MessageColor {
      * @param saturation The saturation of the colors
      * @param brightness The brightness of the colors
      */
-    public Rainbow(final float saturation, final float brightness) {
+    public RainbowColor(final float saturation, final float brightness) {
         this.saturation = saturation;
         this.brightness = brightness;
     }

@@ -7,6 +7,11 @@ import me.mattstudios.mfmsg.commonmark.internal.inline.Position;
 import me.mattstudios.mfmsg.commonmark.internal.inline.Scanner;
 import me.mattstudios.mfmsg.commonmark.internal.util.AsciiMatcher;
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyBold;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyItalic;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyObfuscated;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyStrikethrough;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyUnderline;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,11 +58,19 @@ public class ColorInlineParser implements InlineContentParser {
             return color(scanner, start, true);
         }
 
-        // Checks for reset character
-        if (c == 'r') {
-            return ParsedInline.of(new Reset(), scanner.position());
-        }
+        // Legacy bold
+        if (c == 'l') return ParsedInline.of(new LegacyBold(), scanner.position());
+        // Legacy italic
+        if (c == 'o') return ParsedInline.of(new LegacyItalic(), scanner.position());
+        // Legacy strikethrough
+        if (c == 'm') return ParsedInline.of(new LegacyStrikethrough(), scanner.position());
+        // Legacy underline
+        if (c == 'n') return ParsedInline.of(new LegacyUnderline(), scanner.position());
+        // Legacy obfuscated
+        if (c == 'k') return ParsedInline.of(new LegacyObfuscated(), scanner.position());
 
+        // Checks for reset character
+        if (c == 'r') return ParsedInline.of(new Reset(), scanner.position());
 
         return ParsedInline.none();
     }

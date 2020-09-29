@@ -22,6 +22,11 @@ import me.mattstudios.mfmsg.commonmark.node.Text;
 import me.mattstudios.mfmsg.commonmark.node.mf.Action;
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyBold;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyItalic;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyObfuscated;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyStrikethrough;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyUnderline;
 import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
 import me.mattstudios.mfmsg.commonmark.node.mf.Rainbow;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
@@ -47,6 +52,12 @@ public final class MarkdownRenderer extends AbstractVisitor {
     private boolean underline = false;
     private boolean obfuscated = false;
 
+    private boolean legacyBold = false;
+    private boolean legacyItalic = false;
+    private boolean legacyStrike = false;
+    private boolean legacyUnderline = false;
+    private boolean legacyObfuscated = false;
+
     @Nullable
     private Replaceable replaceable = null;
 
@@ -67,7 +78,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
      * @param node The node to visit
      *             //* @param appender The appender to append text to
      */
-    public void visitComponents(final Node node) {
+    public void visitComponents(@NotNull final Node node) {
         node.accept(this);
     }
 
@@ -77,7 +88,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
      * @param emphasis The italic is matched by either `* *` or `_ _`
      */
     @Override
-    public void visit(final Emphasis emphasis) {
+    public void visit(@NotNull final Emphasis emphasis) {
         if (!messageOptions.hasFormat(Format.ITALIC)) {
             visitChildren(emphasis);
             return;
@@ -94,7 +105,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
      * @param strongEmphasis Bold is matched by `** **`
      */
     @Override
-    public void visit(final StrongEmphasis strongEmphasis) {
+    public void visit(@NotNull final StrongEmphasis strongEmphasis) {
         if (!messageOptions.hasFormat(Format.BOLD)) {
             visitChildren(strongEmphasis);
             return;
@@ -111,7 +122,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
      * @param customNode The {@link CustomNode} can be either {@link Underline}, {@link Strikethrough}, or {@link Obfuscated}
      */
     @Override
-    public void visit(final CustomNode customNode) {
+    public void visit(@NotNull final CustomNode customNode) {
         if (customNode instanceof Underline) {
             if (!messageOptions.hasFormat(Format.UNDERLINE)) {
                 visitChildren(customNode);
@@ -155,8 +166,9 @@ public final class MarkdownRenderer extends AbstractVisitor {
     }
 
     @Override
-    public void visit(final Color color) {
+    public void visit(@NotNull final Color color) {
         if (color.isLegacy() && messageOptions.hasFormat(Format.COLOR)) {
+            resetLegacyFormats();
             currentColor = MessageColor.from(color.getColor().charAt(0));
             visitChildren(color);
             return;
@@ -167,18 +179,75 @@ public final class MarkdownRenderer extends AbstractVisitor {
             return;
         }
 
+        resetLegacyFormats();
         currentColor = MessageColor.from(color.getColor());
         visitChildren(color);
     }
 
     @Override
-    public void visit(final Reset reset) {
+    public void visit(@NotNull final LegacyBold legacyBold) {
+        if (!messageOptions.hasFormat(Format.LEGACY_BOLD)) {
+            visitChildren(legacyBold);
+            return;
+        }
+
+        this.legacyBold = true;
+        visitChildren(legacyBold);
+    }
+
+    @Override
+    public void visit(@NotNull final LegacyItalic legacyItalic) {
+        if (!messageOptions.hasFormat(Format.LEGACY_ITALIC)) {
+            visitChildren(legacyItalic);
+            return;
+        }
+
+        this.legacyItalic = true;
+        visitChildren(legacyItalic);
+    }
+
+    @Override
+    public void visit(final @NotNull LegacyStrikethrough legacyStrikethrough) {
+        if (!messageOptions.hasFormat(Format.LEGACY_STRIKETHROUGH)) {
+            visitChildren(legacyStrikethrough);
+            return;
+        }
+
+        this.legacyStrike = true;
+        visitChildren(legacyStrikethrough);
+    }
+
+    @Override
+    public void visit(final @NotNull LegacyUnderline legacyUnderline) {
+        if (!messageOptions.hasFormat(Format.LEGACY_UNDERLINE)) {
+            visitChildren(legacyUnderline);
+            return;
+        }
+
+        this.legacyUnderline = true;
+        visitChildren(legacyUnderline);
+    }
+
+    @Override
+    public void visit(final @NotNull LegacyObfuscated legacyObfuscated) {
+        if (!messageOptions.hasFormat(Format.LEGACY_OBFUSCATED)) {
+            visitChildren(legacyObfuscated);
+            return;
+        }
+
+        this.legacyObfuscated = true;
+        visitChildren(legacyObfuscated);
+    }
+
+    @Override
+    public void visit(@NotNull final Reset reset) {
         currentColor = messageOptions.getDefaultColor();
+        resetLegacyFormats();
         visitChildren(reset);
     }
 
     @Override
-    public void visit(final Rainbow rainbow) {
+    public void visit(@NotNull final Rainbow rainbow) {
         if (!messageOptions.hasFormat(Format.RAINBOW)) {
             visitChildren(rainbow);
             return;
@@ -189,7 +258,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
     }
 
     @Override
-    public void visit(final Gradient gradient) {
+    public void visit(@NotNull final Gradient gradient) {
         if (!messageOptions.hasFormat(Format.GRADIENT)) {
             visitChildren(gradient);
             return;
@@ -200,7 +269,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
     }
 
     @Override
-    public void visit(final Action action) {
+    public void visit(@NotNull final Action action) {
         final List<MessageAction> actions = new ArrayList<>();
         for (final Entry<String, String> entry : action.getActions().entrySet()) {
             switch (entry.getKey().toLowerCase()) {
@@ -239,7 +308,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
     }
 
     @Override
-    public void visit(final LineBreak lineBreak) {
+    public void visit(@NotNull final LineBreak lineBreak) {
         if (!messageOptions.hasFormat(Format.NEW_LINE)) {
             visitChildren(lineBreak);
             return;
@@ -256,7 +325,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
      * @param text A parsed {@link Text} node
      */
     @Override
-    public void visit(final Text text) {
+    public void visit(@NotNull final Text text) {
         if (replaceable != null) {
             final ReplaceableHandler replaceableHandler = messageOptions.getReplaceableHandler();
 
@@ -289,15 +358,23 @@ public final class MarkdownRenderer extends AbstractVisitor {
 
         messageNode.setColor(currentColor);
 
-        if (bold) messageNode.setBold(true);
-        if (italic) messageNode.setItalic(true);
-        if (strike) messageNode.setStrike(true);
-        if (underline) messageNode.setUnderlined(true);
-        if (obfuscated) messageNode.setObfuscated(true);
+        if (bold || legacyBold) messageNode.setBold(true);
+        if (italic || legacyItalic) messageNode.setItalic(true);
+        if (strike || legacyStrike) messageNode.setStrike(true);
+        if (underline || legacyUnderline) messageNode.setUnderlined(true);
+        if (obfuscated || legacyObfuscated) messageNode.setObfuscated(true);
 
         if (actions != null) messageNode.setActions(actions);
 
         nodes.add(messageNode);
+    }
+
+    private void resetLegacyFormats() {
+        legacyBold = false;
+        legacyItalic = false;
+        legacyStrike = false;
+        legacyUnderline = false;
+        legacyObfuscated = false;
     }
 
 }

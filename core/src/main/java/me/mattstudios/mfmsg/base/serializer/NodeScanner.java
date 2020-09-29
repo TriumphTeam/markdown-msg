@@ -1,9 +1,9 @@
-package me.mattstudios.mfmsg.base.serializer.scanner;
+package me.mattstudios.mfmsg.base.serializer;
 
 import me.mattstudios.mfmsg.base.internal.color.FlatColor;
-import me.mattstudios.mfmsg.base.internal.color.Gradient;
+import me.mattstudios.mfmsg.base.internal.color.GradientColor;
 import me.mattstudios.mfmsg.base.internal.color.MessageColor;
-import me.mattstudios.mfmsg.base.internal.color.Rainbow;
+import me.mattstudios.mfmsg.base.internal.color.RainbowColor;
 import me.mattstudios.mfmsg.base.internal.color.handlers.Fancy;
 import me.mattstudios.mfmsg.base.internal.color.handlers.GradientHandler;
 import me.mattstudios.mfmsg.base.internal.color.handlers.RainbowHandler;
@@ -11,7 +11,6 @@ import me.mattstudios.mfmsg.base.internal.components.LineBreakNode;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.internal.components.ReplaceableNode;
 import me.mattstudios.mfmsg.base.internal.components.TextNode;
-import me.mattstudios.mfmsg.base.serializer.Appender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -101,25 +100,25 @@ public class NodeScanner {
 
             final MessageColor color = node.getColor();
 
-            if (color instanceof Gradient) {
+            if (color instanceof GradientColor) {
                 final List<MessageNode> gradientNodes = new ArrayList<>();
-                final Gradient gradient = (Gradient) color;
+                final GradientColor gradientColor = (GradientColor) color;
                 gradientNodes.add(node);
 
                 getColoredNodes(nodeScanner, gradientNodes, color);
 
-                fancify(appender, gradientNodes, gradient);
+                fancify(appender, gradientNodes, gradientColor);
                 continue;
             }
 
-            if (color instanceof Rainbow) {
+            if (color instanceof RainbowColor) {
                 final List<MessageNode> rainbowNodes = new ArrayList<>();
-                final Rainbow rainbow = (Rainbow) color;
+                final RainbowColor rainbowColor = (RainbowColor) color;
                 rainbowNodes.add(node);
 
                 getColoredNodes(nodeScanner, rainbowNodes, color);
 
-                fancify(appender, rainbowNodes, rainbow);
+                fancify(appender, rainbowNodes, rainbowColor);
                 continue;
             }
 
@@ -162,12 +161,12 @@ public class NodeScanner {
         final int length = getFancyLength(parts);
 
         final Fancy fancy;
-        if (color instanceof Rainbow) {
-            final Rainbow rainbow = (Rainbow) color;
-            fancy = new RainbowHandler(length, rainbow.getSaturation(), rainbow.getBrightness());
-        } else if (color instanceof Gradient) {
-            final Gradient gradient = (Gradient) color;
-            fancy = new GradientHandler(gradient.getColors(), length);
+        if (color instanceof RainbowColor) {
+            final RainbowColor rainbowColor = (RainbowColor) color;
+            fancy = new RainbowHandler(length, rainbowColor.getSaturation(), rainbowColor.getBrightness());
+        } else if (color instanceof GradientColor) {
+            final GradientColor gradientColor = (GradientColor) color;
+            fancy = new GradientHandler(gradientColor.getColors(), length);
         } else {
             return;
         }

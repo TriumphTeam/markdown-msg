@@ -15,6 +15,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.EnumSet
 import kotlin.system.measureNanoTime
@@ -29,12 +30,12 @@ internal class Cmd(plugin: TestPlugin) : CommandBase() {
         val options = MessageOptions.Builder(EnumSet.allOf(Format::class.java))
         //options.setReplaceableHandler(TestReplaceable())
 
-        player.sendMessage("MF - ${
+        /*player.sendMessage("MF - ${
             measureNanoTime {
                 val component = Message.create(options.build()).parse(args.joinToString(" "))
                 component.sendMessage(player)
             } / 1000000.0
-        }ms")
+        }ms")*/
 
         player.sendMessage("Adventure - ${
             measureNanoTime {
@@ -42,6 +43,8 @@ internal class Cmd(plugin: TestPlugin) : CommandBase() {
                 audience.audience(player).sendMessage(component)
             } / 1000000.0
         }ms")
+
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', args.joinToString(" ")))
     }
 
 }

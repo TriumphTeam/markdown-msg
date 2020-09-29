@@ -52,6 +52,6 @@ public class LinkReferenceDefinition extends Node {
 
     @Override
     public void accept(Visitor visitor) {
-        visitor.visit(this);
+        //visitor.visit(this);
     }
 }

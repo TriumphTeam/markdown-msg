@@ -3,7 +3,7 @@ package me.mattstudios.mfmsg.adventure;
 import me.mattstudios.mfmsg.adventure.appender.AdventureAppender;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.base.serializer.scanner.NodeScanner;
+import me.mattstudios.mfmsg.base.serializer.NodeScanner;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 

@@ -6,10 +6,15 @@ package me.mattstudios.mfmsg.base.internal;
 public enum Format {
 
     BOLD,
+    LEGACY_BOLD,
     ITALIC,
+    LEGACY_ITALIC,
     STRIKETHROUGH,
+    LEGACY_STRIKETHROUGH,
     UNDERLINE,
+    LEGACY_UNDERLINE,
     OBFUSCATED,
+    LEGACY_OBFUSCATED,
     COLOR,
     HEX,
     GRADIENT,

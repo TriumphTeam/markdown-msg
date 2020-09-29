@@ -3,9 +3,15 @@ package me.mattstudios.mfmsg.commonmark.node;
 import me.mattstudios.mfmsg.commonmark.node.mf.Action;
 import me.mattstudios.mfmsg.commonmark.node.mf.Color;
 import me.mattstudios.mfmsg.commonmark.node.mf.Gradient;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyBold;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyItalic;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyObfuscated;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyStrikethrough;
+import me.mattstudios.mfmsg.commonmark.node.mf.LegacyUnderline;
 import me.mattstudios.mfmsg.commonmark.node.mf.LineBreak;
 import me.mattstudios.mfmsg.commonmark.node.mf.Rainbow;
 import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Node visitor.
@@ -14,65 +20,47 @@ import me.mattstudios.mfmsg.commonmark.node.mf.Reset;
  */
 public interface Visitor {
 
-    void visit(BlockQuote blockQuote);
-
-    void visit(BulletList bulletList);
-
-    void visit(Code code);
-
     /* START MF NODES */
 
-    void visit(Color color);
+    void visit(@NotNull final Color color);
 
-    void visit(Reset reset);
+    void visit(@NotNull final Reset reset);
 
-    void visit(Rainbow rainbow);
+    void visit(@NotNull final Rainbow rainbow);
 
-    void visit(Gradient gradient);
+    void visit(@NotNull final Gradient gradient);
 
-    void visit(Action action);
+    void visit(@NotNull final Action action);
 
-    void visit(LineBreak lineBreak);
+    void visit(@NotNull final LineBreak lineBreak);
+
+    // Legacy
+
+    void visit(@NotNull final LegacyBold legacyBold);
+
+    void visit(@NotNull final LegacyItalic legacyItalic);
+
+    void visit(@NotNull final LegacyStrikethrough legacyStrikethrough);
+
+    void visit(@NotNull final LegacyUnderline legacyUnderline);
+
+    void visit(@NotNull final LegacyObfuscated legacyObfuscated);
 
     /* END MF NODES */
 
-    void visit(Document document);
+    void visit(@NotNull final Document document);
 
-    void visit(Emphasis emphasis);
+    void visit(@NotNull final Emphasis emphasis);
 
-    void visit(FencedCodeBlock fencedCodeBlock);
+    void visit(@NotNull final Paragraph paragraph);
 
-    void visit(HardLineBreak hardLineBreak);
+    void visit(@NotNull final SoftLineBreak softLineBreak);
 
-    void visit(Heading heading);
+    void visit(@NotNull final StrongEmphasis strongEmphasis);
 
-    void visit(ThematicBreak thematicBreak);
+    void visit(@NotNull final Text text);
 
-    void visit(HtmlInline htmlInline);
+    void visit(@NotNull final CustomBlock customBlock);
 
-    void visit(HtmlBlock htmlBlock);
-
-    void visit(Image image);
-
-    void visit(IndentedCodeBlock indentedCodeBlock);
-
-    void visit(Link link);
-
-    void visit(ListItem listItem);
-
-    void visit(OrderedList orderedList);
-
-    void visit(Paragraph paragraph);
-
-    void visit(SoftLineBreak softLineBreak);
-
-    void visit(StrongEmphasis strongEmphasis);
-
-    void visit(Text text);
-
-    void visit(LinkReferenceDefinition linkReferenceDefinition);
-
-    void visit(CustomBlock customBlock);
-
-    void visit(CustomNode customNode);
+    void visit(@NotNull final CustomNode customNode);
 }

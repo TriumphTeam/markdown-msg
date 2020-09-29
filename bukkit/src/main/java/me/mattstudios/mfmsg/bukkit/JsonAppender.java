@@ -13,7 +13,7 @@ import me.mattstudios.mfmsg.base.internal.action.content.ShowText;
 import me.mattstudios.mfmsg.base.internal.color.handlers.ColorMapping;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.base.serializer.scanner.NodeScanner;
+import me.mattstudios.mfmsg.base.serializer.NodeScanner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

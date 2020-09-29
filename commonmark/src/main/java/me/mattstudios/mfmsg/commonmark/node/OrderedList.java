@@ -7,7 +7,7 @@ public class OrderedList extends ListBlock {
 
     @Override
     public void accept(Visitor visitor) {
-        visitor.visit(this);
+        //visitor.visit(this);
     }
 
     public int getStartNumber() {

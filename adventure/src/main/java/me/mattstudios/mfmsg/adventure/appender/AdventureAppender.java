@@ -8,7 +8,7 @@ import me.mattstudios.mfmsg.base.internal.action.content.ShowItem;
 import me.mattstudios.mfmsg.base.internal.action.content.ShowText;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import me.mattstudios.mfmsg.base.serializer.Appender;
-import me.mattstudios.mfmsg.base.serializer.scanner.NodeScanner;
+import me.mattstudios.mfmsg.base.serializer.NodeScanner;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Gradient message color
  */
-public final class Gradient implements MessageColor {
+public final class GradientColor implements MessageColor {
 
     @NotNull
     private final List<Color> colors;
@@ -18,7 +18,7 @@ public final class Gradient implements MessageColor {
      *
      * @param colors The list of colors to store
      */
-    public Gradient(@NotNull final List<Color> colors) {
+    public GradientColor(@NotNull final List<Color> colors) {
         this.colors = colors;
     }
 
