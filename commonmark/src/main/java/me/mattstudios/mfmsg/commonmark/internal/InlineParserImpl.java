@@ -13,9 +13,7 @@ import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ActionScanner;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ClosedColorInlineParser;
 import me.mattstudios.mfmsg.commonmark.internal.inline.mf.ColorInlineParser;
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
-import me.mattstudios.mfmsg.commonmark.node.HardLineBreak;
 import me.mattstudios.mfmsg.commonmark.node.Node;
-import me.mattstudios.mfmsg.commonmark.node.SoftLineBreak;
 import me.mattstudios.mfmsg.commonmark.node.Text;
 import me.mattstudios.mfmsg.commonmark.node.mf.Action;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParser;
@@ -359,16 +357,6 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
 
     private void removeLastBracket() {
         lastBracket = lastBracket.previous;
-    }
-
-    private Node parseLineBreak() {
-        scanner.next();
-
-        if (trailingSpaces >= 2) {
-            return new HardLineBreak();
-        } else {
-            return new SoftLineBreak();
-        }
     }
 
     /**

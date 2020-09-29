@@ -54,8 +54,6 @@ public interface Visitor {
 
     void visit(@NotNull final Paragraph paragraph);
 
-    void visit(@NotNull final SoftLineBreak softLineBreak);
-
     void visit(@NotNull final StrongEmphasis strongEmphasis);
 
     void visit(@NotNull final Text text);

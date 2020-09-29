@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
 
     val message = Message.create()
 
-    val component = message.parse("**Hello everyone!** *boy!* __hey__")
+    val component = message.parse("<r:.75>***Hello everyone!** *boy!* __hey__*")
     println(component.toString())
 
 }

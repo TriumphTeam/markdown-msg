@@ -99,11 +99,6 @@ public abstract class AbstractVisitor implements Visitor {
     }
 
     @Override
-    public void visit(@NotNull final SoftLineBreak softLineBreak) {
-        visitChildren(softLineBreak);
-    }
-
-    @Override
     public void visit(@NotNull final StrongEmphasis strongEmphasis) {
         visitChildren(strongEmphasis);
     }
