@@ -5,7 +5,6 @@ import me.mattstudios.mfmsg.commonmark.internal.DocumentParser;
 import me.mattstudios.mfmsg.commonmark.internal.InlineParserContextImpl;
 import me.mattstudios.mfmsg.commonmark.internal.InlineParserImpl;
 import me.mattstudios.mfmsg.commonmark.node.Block;
-import me.mattstudios.mfmsg.commonmark.node.BlockQuote;
 import me.mattstudios.mfmsg.commonmark.node.FencedCodeBlock;
 import me.mattstudios.mfmsg.commonmark.node.HtmlBlock;
 import me.mattstudios.mfmsg.commonmark.node.IndentedCodeBlock;
@@ -163,7 +162,6 @@ public class Parser {
          * <li>{@link ThematicBreak} (Horizontal Rule) ({@code ---})
          * <li>{@link FencedCodeBlock} ({@code ```})
          * <li>{@link IndentedCodeBlock}
-         * <li>{@link BlockQuote} ({@code >})
          * <li>{@link ListBlock} (Ordered / Unordered List) ({@code 1. / *})
          * </ul>
          * <p>

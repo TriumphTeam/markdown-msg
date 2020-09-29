@@ -2,7 +2,6 @@ package me.mattstudios.mfmsg.commonmark.internal;
 
 import me.mattstudios.mfmsg.commonmark.internal.util.Parsing;
 import me.mattstudios.mfmsg.commonmark.node.Block;
-import me.mattstudios.mfmsg.commonmark.node.BlockQuote;
 import me.mattstudios.mfmsg.commonmark.node.Document;
 import me.mattstudios.mfmsg.commonmark.node.FencedCodeBlock;
 import me.mattstudios.mfmsg.commonmark.node.HtmlBlock;
@@ -39,7 +38,6 @@ import java.util.Set;
 public class DocumentParser implements ParserState {
 
     private static final Set<Class<? extends Block>> CORE_FACTORY_TYPES = new LinkedHashSet<>(Arrays.asList(
-            BlockQuote.class,
             FencedCodeBlock.class,
             HtmlBlock.class,
             ThematicBreak.class,
@@ -50,7 +48,6 @@ public class DocumentParser implements ParserState {
 
     static {
         Map<Class<? extends Block>, BlockParserFactory> map = new HashMap<>();
-        map.put(BlockQuote.class, new BlockQuoteParser.Factory());
         map.put(FencedCodeBlock.class, new FencedCodeBlockParser.Factory());
         map.put(HtmlBlock.class, new HtmlBlockParser.Factory());
         map.put(ThematicBreak.class, new ThematicBreakParser.Factory());
