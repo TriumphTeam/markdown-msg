@@ -7,7 +7,6 @@ import me.mattstudios.mfmsg.commonmark.internal.InlineParserImpl;
 import me.mattstudios.mfmsg.commonmark.node.Block;
 import me.mattstudios.mfmsg.commonmark.node.BlockQuote;
 import me.mattstudios.mfmsg.commonmark.node.FencedCodeBlock;
-import me.mattstudios.mfmsg.commonmark.node.Heading;
 import me.mattstudios.mfmsg.commonmark.node.HtmlBlock;
 import me.mattstudios.mfmsg.commonmark.node.IndentedCodeBlock;
 import me.mattstudios.mfmsg.commonmark.node.LinkReferenceDefinition;
@@ -160,7 +159,6 @@ public class Parser {
          * <p>
          * By default, CommonMark will recognize and parse the following set of "block" elements:
          * <ul>
-         * <li>{@link Heading} ({@code #})
          * <li>{@link HtmlBlock} ({@code <html></html>})
          * <li>{@link ThematicBreak} (Horizontal Rule) ({@code ---})
          * <li>{@link FencedCodeBlock} ({@code ```})

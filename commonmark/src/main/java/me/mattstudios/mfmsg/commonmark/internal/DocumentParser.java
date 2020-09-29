@@ -5,7 +5,6 @@ import me.mattstudios.mfmsg.commonmark.node.Block;
 import me.mattstudios.mfmsg.commonmark.node.BlockQuote;
 import me.mattstudios.mfmsg.commonmark.node.Document;
 import me.mattstudios.mfmsg.commonmark.node.FencedCodeBlock;
-import me.mattstudios.mfmsg.commonmark.node.Heading;
 import me.mattstudios.mfmsg.commonmark.node.HtmlBlock;
 import me.mattstudios.mfmsg.commonmark.node.IndentedCodeBlock;
 import me.mattstudios.mfmsg.commonmark.node.LinkReferenceDefinition;
@@ -13,9 +12,9 @@ import me.mattstudios.mfmsg.commonmark.node.ListBlock;
 import me.mattstudios.mfmsg.commonmark.node.Paragraph;
 import me.mattstudios.mfmsg.commonmark.node.SourceSpan;
 import me.mattstudios.mfmsg.commonmark.node.ThematicBreak;
+import me.mattstudios.mfmsg.commonmark.parser.IncludeSourceSpans;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParser;
 import me.mattstudios.mfmsg.commonmark.parser.InlineParserFactory;
-import me.mattstudios.mfmsg.commonmark.parser.IncludeSourceSpans;
 import me.mattstudios.mfmsg.commonmark.parser.block.BlockContinue;
 import me.mattstudios.mfmsg.commonmark.parser.block.BlockParser;
 import me.mattstudios.mfmsg.commonmark.parser.block.BlockParserFactory;
@@ -41,7 +40,6 @@ public class DocumentParser implements ParserState {
 
     private static final Set<Class<? extends Block>> CORE_FACTORY_TYPES = new LinkedHashSet<>(Arrays.asList(
             BlockQuote.class,
-            Heading.class,
             FencedCodeBlock.class,
             HtmlBlock.class,
             ThematicBreak.class,
@@ -53,7 +51,6 @@ public class DocumentParser implements ParserState {
     static {
         Map<Class<? extends Block>, BlockParserFactory> map = new HashMap<>();
         map.put(BlockQuote.class, new BlockQuoteParser.Factory());
-        map.put(Heading.class, new HeadingParser.Factory());
         map.put(FencedCodeBlock.class, new FencedCodeBlockParser.Factory());
         map.put(HtmlBlock.class, new HtmlBlockParser.Factory());
         map.put(ThematicBreak.class, new ThematicBreakParser.Factory());
