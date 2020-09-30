@@ -13,12 +13,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-/*publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = "mf-msg-core"
-        }
-    }
-}*/
-

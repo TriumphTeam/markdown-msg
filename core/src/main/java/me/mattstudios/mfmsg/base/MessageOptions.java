@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
  * Options to enable and disable for the formats
+ * TODO JavaDocs
  */
 public final class MessageOptions {
 
@@ -24,27 +24,35 @@ public final class MessageOptions {
     @Nullable
     private final ReplaceableHandler replaceableHandler;
 
-    /**
-     * Main constructor with all the formats
-     */
     private MessageOptions(@NotNull final Set<Format> formats, @NotNull final MessageColor defaultColor, @Nullable final ReplaceableHandler replaceableHandler) {
         this.formats = formats;
         this.defaultColor = defaultColor;
         this.replaceableHandler = replaceableHandler;
     }
 
+    public static Builder builder(@NotNull final Set<Format> formats) {
+        return new Builder(formats);
+    }
+
+    public static Builder builder() {
+        return new Builder(Format.ALL);
+    }
+
     public boolean hasFormat(@NotNull final Format format) {
         return formats.contains(format);
     }
 
+    @NotNull
     public Set<Format> getFormats() {
         return formats;
     }
 
+    @NotNull
     public MessageColor getDefaultColor() {
         return defaultColor;
     }
 
+    @Nullable
     public ReplaceableHandler getReplaceableHandler() {
         return replaceableHandler;
     }
@@ -52,37 +60,34 @@ public final class MessageOptions {
     public static final class Builder {
 
         @NotNull
-        private Set<Format> formats = EnumSet.noneOf(Format.class);
+        private final Set<Format> formats;
+
         @NotNull
         private MessageColor defaultColor = new FlatColor("white");
 
         @Nullable
         private ReplaceableHandler replaceableHandler = null;
 
-        public Builder(@NotNull final Format... format) {
-            formats.addAll(Arrays.asList(format));
-        }
-
         public Builder(@NotNull final Set<Format> formats) {
             this.formats = formats;
         }
 
-        public Builder addFormat(@NotNull Format... format) {
+        public Builder addFormat(@NotNull final Format... format) {
             formats.addAll(Arrays.asList(format));
             return this;
         }
 
-        public Builder removeFormat(@NotNull Format... format) {
+        public Builder removeFormat(@NotNull final Format... format) {
             formats.removeAll(Arrays.asList(format));
             return this;
         }
 
-        public Builder setDefaultColor(@NotNull MessageColor color) {
+        public Builder setDefaultColor(@NotNull final MessageColor color) {
             defaultColor = color;
             return this;
         }
 
-        public Builder setReplaceableHandler(@NotNull ReplaceableHandler replaceableHandler) {
+        public Builder setReplaceableHandler(@NotNull final ReplaceableHandler replaceableHandler) {
             this.replaceableHandler = replaceableHandler;
             return this;
         }

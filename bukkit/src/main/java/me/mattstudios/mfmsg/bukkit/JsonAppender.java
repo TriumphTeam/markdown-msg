@@ -79,6 +79,7 @@ public final class JsonAppender implements Appender<String> {
                     continue;
                 }
 
+                // TODO Show Item is WIP, Adventure version works
                 final ShowItem showItem = (ShowItem) hoverContent;
 
                 hoverObject.addProperty("action", "show_item");

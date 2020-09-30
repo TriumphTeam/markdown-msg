@@ -2,12 +2,10 @@ package me.mattstudios.mfmsg.bukkit;
 
 import me.mattstudios.mfmsg.base.MarkdownMessage;
 import me.mattstudios.mfmsg.base.MessageOptions;
-import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.MessageComponent;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -42,7 +40,7 @@ public final class BukkitMessage extends MarkdownMessage<MessageComponent> {
      */
     @NotNull
     public static BukkitMessage create() {
-        return create(new MessageOptions.Builder(EnumSet.allOf(Format.class)).build());
+        return create(MessageOptions.builder().build());
     }
 
     /**
