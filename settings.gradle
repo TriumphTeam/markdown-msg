@@ -5,5 +5,5 @@ rootProject.name = 'mf-msg'
     findProject(":$it")?.name = "mf-msg-$it"
 }
 
-include 'plugin-test'
+//include 'plugin-test'
 
