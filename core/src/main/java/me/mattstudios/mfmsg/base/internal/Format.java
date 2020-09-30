@@ -27,7 +27,7 @@ public enum Format {
     ACTION_URL,
     ACTION_CLIPBOARD,
     ACTION_SUGGEST,
-    NEW_LINE;
+    LINE_BREAK;
 
     public static final Set<Format> ALL = EnumSet.allOf(Format.class);
     public static final Set<Format> NONE = EnumSet.noneOf(Format.class);

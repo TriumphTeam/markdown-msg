@@ -308,7 +308,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
 
     @Override
     public void visit(@NotNull final LineBreak lineBreak) {
-        if (!messageOptions.hasFormat(Format.NEW_LINE)) {
+        if (!messageOptions.hasFormat(Format.LINE_BREAK)) {
             visitChildren(lineBreak);
             return;
         }

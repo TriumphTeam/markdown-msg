@@ -28,6 +28,7 @@ public enum ColorMapping {
     YELLOW(0xFFFF55, "yellow", 'e'),
     WHITE(0xFFFFFF, "white", 'f');
 
+    private final int hex;
     private final int r, g, b;
     private final char character;
     private final String colorName;
@@ -38,6 +39,7 @@ public enum ColorMapping {
      * @param character The character that represents it
      */
     ColorMapping(final int hex, @NotNull final String colorName, final char character) {
+        this.hex = hex;
         this.r = (hex >> 16) & 0xFF;
         this.g = (hex >> 8) & 0xFF;
         this.b = hex & 0xFF;
@@ -96,6 +98,22 @@ public enum ColorMapping {
         }
 
         return legacy;
+    }
+
+    public int getHex() {
+        return hex;
+    }
+
+    public int getR() {
+        return r;
+    }
+
+    public int getG() {
+        return g;
+    }
+
+    public int getB() {
+        return b;
     }
 
 }
