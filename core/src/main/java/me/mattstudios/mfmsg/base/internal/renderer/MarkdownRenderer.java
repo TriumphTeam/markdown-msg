@@ -276,8 +276,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
                 case "hover":
                     if (!messageOptions.hasFormat(Format.ACTION_HOVER)) break;
                     final MarkdownParser parser = new MarkdownParser(messageOptions);
-                    parser.parse(entry.getValue());
-                    actions.add(MessageAction.from(parser.build()));
+                    actions.add(MessageAction.from(parser.parse(entry.getValue())));
                     break;
 
                 case "command":
