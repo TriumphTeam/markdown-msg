@@ -31,5 +31,6 @@ public enum Format {
 
     public static final Set<Format> ALL = EnumSet.allOf(Format.class);
     public static final Set<Format> NONE = EnumSet.noneOf(Format.class);
+    public static final Set<Format> ACTIONS = EnumSet.of(ACTION_HOVER, ACTION_CLIPBOARD, ACTION_COMMAND, ACTION_SUGGEST, ACTION_URL);
 
 }
