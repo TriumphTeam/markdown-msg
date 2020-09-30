@@ -20,16 +20,20 @@ import java.util.List;
  */
 public final class MarkdownParser {
 
+
     // The parser that'll be used with the strikethrough, underline, obfuscated extensions
+    @NotNull
     private final Parser parser;
+
+    @NotNull
+    private final MessageOptions messageOptions;
 
     @NotNull
     private final List<MessageNode> nodes = new ArrayList<>();
 
-    @NotNull
-    private final MarkdownRenderer visitor;
-
     public MarkdownParser(@NotNull final MessageOptions messageOptions) {
+        this.messageOptions = messageOptions;
+
         final List<Extension> extensions = new ArrayList<>(
                 Arrays.asList(
                         StrikethroughExtension.create(),
@@ -45,10 +49,10 @@ public final class MarkdownParser {
         }
 
         parser = Parser.builder().extensions(extensions).build();
-        visitor = new MarkdownRenderer(nodes, messageOptions);
     }
 
     public List<MessageNode> parse(@NotNull final String message) {
+        final MarkdownRenderer visitor = new MarkdownRenderer(nodes, messageOptions);
         visitor.visitComponents(parser.parse(message));
         final List<MessageNode> parsedNodes = new ArrayList<>(nodes);
         nodes.clear();
