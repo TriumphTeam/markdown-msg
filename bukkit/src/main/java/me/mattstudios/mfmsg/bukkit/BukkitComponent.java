@@ -19,7 +19,7 @@ public final class BukkitComponent implements MessageComponent {
     /**
      * Main constructor that takes in the parsed Lines
      *
-     * @param nodes The parsed lines from {@link Message}
+     * @param nodes The parsed lines from {@link BukkitMessage}
      */
     public BukkitComponent(@NotNull final List<MessageNode> nodes) {
         this.nodes = nodes;
@@ -96,10 +96,14 @@ public final class BukkitComponent implements MessageComponent {
         return NodeSerializer.toJson(nodes);
     }
 
-
+    /**
+     * Gets the raw {@link MessageNode}
+     *
+     * @return The {@link MessageNode} that were parsed
+     */
     @Override
     @NotNull
-    public List<MessageNode> getMessageLines() {
+    public List<MessageNode> getNodes() {
         return nodes;
     }
 

@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Main parser used
  */
-public final class MessageParser {
+public final class MarkdownParser {
 
     // The parser that'll be used with the strikethrough, underline, obfuscated extensions
     private final Parser parser;
@@ -29,7 +29,7 @@ public final class MessageParser {
     @NotNull
     private final MarkdownRenderer visitor;
 
-    public MessageParser(@NotNull final MessageOptions messageOptions) {
+    public MarkdownParser(@NotNull final MessageOptions messageOptions) {
         final List<Extension> extensions = new ArrayList<>(
                 Arrays.asList(
                         StrikethroughExtension.create(),
@@ -48,17 +48,11 @@ public final class MessageParser {
         visitor = new MarkdownRenderer(nodes, messageOptions);
     }
 
-    public void parse(@NotNull final String message) {
+    public List<MessageNode> parse(@NotNull final String message) {
         visitor.visitComponents(parser.parse(message));
-    }
-
-    /**
-     * Builds the parsed information into the list of parts
-     *
-     * @return The list of all the parsed parts
-     */
-    public List<MessageNode> build() {
-        return nodes;
+        final List<MessageNode> parsedNodes = new ArrayList<>(nodes);
+        nodes.clear();
+        return parsedNodes;
     }
 
 }

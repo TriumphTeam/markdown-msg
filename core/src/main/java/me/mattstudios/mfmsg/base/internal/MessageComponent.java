@@ -65,7 +65,12 @@ public interface MessageComponent {
     @NotNull
     String toJson();
 
+    /**
+     * Gets the raw {@link MessageNode}
+     *
+     * @return The {@link MessageNode} that were parsed
+     */
     @NotNull
-    List<MessageNode> getMessageLines();
+    List<MessageNode> getNodes();
 
 }

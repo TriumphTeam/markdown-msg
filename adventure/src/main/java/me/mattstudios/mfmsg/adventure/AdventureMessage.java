@@ -1,9 +1,9 @@
 package me.mattstudios.mfmsg.adventure;
 
+import me.mattstudios.mfmsg.base.MarkdownMessage;
 import me.mattstudios.mfmsg.base.MessageOptions;
 import me.mattstudios.mfmsg.base.internal.Format;
 import me.mattstudios.mfmsg.base.internal.components.MessageNode;
-import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,10 +13,7 @@ import java.util.List;
 /**
  * Adventure message to parse the markdown into adventure
  */
-public class AdventureMessage {
-
-    @NotNull
-    private final MessageOptions messageOptions;
+public class AdventureMessage extends MarkdownMessage<Component> {
 
     /**
      * Private constructor for the message
@@ -24,7 +21,7 @@ public class AdventureMessage {
      * @param messageOptions The {@link MessageOptions} with the settings needed to run
      */
     private AdventureMessage(@NotNull final MessageOptions messageOptions) {
-        this.messageOptions = messageOptions;
+        super(messageOptions);
     }
 
     /**
@@ -54,16 +51,16 @@ public class AdventureMessage {
      * @param message The markdown message
      * @return A parsed {@link Component}
      */
+    @NotNull
+    @Override
     public Component parse(@NotNull final String message) {
-        final MessageParser parser = new MessageParser(messageOptions);
-        parser.parse(message);
-        return AdventureSerializer.toComponent(parser.build());
+        return AdventureSerializer.toComponent(getParser().parse(message));
     }
 
+    @NotNull
+    @Override
     public List<MessageNode> parseToNodes(@NotNull final String message) {
-        final MessageParser parser = new MessageParser(messageOptions);
-        parser.parse(message);
-        return parser.build();
+        return getParser().parse(message);
     }
 
 }

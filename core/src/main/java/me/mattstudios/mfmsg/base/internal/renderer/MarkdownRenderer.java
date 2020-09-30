@@ -12,7 +12,7 @@ import me.mattstudios.mfmsg.base.internal.extensions.node.Obfuscated;
 import me.mattstudios.mfmsg.base.internal.extensions.node.Replaceable;
 import me.mattstudios.mfmsg.base.internal.extensions.node.Strikethrough;
 import me.mattstudios.mfmsg.base.internal.extensions.node.Underline;
-import me.mattstudios.mfmsg.base.internal.parser.MessageParser;
+import me.mattstudios.mfmsg.base.internal.parser.MarkdownParser;
 import me.mattstudios.mfmsg.commonmark.node.AbstractVisitor;
 import me.mattstudios.mfmsg.commonmark.node.CustomNode;
 import me.mattstudios.mfmsg.commonmark.node.Emphasis;
@@ -275,7 +275,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
             switch (entry.getKey().toLowerCase()) {
                 case "hover":
                     if (!messageOptions.hasFormat(Format.ACTION_HOVER)) break;
-                    final MessageParser parser = new MessageParser(messageOptions);
+                    final MarkdownParser parser = new MarkdownParser(messageOptions);
                     parser.parse(entry.getValue());
                     actions.add(MessageAction.from(parser.build()));
                     break;
