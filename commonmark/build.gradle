@@ -2,5 +2,5 @@ group 'me.mattstudios'
 version parent.version
 
 dependencies {
-    compileOnly "org.jetbrains:annotations:17.0.0"
+    compileOnly "com.google.guava:guava:30.0-jre"
 }

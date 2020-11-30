@@ -1,9 +1,13 @@
 group 'me.mattstudios'
 version parent.version
 
+repositories {
+    maven { url = "https://repo.mattstudios.me/artifactory/public/" }
+    maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+}
+
 dependencies {
-
-    api project(":mf-msg-core")
-    implementation "org.jetbrains:annotations:17.0.0"
-
+    api project(":triumph-msg-core")
+    implementation "me.mattstudios:server-version-util:1.0.1"
+    compileOnly "org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT"
 }

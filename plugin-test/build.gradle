@@ -6,10 +6,17 @@ plugins {
 group 'me.mattstudios'
 version parent.version
 
+repositories {
+    maven { url = "https://repo.mattstudios.me/artifactory/public/" }
+    maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+}
+
 dependencies {
 
-    implementation project(":mf-msg-bukkit")
-    implementation project(":mf-msg-adventure")
+    implementation project(":triumph-msg-bukkit")
+    implementation project(":triumph-msg-adventure")
+
+    compileOnly "org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT"
 
     implementation "me.mattstudios.utils:matt-framework:1.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
