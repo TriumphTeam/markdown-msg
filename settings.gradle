@@ -1,9 +1,8 @@
-rootProject.name = 'mf-msg'
+rootProject.name = "triumph-msg"
 
-['commonmark', 'core', 'bukkit', 'adventure'].each {
+["commonmark", "core", "bukkit", "adventure"].each {
     include "$it"
-    findProject(":$it")?.name = "mf-msg-$it"
+    findProject(":$it")?.name = "triumph-msg-$it"
 }
 
 //include 'plugin-test'
-

@@ -2,9 +2,6 @@ group 'me.mattstudios'
 version parent.version
 
 dependencies {
-
-    api project(":mf-msg-core")
-    implementation "org.jetbrains:annotations:17.0.0"
+    api project(":triumph-msg-core")
     compileOnly "net.kyori:adventure-api:4.0.0-SNAPSHOT"
-
 }

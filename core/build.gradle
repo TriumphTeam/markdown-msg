@@ -3,8 +3,7 @@ version parent.version
 
 dependencies {
 
-    api project(":mf-msg-commonmark")
-    compileOnly "org.jetbrains:annotations:17.0.0"
+    api project(":triumph-msg-commonmark")
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"

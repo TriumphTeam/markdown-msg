@@ -10,3 +10,9 @@ temp.java.asc
 
 temp.java
 gradle.properties
+
+adventure/out/
+bukkit/out/
+commonmark/out/
+core/out/
+plugin-test/out/
