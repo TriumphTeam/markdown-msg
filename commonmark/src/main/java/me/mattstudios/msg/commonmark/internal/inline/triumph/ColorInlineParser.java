@@ -1,4 +1,4 @@
-package me.mattstudios.msg.commonmark.internal.inline.mf;
+package me.mattstudios.msg.commonmark.internal.inline.triumph;
 
 import me.mattstudios.msg.commonmark.internal.inline.InlineContentParser;
 import me.mattstudios.msg.commonmark.internal.inline.InlineParserState;
@@ -6,13 +6,13 @@ import me.mattstudios.msg.commonmark.internal.inline.ParsedInline;
 import me.mattstudios.msg.commonmark.internal.inline.Position;
 import me.mattstudios.msg.commonmark.internal.inline.Scanner;
 import me.mattstudios.msg.commonmark.internal.util.AsciiMatcher;
-import me.mattstudios.msg.commonmark.node.mf.Color;
-import me.mattstudios.msg.commonmark.node.mf.LegacyBold;
-import me.mattstudios.msg.commonmark.node.mf.LegacyItalic;
-import me.mattstudios.msg.commonmark.node.mf.LegacyObfuscated;
-import me.mattstudios.msg.commonmark.node.mf.LegacyStrikethrough;
-import me.mattstudios.msg.commonmark.node.mf.LegacyUnderline;
-import me.mattstudios.msg.commonmark.node.mf.Reset;
+import me.mattstudios.msg.commonmark.node.triumph.Color;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyBold;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyItalic;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyObfuscated;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyStrikethrough;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyUnderline;
+import me.mattstudios.msg.commonmark.node.triumph.Reset;
 import org.jetbrains.annotations.NotNull;
 
 /**

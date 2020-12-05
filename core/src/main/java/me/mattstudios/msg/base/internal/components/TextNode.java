@@ -137,23 +137,17 @@ public final class TextNode implements MessageNode {
         this.messageActions = messageActions;
     }
 
-    /**
-     * For testing, mostly
-     *
-     * @return Testing String
-     */
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(text);
-        if (bold) builder.append(" - BOLD");
-        if (italic) builder.append(" - ITALIC");
-        if (strike) builder.append(" - STRIKETHROUGH");
-        if (underlined) builder.append(" - UNDERLINED");
-        if (obfuscated) builder.append(" - OBFUSCATED");
-        if (messageActions != null) builder.append(" - ACTIONS");
-        builder.append(" - ").append(color.toString()).append(" ");
-        return builder.toString();
+        return "TextNode{" +
+                "text='" + text + '\'' +
+                ", color=" + color +
+                ", bold=" + bold +
+                ", italic=" + italic +
+                ", strike=" + strike +
+                ", underlined=" + underlined +
+                ", obfuscated=" + obfuscated +
+                ", messageActions=" + messageActions +
+                '}';
     }
-
 }

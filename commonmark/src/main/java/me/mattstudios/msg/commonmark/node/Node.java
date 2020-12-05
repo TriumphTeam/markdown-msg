@@ -50,11 +50,10 @@ public abstract class Node {
         if (this.lastChild != null) {
             this.lastChild.next = child;
             child.prev = this.lastChild;
-            this.lastChild = child;
         } else {
             this.firstChild = child;
-            this.lastChild = child;
         }
+        this.lastChild = child;
     }
 
     public void prependChild(Node child) {
@@ -119,7 +118,7 @@ public abstract class Node {
      * @return the source spans of this node if included by the parser, an empty list otherwise
      */
     public List<SourceSpan> getSourceSpans() {
-        return sourceSpans != null ? Collections.unmodifiableList(sourceSpans) : Collections.<SourceSpan>emptyList();
+        return sourceSpans != null ? Collections.unmodifiableList(sourceSpans) : Collections.emptyList();
     }
 
     /**

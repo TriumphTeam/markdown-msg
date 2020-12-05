@@ -1,5 +1,6 @@
 package me.mattstudios.msg.commonmark.internal;
 
+import me.mattstudios.msg.commonmark.internal.inline.triumph.TriggerProcessor;
 import me.mattstudios.msg.commonmark.internal.util.Parsing;
 import me.mattstudios.msg.commonmark.node.Block;
 import me.mattstudios.msg.commonmark.node.Document;
@@ -42,7 +43,8 @@ public class DocumentParser implements ParserState {
             HtmlBlock.class,
             ThematicBreak.class,
             ListBlock.class,
-            IndentedCodeBlock.class));
+            IndentedCodeBlock.class
+    ));
 
     private static final Map<Class<? extends Block>, BlockParserFactory> NODES_TO_CORE_FACTORIES;
 
@@ -87,6 +89,7 @@ public class DocumentParser implements ParserState {
     private final List<BlockParserFactory> blockParserFactories;
     private final InlineParserFactory inlineParserFactory;
     private final List<DelimiterProcessor> delimiterProcessors;
+    private final List<TriggerProcessor> triggerProcessors;
     private final IncludeSourceSpans includeSourceSpans;
     private final DocumentBlockParser documentBlockParser;
     private final Map<String, LinkReferenceDefinition> definitions = new LinkedHashMap<>();
@@ -94,11 +97,17 @@ public class DocumentParser implements ParserState {
     private final List<OpenBlockParser> openBlockParsers = new ArrayList<>();
     private final List<BlockParser> allBlockParsers = new ArrayList<>();
 
-    public DocumentParser(List<BlockParserFactory> blockParserFactories, InlineParserFactory inlineParserFactory,
-                          List<DelimiterProcessor> delimiterProcessors, IncludeSourceSpans includeSourceSpans) {
+    public DocumentParser(
+            final List<BlockParserFactory> blockParserFactories,
+            final InlineParserFactory inlineParserFactory,
+            final List<DelimiterProcessor> delimiterProcessors,
+            final List<TriggerProcessor> triggerProcessors,
+            final IncludeSourceSpans includeSourceSpans
+    ) {
         this.blockParserFactories = blockParserFactories;
         this.inlineParserFactory = inlineParserFactory;
         this.delimiterProcessors = delimiterProcessors;
+        this.triggerProcessors = triggerProcessors;
         this.includeSourceSpans = includeSourceSpans;
 
         this.documentBlockParser = new DocumentBlockParser();
@@ -462,7 +471,7 @@ public class DocumentParser implements ParserState {
      * Walk through a block & children recursively, parsing string content into inline content where appropriate.
      */
     private void processInlines() {
-        InlineParserContextImpl context = new InlineParserContextImpl(delimiterProcessors, definitions);
+        InlineParserContextImpl context = new InlineParserContextImpl(delimiterProcessors, triggerProcessors, definitions);
         InlineParser inlineParser = inlineParserFactory.create(context);
 
         for (BlockParser blockParser : allBlockParsers) {

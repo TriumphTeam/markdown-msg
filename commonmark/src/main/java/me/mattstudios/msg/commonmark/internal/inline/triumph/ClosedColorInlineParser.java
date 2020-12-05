@@ -1,4 +1,4 @@
-package me.mattstudios.msg.commonmark.internal.inline.mf;
+package me.mattstudios.msg.commonmark.internal.inline.triumph;
 
 import com.google.common.primitives.Floats;
 import me.mattstudios.msg.commonmark.internal.inline.InlineContentParser;
@@ -7,9 +7,9 @@ import me.mattstudios.msg.commonmark.internal.inline.ParsedInline;
 import me.mattstudios.msg.commonmark.internal.inline.Position;
 import me.mattstudios.msg.commonmark.internal.inline.Scanner;
 import me.mattstudios.msg.commonmark.internal.util.AsciiMatcher;
-import me.mattstudios.msg.commonmark.node.mf.Color;
-import me.mattstudios.msg.commonmark.node.mf.Gradient;
-import me.mattstudios.msg.commonmark.node.mf.Rainbow;
+import me.mattstudios.msg.commonmark.node.triumph.Color;
+import me.mattstudios.msg.commonmark.node.triumph.Gradient;
+import me.mattstudios.msg.commonmark.node.triumph.Rainbow;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package me.mattstudios.msg.commonmark.internal.inline.mf;
+package me.mattstudios.msg.commonmark.internal.inline.triumph;
 
 import me.mattstudios.msg.commonmark.internal.inline.Scanner;
 import me.mattstudios.msg.commonmark.internal.util.Parsing;

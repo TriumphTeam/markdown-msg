@@ -9,13 +9,15 @@ import me.mattstudios.msg.commonmark.internal.inline.ParsedInlineImpl;
 import me.mattstudios.msg.commonmark.internal.inline.Position;
 import me.mattstudios.msg.commonmark.internal.inline.Scanner;
 import me.mattstudios.msg.commonmark.internal.inline.UnderscoreDelimiterProcessor;
-import me.mattstudios.msg.commonmark.internal.inline.mf.ActionScanner;
-import me.mattstudios.msg.commonmark.internal.inline.mf.ClosedColorInlineParser;
-import me.mattstudios.msg.commonmark.internal.inline.mf.ColorInlineParser;
+import me.mattstudios.msg.commonmark.internal.inline.triumph.ActionScanner;
+import me.mattstudios.msg.commonmark.internal.inline.triumph.ClosedColorInlineParser;
+import me.mattstudios.msg.commonmark.internal.inline.triumph.ColorInlineParser;
+import me.mattstudios.msg.commonmark.internal.inline.triumph.CustomInlineParser;
+import me.mattstudios.msg.commonmark.internal.inline.triumph.TriggerProcessor;
 import me.mattstudios.msg.commonmark.internal.util.Parsing;
 import me.mattstudios.msg.commonmark.node.Node;
 import me.mattstudios.msg.commonmark.node.Text;
-import me.mattstudios.msg.commonmark.node.mf.Action;
+import me.mattstudios.msg.commonmark.node.triumph.Action;
 import me.mattstudios.msg.commonmark.parser.InlineParser;
 import me.mattstudios.msg.commonmark.parser.InlineParserContext;
 import me.mattstudios.msg.commonmark.parser.delimiter.DelimiterProcessor;
@@ -63,7 +65,11 @@ public class InlineParserImpl implements InlineParser, InlineParserState {
         this.inlineParsers.put('&', new ColorInlineParser());
         this.inlineParsers.put('<', new ClosedColorInlineParser());
 
-        this.delimiterCharacters = calculateDelimiterCharacters(this.delimiterProcessors.keySet());
+        for (final TriggerProcessor triggerProcessor : inlineParserContext.getCustomTriggerProcessors()) {
+            inlineParsers.put(triggerProcessor.getTriggerCharacter(), new CustomInlineParser(triggerProcessor));
+        }
+
+        this.delimiterCharacters = calculateDelimiterCharacters(delimiterProcessors.keySet());
         this.specialCharacters = calculateSpecialCharacters(delimiterCharacters, inlineParsers.keySet());
     }
 

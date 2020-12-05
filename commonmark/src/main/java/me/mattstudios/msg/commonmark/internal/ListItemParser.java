@@ -16,7 +16,7 @@ public class ListItemParser extends AbstractBlockParser {
      * Minimum number of columns that the content has to be indented (relative to the containing block) to be part of
      * this list item.
      */
-    private int contentIndent;
+    private final int contentIndent;
 
     private boolean hadBlankLine;
 

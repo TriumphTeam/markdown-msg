@@ -12,7 +12,7 @@ public class FencedCodeBlockParser extends AbstractBlockParser {
     private final FencedCodeBlock block = new FencedCodeBlock();
 
     private String firstLine;
-    private StringBuilder otherLines = new StringBuilder();
+    private final StringBuilder otherLines = new StringBuilder();
 
     public FencedCodeBlockParser(char fenceChar, int fenceLength, int fenceIndent) {
         block.setFenceChar(fenceChar);

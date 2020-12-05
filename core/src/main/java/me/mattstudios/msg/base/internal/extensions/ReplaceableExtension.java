@@ -1,6 +1,5 @@
 package me.mattstudios.msg.base.internal.extensions;
 
-import jdk.internal.joptsimple.internal.Strings;
 import me.mattstudios.msg.base.internal.components.MessageNode;
 import me.mattstudios.msg.base.internal.extensions.delimiter.KeywordDelimiterProcessor;
 import me.mattstudios.msg.commonmark.parser.Parser;
@@ -31,13 +30,13 @@ public abstract class ReplaceableExtension implements ReplaceableHandler {
     @NotNull
     @Override
     public String getOpener() {
-        return Strings.repeat(openingCharacter, amount);
+        return String.valueOf(openingCharacter);
     }
 
     @NotNull
     @Override
     public String getCloser() {
-        return Strings.repeat(closingCharacter, amount);
+        return String.valueOf(closingCharacter);
     }
 
 }

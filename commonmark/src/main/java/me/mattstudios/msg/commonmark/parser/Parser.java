@@ -4,6 +4,7 @@ import me.mattstudios.msg.commonmark.Extension;
 import me.mattstudios.msg.commonmark.internal.DocumentParser;
 import me.mattstudios.msg.commonmark.internal.InlineParserContextImpl;
 import me.mattstudios.msg.commonmark.internal.InlineParserImpl;
+import me.mattstudios.msg.commonmark.internal.inline.triumph.TriggerProcessor;
 import me.mattstudios.msg.commonmark.node.Block;
 import me.mattstudios.msg.commonmark.node.FencedCodeBlock;
 import me.mattstudios.msg.commonmark.node.HtmlBlock;
@@ -14,9 +15,14 @@ import me.mattstudios.msg.commonmark.node.Node;
 import me.mattstudios.msg.commonmark.node.ThematicBreak;
 import me.mattstudios.msg.commonmark.parser.block.BlockParserFactory;
 import me.mattstudios.msg.commonmark.parser.delimiter.DelimiterProcessor;
+import org.checkerframework.common.returnsreceiver.qual.This;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +42,7 @@ public class Parser {
 
     private final List<BlockParserFactory> blockParserFactories;
     private final List<DelimiterProcessor> delimiterProcessors;
+    private final List<TriggerProcessor> triggerProcessors;
     private final InlineParserFactory inlineParserFactory;
     private final List<PostProcessor> postProcessors;
     private final IncludeSourceSpans includeSourceSpans;
@@ -45,12 +52,18 @@ public class Parser {
         this.inlineParserFactory = builder.getInlineParserFactory();
         this.postProcessors = builder.postProcessors;
         this.delimiterProcessors = builder.delimiterProcessors;
+        this.triggerProcessors = builder.triggerProcessors;
         this.includeSourceSpans = builder.includeSourceSpans;
 
         // Try to construct an inline parser. Invalid configuration might result in an exception, which we want to
         // detect as soon as possible.
-        this.inlineParserFactory.create(new InlineParserContextImpl(delimiterProcessors,
-                Collections.<String, LinkReferenceDefinition>emptyMap()));
+        this.inlineParserFactory.create(
+                new InlineParserContextImpl(
+                        delimiterProcessors,
+                        triggerProcessors,
+                        Collections.emptyMap()
+                )
+        );
     }
 
     /**
@@ -79,36 +92,8 @@ public class Parser {
         return postProcess(document);
     }
 
-    /**
-     * Parse the specified reader into a tree of nodes. The caller is responsible for closing the reader.
-     * <pre><code>
-     * Parser parser = Parser.builder().build();
-     * try (InputStreamReader reader = new InputStreamReader(new FileInputStream("file.md"), StandardCharsets.UTF_8)) {
-     *     Node document = parser.parseReader(reader);
-     *     // ...
-     * }
-     * </code></pre>
-     * Note that if you have a file with a byte order mark (BOM), you need to skip it before handing the reader to this
-     * library. There's existing classes that do that, e.g. see {@code BOMInputStream} in Commons IO.
-     * <p>
-     * This method is thread-safe (a new parser state is used for each invocation).
-     *
-     * @param input the reader to parse - must not be null
-     * @return the root node
-     * @throws IOException when reading throws an exception
-     */
-    public Node parseReader(Reader input) throws IOException {
-        if (input == null) {
-            throw new NullPointerException("input must not be null");
-        }
-
-        DocumentParser documentParser = createDocumentParser();
-        Node document = documentParser.parse(input);
-        return postProcess(document);
-    }
-
     private DocumentParser createDocumentParser() {
-        return new DocumentParser(blockParserFactories, inlineParserFactory, delimiterProcessors, includeSourceSpans);
+        return new DocumentParser(blockParserFactories, inlineParserFactory, delimiterProcessors, triggerProcessors, includeSourceSpans);
     }
 
     private Node postProcess(Node document) {
@@ -124,8 +109,9 @@ public class Parser {
     public static class Builder {
         private final List<BlockParserFactory> blockParserFactories = new ArrayList<>();
         private final List<DelimiterProcessor> delimiterProcessors = new ArrayList<>();
+        private final List<TriggerProcessor> triggerProcessors = new ArrayList<>();
         private final List<PostProcessor> postProcessors = new ArrayList<>();
-        private Set<Class<? extends Block>> enabledBlockTypes = DocumentParser.getDefaultBlockParserTypes();
+        private final Set<Class<? extends Block>> enabledBlockTypes = DocumentParser.getDefaultBlockParserTypes();
         private InlineParserFactory inlineParserFactory;
         private IncludeSourceSpans includeSourceSpans = IncludeSourceSpans.NONE;
 
@@ -154,39 +140,6 @@ public class Parser {
         }
 
         /**
-         * Describe the list of markdown features the parser will recognize and parse.
-         * <p>
-         * By default, CommonMark will recognize and parse the following set of "block" elements:
-         * <ul>
-         * <li>{@link HtmlBlock} ({@code <html></html>})
-         * <li>{@link ThematicBreak} (Horizontal Rule) ({@code ---})
-         * <li>{@link FencedCodeBlock} ({@code ```})
-         * <li>{@link IndentedCodeBlock}
-         * <li>{@link ListBlock} (Ordered / Unordered List) ({@code 1. / *})
-         * </ul>
-         * <p>
-         * To parse only a subset of the features listed above, pass a list of each feature's associated {@link Block} class.
-         * <p>
-         * E.g., to only parse headings and lists:
-         * <pre>
-         *     {@code
-         *     Parser.builder().enabledBlockTypes(new HashSet<>(Arrays.asList(Heading.class, ListBlock.class)));
-         *     }
-         * </pre>
-         *
-         * @param enabledBlockTypes A list of block nodes the parser will parse.
-         *                          If this list is empty, the parser will not recognize any CommonMark core features.
-         * @return {@code this}
-         */
-        public Builder enabledBlockTypes(Set<Class<? extends Block>> enabledBlockTypes) {
-            if (enabledBlockTypes == null) {
-                throw new NullPointerException("enabledBlockTypes must not be null");
-            }
-            this.enabledBlockTypes = enabledBlockTypes;
-            return this;
-        }
-
-        /**
          * Whether to calculate {@link me.mattstudios.msg.commonmark.node.SourceSpan} for {@link Node}.
          * <p>
          * By default, source spans are disabled.
@@ -200,24 +153,6 @@ public class Parser {
         }
 
         /**
-         * Adds a custom block parser factory.
-         * <p>
-         * Note that custom factories are applied <em>before</em> the built-in factories. This is so that
-         * extensions can change how some syntax is parsed that would otherwise be handled by built-in factories.
-         * "With great power comes great responsibility."
-         *
-         * @param blockParserFactory a block parser factory implementation
-         * @return {@code this}
-         */
-        public Builder customBlockParserFactory(BlockParserFactory blockParserFactory) {
-            if (blockParserFactory == null) {
-                throw new NullPointerException("blockParserFactory must not be null");
-            }
-            blockParserFactories.add(blockParserFactory);
-            return this;
-        }
-
-        /**
          * Adds a custom delimiter processor.
          * <p>
          * Note that multiple delimiter processors with the same characters can be added, as long as they have a
@@ -227,43 +162,13 @@ public class Parser {
          * @param delimiterProcessor a delimiter processor implementation
          * @return {@code this}
          */
-        public Builder customDelimiterProcessor(DelimiterProcessor delimiterProcessor) {
-            if (delimiterProcessor == null) {
-                throw new NullPointerException("delimiterProcessor must not be null");
-            }
+        public Builder customDelimiterProcessor(@NotNull final DelimiterProcessor delimiterProcessor) {
             delimiterProcessors.add(delimiterProcessor);
             return this;
         }
 
-        public Builder postProcessor(PostProcessor postProcessor) {
-            if (postProcessor == null) {
-                throw new NullPointerException("postProcessor must not be null");
-            }
-            postProcessors.add(postProcessor);
-            return this;
-        }
-
-        /**
-         * Overrides the parser used for inline markdown processing.
-         * <p>
-         * Provide an implementation of InlineParserFactory which provides a custom inline parser
-         * to modify how the following are parsed:
-         * bold (**)
-         * italic (*)
-         * strikethrough (~~)
-         * backtick quote (`)
-         * link ([title](http://))
-         * image (![alt](http://))
-         * <p>
-         * <p>
-         * Note that if this method is not called or the inline parser factory is set to null, then the default
-         * implementation will be used.
-         *
-         * @param inlineParserFactory an inline parser factory implementation
-         * @return {@code this}
-         */
-        public Builder inlineParserFactory(InlineParserFactory inlineParserFactory) {
-            this.inlineParserFactory = inlineParserFactory;
+        public Builder customTriggerProcessor(@NotNull final TriggerProcessor triggerProcessor) {
+            triggerProcessors.add(triggerProcessor);
             return this;
         }
 
@@ -271,19 +176,8 @@ public class Parser {
             if (inlineParserFactory != null) {
                 return inlineParserFactory;
             }
-            return new InlineParserFactory() {
-                @Override
-                public InlineParser create(InlineParserContext inlineParserContext) {
-                    return new InlineParserImpl(inlineParserContext);
-                }
-            };
+            return InlineParserImpl::new;
         }
     }
 
-    /**
-     * Extension for {@link Parser}.
-     */
-    public interface ParserExtension extends Extension {
-        void extend(Builder parserBuilder);
-    }
 }

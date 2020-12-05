@@ -6,4 +6,3 @@ rootProject.name = "triumph-msg"
 }
 
 include 'plugin-test'
-

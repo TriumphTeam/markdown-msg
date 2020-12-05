@@ -1,5 +1,6 @@
 package me.mattstudios.msg.commonmark.parser;
 
+import me.mattstudios.msg.commonmark.internal.inline.triumph.TriggerProcessor;
 import me.mattstudios.msg.commonmark.node.LinkReferenceDefinition;
 import me.mattstudios.msg.commonmark.parser.delimiter.DelimiterProcessor;
 
@@ -14,6 +15,11 @@ public interface InlineParserContext {
      * @return custom delimiter processors that have been configured with {@link Parser.Builder#customDelimiterProcessor(DelimiterProcessor)}
      */
     List<DelimiterProcessor> getCustomDelimiterProcessors();
+
+    /**
+     * @return Custom trigger processors
+     */
+    List<TriggerProcessor> getCustomTriggerProcessors();
 
     /**
      * Look up a {@link LinkReferenceDefinition} for a given label.

@@ -7,9 +7,7 @@ import me.mattstudios.msg.base.internal.color.MessageColor;
 import me.mattstudios.msg.base.internal.components.LineBreakNode;
 import me.mattstudios.msg.base.internal.components.MessageNode;
 import me.mattstudios.msg.base.internal.components.TextNode;
-import me.mattstudios.msg.base.internal.extensions.ReplaceableHandler;
 import me.mattstudios.msg.base.internal.extensions.node.Obfuscated;
-import me.mattstudios.msg.base.internal.extensions.node.Replaceable;
 import me.mattstudios.msg.base.internal.extensions.node.Strikethrough;
 import me.mattstudios.msg.base.internal.extensions.node.Underline;
 import me.mattstudios.msg.base.internal.parser.MarkdownParser;
@@ -19,28 +17,32 @@ import me.mattstudios.msg.commonmark.node.Emphasis;
 import me.mattstudios.msg.commonmark.node.Node;
 import me.mattstudios.msg.commonmark.node.StrongEmphasis;
 import me.mattstudios.msg.commonmark.node.Text;
-import me.mattstudios.msg.commonmark.node.mf.Action;
-import me.mattstudios.msg.commonmark.node.mf.Color;
-import me.mattstudios.msg.commonmark.node.mf.Gradient;
-import me.mattstudios.msg.commonmark.node.mf.LegacyBold;
-import me.mattstudios.msg.commonmark.node.mf.LegacyItalic;
-import me.mattstudios.msg.commonmark.node.mf.LegacyObfuscated;
-import me.mattstudios.msg.commonmark.node.mf.LegacyStrikethrough;
-import me.mattstudios.msg.commonmark.node.mf.LegacyUnderline;
-import me.mattstudios.msg.commonmark.node.mf.LineBreak;
-import me.mattstudios.msg.commonmark.node.mf.Rainbow;
-import me.mattstudios.msg.commonmark.node.mf.Reset;
+import me.mattstudios.msg.commonmark.node.triumph.Action;
+import me.mattstudios.msg.commonmark.node.triumph.Color;
+import me.mattstudios.msg.commonmark.node.triumph.Gradient;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyBold;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyItalic;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyObfuscated;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyStrikethrough;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyUnderline;
+import me.mattstudios.msg.commonmark.node.triumph.LineBreak;
+import me.mattstudios.msg.commonmark.node.triumph.Rainbow;
+import me.mattstudios.msg.commonmark.node.triumph.Reset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public final class MarkdownRenderer extends AbstractVisitor {
 
     @NotNull
     private final MessageOptions messageOptions;
+
+    @NotNull
+    private final Map<Class<? extends CustomNode>, NodeRenderer> renderers;
 
     @NotNull
     private final List<MessageNode> nodes;
@@ -58,18 +60,20 @@ public final class MarkdownRenderer extends AbstractVisitor {
     private boolean legacyUnderline = false;
     private boolean legacyObfuscated = false;
 
-    @Nullable
-    private Replaceable replaceable = null;
-
     @NotNull
     private MessageColor currentColor;
     @Nullable
     private List<MessageAction> actions = null;
 
-    public MarkdownRenderer(@NotNull final List<MessageNode> nodes, @NotNull final MessageOptions messageOptions) {
+    public MarkdownRenderer(
+            @NotNull final List<MessageNode> nodes,
+            @NotNull final MessageOptions messageOptions,
+            @NotNull final Map<Class<? extends CustomNode>, NodeRenderer> renderers
+    ) {
         this.nodes = nodes;
         this.messageOptions = messageOptions;
         this.currentColor = messageOptions.getDefaultColor();
+        this.renderers = renderers;
     }
 
     /**
@@ -157,12 +161,14 @@ public final class MarkdownRenderer extends AbstractVisitor {
             strike = false;
         }
 
-        if (customNode instanceof Replaceable) {
-            replaceable = (Replaceable) customNode;
+        final NodeRenderer nodeRenderer = renderers.get(customNode.getClass());
+        if (nodeRenderer == null) {
             visitChildren(customNode);
-            replaceable = null;
+            return;
         }
 
+        nodes.add(nodeRenderer.render(customNode));
+        visitChildren(customNode);
     }
 
     @Override
@@ -325,29 +331,6 @@ public final class MarkdownRenderer extends AbstractVisitor {
      */
     @Override
     public void visit(@NotNull final Text text) {
-        if (replaceable != null) {
-            final ReplaceableHandler replaceableHandler = messageOptions.getReplaceableHandler();
-
-            // Likely never happen
-            if (replaceableHandler == null) {
-                appendNode(text.getLiteral());
-                visitChildren(text);
-                return;
-            }
-
-            final MessageNode node = replaceableHandler.getNode(text.getLiteral());
-
-            if (node == null) {
-                appendNode(replaceableHandler.getOpener() + text.getLiteral() + replaceableHandler.getCloser());
-                visitChildren(text);
-                return;
-            }
-
-            nodes.add(node);
-            visitChildren(text);
-            return;
-        }
-
         appendNode(text.getLiteral());
         visitChildren(text);
     }

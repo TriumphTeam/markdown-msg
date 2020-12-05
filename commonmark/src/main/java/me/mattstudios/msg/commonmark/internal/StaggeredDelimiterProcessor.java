@@ -17,7 +17,7 @@ class StaggeredDelimiterProcessor implements DelimiterProcessor {
 
     private final char delim;
     private int minLength = 0;
-    private LinkedList<DelimiterProcessor> processors = new LinkedList<>(); // in reverse getMinLength order
+    private final LinkedList<DelimiterProcessor> processors = new LinkedList<>(); // in reverse getMinLength order
 
     StaggeredDelimiterProcessor(char delim) {
         this.delim = delim;

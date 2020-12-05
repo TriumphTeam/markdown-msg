@@ -3,11 +3,13 @@ package me.mattstudios.msg.base;
 import me.mattstudios.msg.base.internal.Format;
 import me.mattstudios.msg.base.internal.color.FlatColor;
 import me.mattstudios.msg.base.internal.color.MessageColor;
-import me.mattstudios.msg.base.internal.extensions.ReplaceableHandler;
+import me.mattstudios.msg.commonmark.parser.ParserExtension;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,13 +23,17 @@ public final class MessageOptions {
     @NotNull
     private final MessageColor defaultColor;
 
-    @Nullable
-    private final ReplaceableHandler replaceableHandler;
+    @NotNull
+    private final List<ParserExtension> extensions;
 
-    private MessageOptions(@NotNull final Set<Format> formats, @NotNull final MessageColor defaultColor, @Nullable final ReplaceableHandler replaceableHandler) {
+    private MessageOptions(
+            @NotNull final Set<Format> formats,
+            @NotNull final MessageColor defaultColor,
+            @NotNull final List<ParserExtension> extensions
+    ) {
         this.formats = formats;
         this.defaultColor = defaultColor;
-        this.replaceableHandler = replaceableHandler;
+        this.extensions = extensions;
     }
 
     public static Builder builder(@NotNull final Set<Format> formats) {
@@ -52,9 +58,9 @@ public final class MessageOptions {
         return defaultColor;
     }
 
-    @Nullable
-    public ReplaceableHandler getReplaceableHandler() {
-        return replaceableHandler;
+    @NotNull
+    public List<ParserExtension> getExtensions() {
+        return extensions;
     }
 
     public static final class Builder {
@@ -65,8 +71,8 @@ public final class MessageOptions {
         @NotNull
         private MessageColor defaultColor = new FlatColor("white");
 
-        @Nullable
-        private ReplaceableHandler replaceableHandler = null;
+        @NotNull
+        private final List<ParserExtension> extensions = new ArrayList<>();
 
         public Builder(@NotNull final Set<Format> formats) {
             this.formats = formats;
@@ -87,13 +93,18 @@ public final class MessageOptions {
             return this;
         }
 
-        public Builder setReplaceableHandler(@NotNull final ReplaceableHandler replaceableHandler) {
-            this.replaceableHandler = replaceableHandler;
+        public Builder extensions(@NotNull final Collection<ParserExtension> extensions) {
+            this.extensions.addAll(extensions);
+            return this;
+        }
+
+        public Builder extensions(@NotNull final ParserExtension... extensions) {
+            this.extensions.addAll(Arrays.asList(extensions));
             return this;
         }
 
         public MessageOptions build() {
-            return new MessageOptions(formats, defaultColor, replaceableHandler);
+            return new MessageOptions(formats, defaultColor, extensions);
         }
 
     }

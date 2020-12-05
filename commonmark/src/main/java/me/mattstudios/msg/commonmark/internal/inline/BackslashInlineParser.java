@@ -2,7 +2,7 @@ package me.mattstudios.msg.commonmark.internal.inline;
 
 import me.mattstudios.msg.commonmark.internal.util.Escaping;
 import me.mattstudios.msg.commonmark.node.Text;
-import me.mattstudios.msg.commonmark.node.mf.LineBreak;
+import me.mattstudios.msg.commonmark.node.triumph.LineBreak;
 
 import java.util.regex.Pattern;
 

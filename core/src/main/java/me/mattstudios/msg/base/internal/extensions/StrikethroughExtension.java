@@ -3,8 +3,10 @@ package me.mattstudios.msg.base.internal.extensions;
 import me.mattstudios.msg.base.internal.extensions.delimiter.StrikethroughDelimiterProcessor;
 import me.mattstudios.msg.commonmark.Extension;
 import me.mattstudios.msg.commonmark.parser.Parser;
+import me.mattstudios.msg.commonmark.parser.ParserExtension;
+import org.jetbrains.annotations.NotNull;
 
-public final class StrikethroughExtension implements Parser.ParserExtension {
+public final class StrikethroughExtension implements ParserExtension {
 
     private StrikethroughExtension() {}
 
@@ -13,7 +15,7 @@ public final class StrikethroughExtension implements Parser.ParserExtension {
     }
 
     @Override
-    public void extend(Parser.Builder parserBuilder) {
+    public void extend(@NotNull final Parser.Builder parserBuilder) {
         parserBuilder.customDelimiterProcessor(new StrikethroughDelimiterProcessor());
     }
 

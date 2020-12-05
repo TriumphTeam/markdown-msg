@@ -1,16 +1,16 @@
 package me.mattstudios.msg.commonmark.node;
 
-import me.mattstudios.msg.commonmark.node.mf.Action;
-import me.mattstudios.msg.commonmark.node.mf.Color;
-import me.mattstudios.msg.commonmark.node.mf.Gradient;
-import me.mattstudios.msg.commonmark.node.mf.LegacyBold;
-import me.mattstudios.msg.commonmark.node.mf.LegacyItalic;
-import me.mattstudios.msg.commonmark.node.mf.LegacyObfuscated;
-import me.mattstudios.msg.commonmark.node.mf.LegacyStrikethrough;
-import me.mattstudios.msg.commonmark.node.mf.LegacyUnderline;
-import me.mattstudios.msg.commonmark.node.mf.LineBreak;
-import me.mattstudios.msg.commonmark.node.mf.Rainbow;
-import me.mattstudios.msg.commonmark.node.mf.Reset;
+import me.mattstudios.msg.commonmark.node.triumph.Action;
+import me.mattstudios.msg.commonmark.node.triumph.Color;
+import me.mattstudios.msg.commonmark.node.triumph.Gradient;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyBold;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyItalic;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyObfuscated;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyStrikethrough;
+import me.mattstudios.msg.commonmark.node.triumph.LegacyUnderline;
+import me.mattstudios.msg.commonmark.node.triumph.LineBreak;
+import me.mattstudios.msg.commonmark.node.triumph.Rainbow;
+import me.mattstudios.msg.commonmark.node.triumph.Reset;
 import org.jetbrains.annotations.NotNull;
 
 /**
