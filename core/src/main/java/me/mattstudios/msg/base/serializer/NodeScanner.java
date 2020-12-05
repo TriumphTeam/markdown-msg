@@ -9,7 +9,6 @@ import me.mattstudios.msg.base.internal.color.handlers.GradientHandler;
 import me.mattstudios.msg.base.internal.color.handlers.RainbowHandler;
 import me.mattstudios.msg.base.internal.components.LineBreakNode;
 import me.mattstudios.msg.base.internal.components.MessageNode;
-import me.mattstudios.msg.base.internal.components.ReplaceableNode;
 import me.mattstudios.msg.base.internal.components.TextNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -142,7 +141,7 @@ public class NodeScanner {
 
             final MessageNode nextNode = nodeScanner.peek();
 
-            if (nextNode instanceof LineBreakNode || nextNode instanceof ReplaceableNode) {
+            if (nextNode instanceof LineBreakNode) {
                 nodes.add(nextNode);
                 continue;
             }
@@ -202,25 +201,6 @@ public class NodeScanner {
     private static boolean renderSpecial(@NotNull final MessageNode node, @NotNull final Appender<?> appender) {
         if (node instanceof LineBreakNode) {
             appender.append("\n");
-            return true;
-        }
-
-        if (node instanceof ReplaceableNode) {
-            final ReplaceableNode replaceableNode = (ReplaceableNode) node;
-
-            for (final TextNode textNode : replaceableNode.getNodes()) {
-                appender.appendNode(
-                        textNode.getText(),
-                        null,
-                        textNode.isBold(),
-                        textNode.isItalic(),
-                        textNode.isStrike(),
-                        textNode.isUnderlined(),
-                        textNode.isObfuscated(),
-                        textNode.getActions()
-                );
-            }
-
             return true;
         }
 
