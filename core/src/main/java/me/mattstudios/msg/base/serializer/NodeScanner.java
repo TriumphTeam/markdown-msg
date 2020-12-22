@@ -7,9 +7,7 @@ import me.mattstudios.msg.base.internal.color.RainbowColor;
 import me.mattstudios.msg.base.internal.color.handlers.Fancy;
 import me.mattstudios.msg.base.internal.color.handlers.GradientHandler;
 import me.mattstudios.msg.base.internal.color.handlers.RainbowHandler;
-import me.mattstudios.msg.base.internal.components.LineBreakNode;
-import me.mattstudios.msg.base.internal.components.MessageNode;
-import me.mattstudios.msg.base.internal.components.TextNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -91,12 +89,7 @@ public class NodeScanner {
         while (nodeScanner.hasNext()) {
             nodeScanner.next();
 
-            final MessageNode messageNode = nodeScanner.peek();
-
-            if (renderSpecial(messageNode, appender)) continue;
-
-            final TextNode node = (TextNode) messageNode;
-
+            final MessageNode node = nodeScanner.peek();
             final MessageColor color = node.getColor();
 
             if (color instanceof GradientColor) {
@@ -141,18 +134,12 @@ public class NodeScanner {
 
             final MessageNode nextNode = nodeScanner.peek();
 
-            if (nextNode instanceof LineBreakNode) {
-                nodes.add(nextNode);
-                continue;
-            }
-
-            final TextNode textNode = (TextNode) nextNode;
-            if (!color.equals(textNode.getColor())) {
+            if (!color.equals(nextNode.getColor())) {
                 nodeScanner.previous();
                 break;
             }
 
-            nodes.add(textNode);
+            nodes.add(nextNode);
         }
     }
 
@@ -171,19 +158,16 @@ public class NodeScanner {
         }
 
         for (final MessageNode node : parts) {
-            if (renderSpecial(node, appender)) continue;
-
-            final TextNode textNode = (TextNode) node;
-            for (char character : textNode.getText().toCharArray()) {
+            for (char character : node.getText().toCharArray()) {
                 appender.appendNode(
                         String.valueOf(character),
                         fancy.next(),
-                        textNode.isBold(),
-                        textNode.isItalic(),
-                        textNode.isStrike(),
-                        textNode.isUnderlined(),
-                        textNode.isObfuscated(),
-                        textNode.getActions()
+                        node.isBold(),
+                        node.isItalic(),
+                        node.isStrike(),
+                        node.isUnderlined(),
+                        node.isObfuscated(),
+                        node.getActions()
                 );
             }
         }
@@ -192,18 +176,9 @@ public class NodeScanner {
     private static int getFancyLength(@NotNull final List<MessageNode> nodes) {
         int length = 0;
         for (final MessageNode node : nodes) {
-            if (!(node instanceof TextNode)) continue;
-            length += ((TextNode) node).getText().length();
+            length += node.getText().length();
         }
         return length;
     }
 
-    private static boolean renderSpecial(@NotNull final MessageNode node, @NotNull final Appender<?> appender) {
-        if (node instanceof LineBreakNode) {
-            appender.append("\n");
-            return true;
-        }
-
-        return false;
-    }
 }

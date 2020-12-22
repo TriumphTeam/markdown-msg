@@ -11,7 +11,7 @@ import me.mattstudios.msg.base.internal.action.content.HoverContent;
 import me.mattstudios.msg.base.internal.action.content.ShowItem;
 import me.mattstudios.msg.base.internal.action.content.ShowText;
 import me.mattstudios.msg.base.internal.color.handlers.ColorMapping;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import me.mattstudios.msg.base.serializer.Appender;
 import me.mattstudios.msg.base.serializer.NodeScanner;
 import me.mattstudios.util.ServerVersion;

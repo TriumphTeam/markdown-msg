@@ -7,6 +7,9 @@ group 'me.mattstudios'
 version parent.version
 
 repositories {
+    mavenCentral()
+
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/"    }
     maven { url = "https://repo.mattstudios.me/artifactory/public/" }
     maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
@@ -21,6 +24,7 @@ dependencies {
     implementation "me.mattstudios.utils:matt-framework:1.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
+    implementation "net.kyori:adventure-api:4.3.0"
     implementation "net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT"
 
 }
@@ -32,6 +36,7 @@ compileKotlin {
 
 shadowJar {
     //minimize()
+    relocate("net.kyori", "me.mattstudios.kyori")
     destinationDir file("C:/Users/xpsyk/Desktop/servers/paper-1.16/plugins")
 }
 

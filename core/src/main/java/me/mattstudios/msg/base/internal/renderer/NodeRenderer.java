@@ -1,6 +1,6 @@
 package me.mattstudios.msg.base.internal.renderer;
 
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.TextNode;
 import me.mattstudios.msg.commonmark.node.CustomNode;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +10,11 @@ public interface NodeRenderer {
     Class<? extends CustomNode> getParserNode();
 
     @NotNull
-    MessageNode render(@NotNull final CustomNode node);
+    TextNode render(@NotNull final CustomNode node);
+
+    @NotNull
+    default FormatRetention retention() {
+        return FormatRetention.IGNORE;
+    }
 
 }

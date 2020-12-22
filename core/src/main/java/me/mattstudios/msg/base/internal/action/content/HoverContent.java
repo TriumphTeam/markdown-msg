@@ -1,6 +1,6 @@
 package me.mattstudios.msg.base.internal.action.content;
 
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

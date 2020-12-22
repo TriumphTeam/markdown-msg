@@ -2,7 +2,7 @@ package me.mattstudios.msg.bukkit;
 
 import me.mattstudios.msg.base.MarkdownMessage;
 import me.mattstudios.msg.base.MessageOptions;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

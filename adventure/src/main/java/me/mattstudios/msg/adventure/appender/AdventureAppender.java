@@ -6,7 +6,7 @@ import me.mattstudios.msg.base.internal.action.MessageAction;
 import me.mattstudios.msg.base.internal.action.content.HoverContent;
 import me.mattstudios.msg.base.internal.action.content.ShowItem;
 import me.mattstudios.msg.base.internal.action.content.ShowText;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import me.mattstudios.msg.base.serializer.Appender;
 import me.mattstudios.msg.base.serializer.NodeScanner;
 import net.kyori.adventure.key.Key;
@@ -24,12 +24,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Appender to turn MF nodes into Kyori {@link Component}
+ * Appender to turn triumph nodes into Kyori {@link Component}
  */
 public final class AdventureAppender implements Appender<Component> {
 
     // Main builder
-    final TextComponent.Builder builder = TextComponent.builder("");
+    final TextComponent.Builder builder = Component.text().content("");
 
     /**
      * Appends a text value to the builder
@@ -39,7 +39,7 @@ public final class AdventureAppender implements Appender<Component> {
     @Override
     public void append(@NotNull final String value) {
         if (value.isEmpty()) return;
-        builder.append(value);
+        builder.append(Component.text(value));
     }
 
     /**
@@ -56,7 +56,7 @@ public final class AdventureAppender implements Appender<Component> {
      */
     @Override
     public void appendNode(@NotNull final String text, @Nullable final String color, final boolean bold, final boolean italic, final boolean strike, final boolean underline, final boolean obfuscated, @Nullable final List<MessageAction> actions) {
-        final TextComponent.Builder textComponent = TextComponent.builder().content(text);
+        final TextComponent.Builder textComponent = Component.text().content(text);
 
         // Applies the node's properties (decoration)
         if (bold) textComponent.decoration(TextDecoration.BOLD, true);
@@ -97,7 +97,7 @@ public final class AdventureAppender implements Appender<Component> {
 
                 final ShowItem showItem = (ShowItem) hoverContent;
 
-                final Key key = Key.of(showItem.getId());
+                final Key key = Key.key(showItem.getId());
 
                 BinaryTagHolder nbt = null;
 
@@ -105,7 +105,7 @@ public final class AdventureAppender implements Appender<Component> {
                     nbt = BinaryTagHolder.of(showItem.getNbt());
                 }
 
-                textComponent.hoverEvent(HoverEvent.showItem(new HoverEvent.ShowItem(key, showItem.getCount(), nbt)));
+                textComponent.hoverEvent(HoverEvent.showItem(key, showItem.getCount(), nbt));
                 continue;
             }
 

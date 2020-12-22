@@ -1,6 +1,6 @@
 package me.mattstudios.msg.bukkit;
 
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

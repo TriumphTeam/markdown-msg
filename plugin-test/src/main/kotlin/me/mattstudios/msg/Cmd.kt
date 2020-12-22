@@ -23,8 +23,7 @@ internal class Cmd(plugin: TestPlugin) : CommandBase() {
         val lore = BukkitMessage.create().parse("<g:#AA00AA:#ff82ff>test lore lines").toString().split(" ")*/
 
         val component = AdventureMessage.create().parse(args.joinToString(" "))
-        println(component)
-        audience.audience(player).sendMessage(component)
+        audience.player(player).sendMessage(component)
 
     }
 

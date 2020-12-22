@@ -1,7 +1,7 @@
 package me.mattstudios.msg.base.internal.action.content;
 
-import me.mattstudios.msg.base.internal.components.MessageNode;
-import me.mattstudios.msg.base.internal.components.TextNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.TextNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;

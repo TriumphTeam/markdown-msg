@@ -1,7 +1,7 @@
 package me.mattstudios.msg.base.internal.parser;
 
 import me.mattstudios.msg.base.MessageOptions;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import me.mattstudios.msg.base.internal.extensions.ObfuscatedExtension;
 import me.mattstudios.msg.base.internal.extensions.StrikethroughExtension;
 import me.mattstudios.msg.base.internal.extensions.UnderlineExtension;
