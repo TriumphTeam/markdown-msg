@@ -4,6 +4,7 @@ import me.mattstudios.msg.base.FormatData;
 import me.mattstudios.msg.base.MessageOptions;
 import me.mattstudios.msg.base.internal.Format;
 import me.mattstudios.msg.base.internal.action.MessageAction;
+import me.mattstudios.msg.base.internal.color.FlatColor;
 import me.mattstudios.msg.base.internal.color.MessageColor;
 import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import me.mattstudios.msg.base.internal.nodes.TextNode;
@@ -61,7 +62,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
     private boolean legacyObfuscated = false;
 
     @NotNull
-    private MessageColor currentColor;
+    private MessageColor currentColor = new FlatColor("white");
     @Nullable
     private List<MessageAction> actions = null;
 
@@ -387,6 +388,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
         strike = formatData.isStrike();
         underline = formatData.isUnderlined();
         obfuscated = formatData.isObfuscated();
+        actions = formatData.getActions();
     }
 
 }

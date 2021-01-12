@@ -1,8 +1,12 @@
 package me.mattstudios.msg.base;
 
+import me.mattstudios.msg.base.internal.action.MessageAction;
 import me.mattstudios.msg.base.internal.color.FlatColor;
 import me.mattstudios.msg.base.internal.color.MessageColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public final class FormatData {
 
@@ -14,6 +18,9 @@ public final class FormatData {
     private boolean strike = false;
     private boolean underlined = false;
     private boolean obfuscated = false;
+
+    @Nullable
+    private List<MessageAction> actions = null;
 
     @NotNull
     public MessageColor getColor() {
@@ -62,6 +69,15 @@ public final class FormatData {
 
     public void setObfuscated(final boolean obfuscated) {
         this.obfuscated = obfuscated;
+    }
+
+    @Nullable
+    public List<MessageAction> getActions() {
+        return actions;
+    }
+
+    public void setActions(@Nullable final List<MessageAction> actions) {
+        this.actions = actions;
     }
 
 }
