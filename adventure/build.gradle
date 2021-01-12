@@ -3,5 +3,5 @@ version parent.version
 
 dependencies {
     api project(":triumph-msg-core")
-    compileOnly "net.kyori:adventure-api:4.0.0-SNAPSHOT"
+    compileOnly "net.kyori:adventure-api:4.3.0"
 }

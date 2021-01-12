@@ -1,12 +1,13 @@
 package me.mattstudios.msg.base.internal.renderer;
 
+import me.mattstudios.msg.base.FormatData;
 import me.mattstudios.msg.base.MessageOptions;
 import me.mattstudios.msg.base.internal.Format;
 import me.mattstudios.msg.base.internal.action.MessageAction;
+import me.mattstudios.msg.base.internal.color.FlatColor;
 import me.mattstudios.msg.base.internal.color.MessageColor;
-import me.mattstudios.msg.base.internal.components.LineBreakNode;
-import me.mattstudios.msg.base.internal.components.MessageNode;
-import me.mattstudios.msg.base.internal.components.TextNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.TextNode;
 import me.mattstudios.msg.base.internal.extensions.node.Obfuscated;
 import me.mattstudios.msg.base.internal.extensions.node.Strikethrough;
 import me.mattstudios.msg.base.internal.extensions.node.Underline;
@@ -61,7 +62,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
     private boolean legacyObfuscated = false;
 
     @NotNull
-    private MessageColor currentColor;
+    private MessageColor currentColor = new FlatColor("white");
     @Nullable
     private List<MessageAction> actions = null;
 
@@ -72,8 +73,9 @@ public final class MarkdownRenderer extends AbstractVisitor {
     ) {
         this.nodes = nodes;
         this.messageOptions = messageOptions;
-        this.currentColor = messageOptions.getDefaultColor();
         this.renderers = renderers;
+
+        initFormat();
     }
 
     /**
@@ -159,6 +161,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
             strike = true;
             visitChildren(customNode);
             strike = false;
+            return;
         }
 
         final NodeRenderer nodeRenderer = renderers.get(customNode.getClass());
@@ -167,8 +170,24 @@ public final class MarkdownRenderer extends AbstractVisitor {
             return;
         }
 
-        nodes.add(nodeRenderer.render(customNode));
-        visitChildren(customNode);
+        final TextNode textNode = nodeRenderer.render(customNode);
+
+        switch (nodeRenderer.retention()) {
+
+            case ALL:
+                appendNode(textNode);
+                return;
+
+            case RESET:
+                resetLegacyFormats();
+                currentColor = messageOptions.getDefaultFormatData().getColor();
+                appendNode(textNode);
+                return;
+
+            default:
+                nodes.add(nodeRenderer.render(customNode));
+                visitChildren(customNode);
+        }
     }
 
     @Override
@@ -247,7 +266,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
 
     @Override
     public void visit(@NotNull final Reset reset) {
-        currentColor = messageOptions.getDefaultColor();
+        currentColor = messageOptions.getDefaultFormatData().getColor();
         resetLegacyFormats();
         visitChildren(reset);
     }
@@ -319,7 +338,7 @@ public final class MarkdownRenderer extends AbstractVisitor {
             return;
         }
 
-        nodes.add(new LineBreakNode());
+        appendNode("\n");
         visitChildren(lineBreak);
     }
 
@@ -336,8 +355,10 @@ public final class MarkdownRenderer extends AbstractVisitor {
     }
 
     private void appendNode(@NotNull final String literal) {
-        final TextNode messageNode = new TextNode(literal);
+        appendNode(new TextNode(literal));
+    }
 
+    private void appendNode(@NotNull final TextNode messageNode) {
         messageNode.setColor(currentColor);
 
         if (bold || legacyBold) messageNode.setBold(true);
@@ -357,6 +378,17 @@ public final class MarkdownRenderer extends AbstractVisitor {
         legacyStrike = false;
         legacyUnderline = false;
         legacyObfuscated = false;
+    }
+
+    private void initFormat() {
+        final FormatData formatData = messageOptions.getDefaultFormatData();
+        currentColor = formatData.getColor();
+        bold = formatData.isBold();
+        italic = formatData.isItalic();
+        strike = formatData.isStrike();
+        underline = formatData.isUnderlined();
+        obfuscated = formatData.isObfuscated();
+        actions = formatData.getActions();
     }
 
 }

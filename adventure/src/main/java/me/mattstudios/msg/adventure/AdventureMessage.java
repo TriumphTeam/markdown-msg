@@ -3,7 +3,7 @@ package me.mattstudios.msg.adventure;
 import me.mattstudios.msg.base.MarkdownMessage;
 import me.mattstudios.msg.base.MessageOptions;
 import me.mattstudios.msg.base.internal.Format;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,21 +1,13 @@
 package me.mattstudios.msg;
 
 import me.mattstudios.msg.base.MessageOptions;
-import me.mattstudios.msg.base.internal.components.MessageNode;
 import me.mattstudios.msg.base.internal.parser.MarkdownParser;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class MarkdownTest {
 
     private final MarkdownParser markdownParser = new MarkdownParser(MessageOptions.builder().build());
 
-    @Test
+    /*@Test
     public void test_bold() {
         final List<MessageNode> nodes = markdownParser.parse("**Hello**");
         final String nodeString = nodes.stream().map(Object::toString).collect(Collectors.joining()).trim();
@@ -76,6 +68,6 @@ public final class MarkdownTest {
 
         assertNotNull(nodeString);
         assertEquals(nodeString, "Bold - BOLD - white   - white italic - ITALIC - white   - white strike - STRIKETHROUGH - white   - white underline - UNDERLINED - white   - white obfuscated - OBFUSCATED - white   - white action - ACTIONS - white");
-    }
+    }*/
 
 }

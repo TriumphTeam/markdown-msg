@@ -1,4 +1,4 @@
-package me.mattstudios.msg.base.internal.components;
+package me.mattstudios.msg.base.internal.nodes;
 
 import me.mattstudios.msg.base.internal.action.MessageAction;
 import me.mattstudios.msg.base.internal.color.FlatColor;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public final class TextNode implements MessageNode {
+public class TextNode implements MessageNode {
 
     @NotNull
     private final String text;
@@ -40,6 +40,7 @@ public final class TextNode implements MessageNode {
      * @return The text
      */
     @NotNull
+    @Override
     public String getText() {
         return text;
     }
@@ -50,6 +51,7 @@ public final class TextNode implements MessageNode {
      * @return The message color
      */
     @NotNull
+    @Override
     public MessageColor getColor() {
         return color;
     }
@@ -59,6 +61,7 @@ public final class TextNode implements MessageNode {
      *
      * @return Whether or not it's bold
      */
+    @Override
     public boolean isBold() {
         return bold;
     }
@@ -68,6 +71,7 @@ public final class TextNode implements MessageNode {
      *
      * @return Whether or not it's italic
      */
+    @Override
     public boolean isItalic() {
         return italic;
     }
@@ -77,6 +81,7 @@ public final class TextNode implements MessageNode {
      *
      * @return Whether or not it's strikethrough
      */
+    @Override
     public boolean isStrike() {
         return strike;
     }
@@ -86,6 +91,7 @@ public final class TextNode implements MessageNode {
      *
      * @return Whether or not it's underlined
      */
+    @Override
     public boolean isUnderlined() {
         return underlined;
     }
@@ -95,6 +101,7 @@ public final class TextNode implements MessageNode {
      *
      * @return Whether or not it's bold
      */
+    @Override
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -105,6 +112,7 @@ public final class TextNode implements MessageNode {
      * @return The message actions
      */
     @Nullable
+    @Override
     public List<MessageAction> getActions() {
         return messageActions;
     }
@@ -150,4 +158,5 @@ public final class TextNode implements MessageNode {
                 ", messageActions=" + messageActions +
                 '}';
     }
+
 }

@@ -1,6 +1,6 @@
 package me.mattstudios.msg.bukkit.serializer;
 
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import me.mattstudios.msg.base.serializer.Appender;
 import me.mattstudios.msg.base.serializer.NodeScanner;
 import me.mattstudios.msg.bukkit.JsonAppender;

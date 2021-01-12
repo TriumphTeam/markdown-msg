@@ -2,7 +2,7 @@ package me.mattstudios.msg.base.internal.action;
 
 import me.mattstudios.msg.base.internal.Format;
 import me.mattstudios.msg.base.internal.action.content.HoverContent;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

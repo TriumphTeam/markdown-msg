@@ -1,7 +1,7 @@
 package me.mattstudios.msg.adventure;
 
 import me.mattstudios.msg.adventure.appender.AdventureAppender;
-import me.mattstudios.msg.base.internal.components.MessageNode;
+import me.mattstudios.msg.base.internal.nodes.MessageNode;
 import me.mattstudios.msg.base.serializer.Appender;
 import me.mattstudios.msg.base.serializer.NodeScanner;
 import net.kyori.adventure.text.Component;

@@ -1,7 +1,6 @@
 package me.mattstudios.msg.base;
 
 import me.mattstudios.msg.base.internal.Format;
-import me.mattstudios.msg.base.internal.color.FlatColor;
 import me.mattstudios.msg.base.internal.color.MessageColor;
 import me.mattstudios.msg.commonmark.parser.ParserExtension;
 import org.jetbrains.annotations.NotNull;
@@ -20,19 +19,20 @@ public final class MessageOptions {
 
     @NotNull
     private final Set<Format> formats;
+
     @NotNull
-    private final MessageColor defaultColor;
+    private FormatData formatData = new FormatData();
 
     @NotNull
     private final List<ParserExtension> extensions;
 
     private MessageOptions(
             @NotNull final Set<Format> formats,
-            @NotNull final MessageColor defaultColor,
+            @NotNull final FormatData formatData,
             @NotNull final List<ParserExtension> extensions
     ) {
         this.formats = formats;
-        this.defaultColor = defaultColor;
+        this.formatData = formatData;
         this.extensions = extensions;
     }
 
@@ -54,8 +54,8 @@ public final class MessageOptions {
     }
 
     @NotNull
-    public MessageColor getDefaultColor() {
-        return defaultColor;
+    public FormatData getDefaultFormatData() {
+        return formatData;
     }
 
     @NotNull
@@ -69,7 +69,7 @@ public final class MessageOptions {
         private final Set<Format> formats;
 
         @NotNull
-        private MessageColor defaultColor = new FlatColor("white");
+        private FormatData formatData = new FormatData();
 
         @NotNull
         private final List<ParserExtension> extensions = new ArrayList<>();
@@ -89,7 +89,12 @@ public final class MessageOptions {
         }
 
         public Builder setDefaultColor(@NotNull final MessageColor color) {
-            defaultColor = color;
+            formatData.setColor(color);
+            return this;
+        }
+
+        public Builder setDefaultFormatData(@NotNull FormatData formatData) {
+            formatData = formatData;
             return this;
         }
 
@@ -104,7 +109,7 @@ public final class MessageOptions {
         }
 
         public MessageOptions build() {
-            return new MessageOptions(formats, defaultColor, extensions);
+            return new MessageOptions(formats, formatData, extensions);
         }
 
     }

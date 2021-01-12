@@ -1,7 +1,6 @@
 package me.mattstudios.msg.extensions
 
-import me.mattstudios.msg.base.internal.components.MessageNode
-import me.mattstudios.msg.base.internal.components.TextNode
+import me.mattstudios.msg.base.internal.nodes.TextNode
 import me.mattstudios.msg.base.internal.renderer.NodeRenderer
 import me.mattstudios.msg.commonmark.internal.inline.ParsedInline
 import me.mattstudios.msg.commonmark.internal.inline.Scanner
@@ -17,7 +16,7 @@ class BracketExtension : ParserExtension, NodeRenderer {
         builder.customTriggerProcessor(ProcessorTest())
     }
 
-    override fun render(node: CustomNode): MessageNode {
+    override fun render(node: CustomNode): TextNode {
         println(node)
         return TextNode("pinged")
     }
@@ -53,7 +52,5 @@ class ProcessorTest : TriggerProcessor {
 
         return ParsedInline.none()
     }
-
-
 
 }
