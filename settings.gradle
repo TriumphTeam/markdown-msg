@@ -5,4 +5,4 @@ rootProject.name = "triumph-msg"
     findProject(":$it")?.name = "triumph-msg-$it"
 }
 
-//include "plugin-test"
+include "plugin-test"

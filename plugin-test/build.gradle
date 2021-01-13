@@ -40,10 +40,4 @@ shadowJar {
     destinationDir file("C:/Users/xpsyk/Desktop/servers/paper-1.16/plugins")
 }
 
-import org.apache.tools.ant.filters.ReplaceTokens
-
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
-}
+project.tasks.publish.enabled = false

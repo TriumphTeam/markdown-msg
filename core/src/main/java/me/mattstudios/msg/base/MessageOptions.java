@@ -94,7 +94,7 @@ public final class MessageOptions {
         }
 
         public Builder setDefaultFormatData(@NotNull FormatData formatData) {
-            formatData = formatData;
+            this.formatData = formatData;
             return this;
         }
 
