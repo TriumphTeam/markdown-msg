@@ -1,5 +1,5 @@
 ## Markdown Messages Lib 
-<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/ipsk/triumph-msg?label=version&style=flat-square"> <img alt="GitHub" src="https://img.shields.io/github/license/ipsk/triumph-msg?color=blue&style=flat-square"> <a href="https://mattstudios.me/discord"><img alt="Discord" src="https://img.shields.io/discord/493380790718038028?label=discord&style=flat-square"></a>
+<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/TriumphTeam/markdown-msg?style=flat-square"> <img alt="GitHub" src="https://img.shields.io/github/license/triumphteam/markdown-msg?style=flat-square"> <a href="https://mattstudios.me/discord"><img alt="Discord" src="https://img.shields.io/discord/493380790718038028?label=discord&style=flat-square"></a>
 
 ## Introduction
 triumph-msg is a message lib that implements Discord like markdown syntax to minecraft.<br/>
