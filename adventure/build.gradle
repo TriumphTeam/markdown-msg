@@ -1,7 +1,4 @@
-group 'me.mattstudios'
-version parent.version
-
 dependencies {
     api project(":triumph-msg-core")
-    compileOnly "net.kyori:adventure-api:4.3.0"
+    compileOnly "net.kyori:adventure-api:4.7.0"
 }

@@ -82,6 +82,7 @@ public final class AdventureAppender implements Appender<Component> {
         // Handles the actions
         for (final MessageAction messageAction : actions) {
             if (messageAction instanceof HoverMessageAction) {
+
                 final HoverContent hoverContent = ((HoverMessageAction) messageAction).getHoverContent();
 
                 if (hoverContent instanceof ShowText) {
@@ -96,7 +97,6 @@ public final class AdventureAppender implements Appender<Component> {
                 }
 
                 final ShowItem showItem = (ShowItem) hoverContent;
-
                 final Key key = Key.key(showItem.getId());
 
                 BinaryTagHolder nbt = null;
